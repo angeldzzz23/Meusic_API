@@ -1,5 +1,5 @@
 @echo off
-set "VIRTUAL_ENV=C:\Users\MAGGY\Desktop\Proyecto\env"
+set "VIRTUAL_ENV=C:\wamp64\www\backend\env"
 
 if not defined PROMPT (
     set "PROMPT=$P$G"

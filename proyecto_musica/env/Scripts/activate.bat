@@ -1,5 +1,5 @@
 @echo off
-set "VIRTUAL_ENV=C:\Users\MAGGY\Desktop\Proyecto\proyecto_musica\env"
+set "VIRTUAL_ENV=C:\wamp64\www\backend\proyecto_musica\env"
 
 if not defined PROMPT (
     set "PROMPT=$P$G"
