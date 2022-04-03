@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -12,7 +13,7 @@ class Genero(models.Model):
         db_table = 'Genero'
  
 class Usuarios(models.Model):
-    usuario_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='usuario_id')
+    usuario_id=models.UUIDField(default=uuid.uuid4,editable=False,primary_key=True,unique=True,null=False,verbose_name='usuario_id')
     nombre = models.CharField(max_length=100)
     apellidos =models.CharField(max_length=100)
     fecha_nacimiento=models.DateField()
@@ -55,7 +56,7 @@ class Usuario_habilidad(models.Model):
 
 class Genero_musical(models.Model):
     genero_musical_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='genero_musical_id')
-    genero_musical_descripcion =models.CharField(max_length=200)
+    
 
     def __str__(self):
         return self.genero_musical_id
@@ -69,6 +70,44 @@ class Usuario_genero_musical(models.Model):
    
     class Meta:
         db_table = 'usuario_genero_musical'
+
+class Plataforma(models.Model):
+     plataforma_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
+     plataforma_descripcion =models.CharField(max_length=200)
+     def __str__(self):
+        return self.plataforma_id
+     class Meta:
+        db_table = 'plataforma'
+
+class Usuario_plataforma(models.Model):
+     plataforma_usuario_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
+     plataforma =models.ForeignKey(Plataforma, on_delete=models.CASCADE,verbose_name='plataforma_id')
+     usuario =models.ForeignKey(Usuarios, on_delete=models.CASCADE,verbose_name='usuario_id')
+     url =models.CharField(max_length=200)
+     class Meta:
+        db_table = 'usuario_plataforma'
+
+class Vimeo(models.Model):
+    vimeo_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
+    client_id =models.CharField(max_length=255)
+    client_secret =models.CharField(max_length=255)
+    class Meta:
+        db_table = 'vimeo'
+        
+class Spotify(models.Model):
+    spotify_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
+    client_id =models.CharField(max_length=255)
+    client_secret =models.CharField(max_length=255)
+    class Meta:
+        db_table = 'spotify'
+
+class Youtube(models.Model):
+    youtube_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
+    key=models.CharField(max_length=255)
+    class Meta:
+        db_table = 'youtube'      
+
+
 
 
 

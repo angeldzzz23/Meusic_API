@@ -1,0 +1,59 @@
+{
+	"info": {
+		"_postman_id": "9659de6d-4c2a-4848-bb73-d51dece07128",
+		"name": "Genero",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Generos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/genero/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"genero",
+						""
+					]
+				},
+				"description": "Para obtener todos los generos solo sera requerido usar la siguiente url :\n\n[http://127.0.0.1:8000/api/genero/](http://127.0.0.1:8000/api/usuarios/)\n\nSin algun parametro en particular"
+			},
+			"response": []
+		},
+		{
+			"name": "Generos(Sugerencias)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/genero/hom",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"genero",
+						"hom"
+					]
+				},
+				"description": "Para obtener sugerencias de generos se debera mandar el texto a buscar por medio de la url como en el ejemplo siguiente:\n\n[http://127.0.0.1:8000/api/genero/](http://127.0.0.1:8000/api/usuarios/)texto\n\nDonde \"texto \" es la palabra o genero a buscar"
+			},
+			"response": []
+		}
+	]
+}

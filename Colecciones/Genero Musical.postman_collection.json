@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "8da77407-99cd-4df6-acb1-2a5bb94573ed",
+		"name": "Genero Musical",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Generos Musicales",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/genero_musical/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"genero_musical",
+						""
+					]
+				},
+				"description": "Para obtener todos los generos musicales solo sera requerido usar la siguiente url :\n\n[http://127.0.0.1:8000/api/genero_musical/  \n  \n](http://127.0.0.1:8000/api/usuarios/)\n\nSin algun parametro en particular"
+			},
+			"response": []
+		},
+		{
+			"name": "Genero Musical (Crear)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n\"genero_musical_descripcion\":\"MI Genero musical Nuevo\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/genero_musical/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"genero_musical",
+						""
+					]
+				},
+				"description": "Para guardar un genero musical se debera mandar un json como muestra el ejemplo y la url sera de la siguiente manera\n\n[http://127.0.0.1:8000/api/genero_musical/  \n  \n](http://127.0.0.1:8000/api/usuarios/)\n\nSin algun parametro en particular"
+			},
+			"response": []
+		},
+		{
+			"name": "Generos Musicales(Sugerencias)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/genero_musical/regional",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"genero_musical",
+						"regional"
+					]
+				},
+				"description": "Para obtener sugerencias de generos musicales se debera mandar el texto a buscar por medio de la url como en el ejemplo siguiente:\n\n[http://127.0.0.1:8000/api/genero_musical/texto](http://127.0.0.1:8000/api/genero_musical/texto)\n\nDonde \"texto \" es la palabra o genero musical a buscar"
+			},
+			"response": []
+		}
+	]
+}

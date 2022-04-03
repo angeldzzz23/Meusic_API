@@ -9,6 +9,10 @@ from .models import Habilidad
 from .models import Usuario_habilidad
 from .models import Usuario_genero_musical
 from .models import Genero_musical
+from .models import Usuario_plataforma
+from .models import Vimeo
+from .models import Youtube
+from .models import Spotify
 import json
 
 # Create your views here.
@@ -20,21 +24,22 @@ class UsuariosView(View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, id=0):
-        if (id > 0):
+    def get(self, request, id=""):
+        print(id)
+        if (id !=""):
             datos_usuarios = list(Usuarios.objects.prefetch_related('Genero').filter(usuario_id=id).values(
                 "genero__genero_descripcion","genero_id","nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
             if len(datos_usuarios) > 0:
                 informacion = datos_usuarios[0]
                 
-                datos = {'codigo':"200",'message': "Success", 'usuarios': informacion}
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
             else:
                 datos = {'codigo':"200",'message': "Users not found..."}
             return JsonResponse(datos)
         else:
             datos_usuarios = list(Usuarios.objects.prefetch_related('Genero').values("genero__genero_descripcion","genero_id","nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
             if len(datos_usuarios) > 0:
-                datos = {'codigo':"200", 'message': "Success", 'usuarios': datos_usuarios}
+                datos = {'codigo':"200", 'message': "Success", 'resultado': datos_usuarios}
             else:
                 datos = {'codigo':"400",'message': "Users not found..."}
             return JsonResponse(datos)
@@ -42,7 +47,7 @@ class UsuariosView(View):
     def post(self, request):
         # print(request.body)
         jd = json.loads(request.body)
-        # print(jd)
+        # 
         registro= Usuarios.objects.filter(username=jd['username'])
         if len(registro) > 0:
             datos = {'codigo':"400",'message': "El username ya existe"}  
@@ -57,20 +62,15 @@ class UsuariosView(View):
             username=jd['username'],contrasena=jd['contrasena'],acerca_de_mi=jd['acerca_de_mi'],
             genero_id=jd['genero_id']
             )
-            datos = {'codigo':"200",'message': "Success"}
+            registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values())
+            
+            datos = {'codigo':"200",'message': "Success","resultado":registro}
        
             return JsonResponse(datos)
 
     def put(self, request, id):
         jd = json.loads(request.body)
         registro= Usuarios.objects.filter(username=jd['username'])
-        if len(registro) > 0:
-            datos = {'codigo':"400",'message': "El username ya existe"}  
-            return JsonResponse(datos)
-        registro= Usuarios.objects.filter(correo_electronico=jd['correo_electronico'])
-        if len(registro) > 0:
-            datos = {'codigo':"400",'message': "El correo electronico ya existe"}   
-            return JsonResponse(datos)
         usuario_edit= list(Usuarios.objects.filter(usuario_id=id).values())
         if len(usuario_edit) > 0:
             registro = Usuarios.objects.get(usuario_id=id)
@@ -83,7 +83,10 @@ class UsuariosView(View):
             registro.acerca_de_mi=jd['acerca_de_mi']
             registro.genero_id=jd['genero_id']
             registro.save()
-            datos = {'codigo':"200",'message': "Success"}
+            registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values(  
+            "nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
+            datos = {'codigo':"200",'message': "Success","resultado":registro}
+       
         else:
             datos = {'codigo':"400",'message': "User not found..."}
         return JsonResponse(datos)
@@ -107,7 +110,7 @@ class GeneroView(View):
             datos_generos = list(Genero.objects.filter(genero_descripcion__icontains=name).values())
             if len(datos_generos) > 0:
                 informacion = datos_generos
-                datos = {'codigo':"200",'message': "Success", 'generos': informacion}
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
                 return JsonResponse(datos)
             else:
                 datos = {'codigo':"400",'message': "Genero not found..."} 
@@ -115,7 +118,7 @@ class GeneroView(View):
         else:
             datos_generos = list(Genero.objects.values())
             if len(datos_generos) > 0:
-                datos = {'codigo':"200", 'message': "Success", 'generos': datos_generos}
+                datos = {'codigo':"200", 'message': "Success", 'resultado': datos_generos}
                 return JsonResponse(datos)
             else:
                 datos = {'codigo':"400",'message': "Genero not found..."}
@@ -131,15 +134,15 @@ class GeneroMusicalView(View):
             datos_generos = list(Genero_musical.objects.filter(genero_musical_descripcion__icontains=name).values())
             if len(datos_generos) > 0:
                 informacion = datos_generos
-                datos = {'codigo':"200",'message': "Success", 'generos': informacion}
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
                 return JsonResponse(datos)
             else:
-                 datos = {'codigo':"400",'message': "Genero not found..."}
+                 datos = {'codigo':"400",'message': "Genero Musical not found..."}
                  return JsonResponse(datos)
         else:
             datos_generos = list(Genero_musical.objects.values())
             if len(datos_generos) > 0:
-                datos = {'codigo':"200", 'message': "Success", 'generos': datos_generos}
+                datos = {'codigo':"200", 'message': "Success", 'resultado': datos_generos}
             else:
                 datos = {'codigo':"400",'message': "Genero not found..."}
             return JsonResponse(datos)
@@ -155,19 +158,19 @@ class HabilidadView(View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, name=0):
-        if (name != 0):
+    def get(self, request, name=""):
+        if (name != ""):
             datos_habilidad = list(Habilidad.objects.filter(habilidad_descripcion__icontains=name).values())
             if len(datos_habilidad) > 0:
                 informacion = datos_habilidad
-                datos = {'codigo':"200",'message': "Success", 'habilidades': informacion}
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
                 return JsonResponse(datos)
         else:
             datos_habilidad = list(Habilidad.objects.values())
             if len(datos_habilidad) > 0:
-                datos = {'codigo':"200", 'message': "Success", 'habilidades': datos_habilidad}
+                datos = {'codigo':"200", 'message': "Success", 'resultado': datos_habilidad}
             else:
-                datos = {'codigo':"400",'message': "Genero not found..."}
+                datos = {'codigo':"400",'message': "Habilidades not found..."}
             return JsonResponse(datos)
 
 class UsaurioArtistaView(View):
@@ -175,12 +178,12 @@ class UsaurioArtistaView(View):
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request, id=0):
-        if (id!=0):
+    def get(self, request, id=""):
+        if (id!=""):
             artistas = list(Usuario_artista.objects.filter(usuario_id=id).values())
             if len(artistas) > 0:
                 informacion = artistas
-                datos = {'codigo':"200",'message': "Success", 'artistas': informacion}
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
             else:
                 datos = {'codigo':"400",'message': "artistas not found..."}
             return JsonResponse(datos)
@@ -304,3 +307,71 @@ class UsuarioGeneroMusicalView(View):
         else:
             datos = {'codigo':"400",'message': "El usuario ya no se encuentra relacionado con el artita"}
         return JsonResponse(datos)
+
+class UsuarioPlataformaView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, id=""):
+        if (id!=""):
+            genero = list(Usuario_plataforma.objects.filter(usuario_id=id).values())
+            if len(genero) > 0:
+                informacion = genero
+                datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
+            else:
+                datos = {'codigo':"400",'message': "Usuario Plataforma not found..."}
+            return JsonResponse(datos)
+    def post(self, request):
+        # print(request.body)
+        jd = json.loads(request.body)
+       
+        Usuario_plataforma.objects.create(usuario_id=jd['usuario_id'],plataforma_id=jd['plataforma_id'],
+        url=jd['url'] )
+        datos = {'codigo':"200",'message': "Success"}
+        return JsonResponse(datos)
+
+    def delete(self, request, id):
+        jd = json.loads(request.body)
+        registro = list(Usuario_plataforma.objects.filter(usuario_id=id,plataforma_id=jd['plataforma_id']).values())
+        if len(registro) > 0:
+            Usuario_plataforma.objects.filter(usuario_id=id,plataforma_id=jd['plataforma_id']).delete()
+            datos = {'codigo':"200",'message': "Success"}
+        else:
+            datos = {'codigo':"400",'message': "Registro previamente Borrado"}
+        return JsonResponse(datos)
+
+class VimeoView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, name=0):
+        vimeo = list(Vimeo.objects.filter(vimeo_id=1).values())
+        informacion = vimeo
+        datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
+        return JsonResponse(datos)
+class YoutubeView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, name=0):
+        youtube = list(Youtube.objects.filter(youtube_id=1).values())
+        informacion = youtube
+        datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
+        return JsonResponse(datos)
+
+class SpotifyView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, name=0):
+        spotify = list(Spotify.objects.filter(spotify_id=1).values())
+        informacion = spotify
+        datos = {'codigo':"200",'message': "Success", 'resultado': informacion}
+        return JsonResponse(datos)
+
+       
+
