@@ -14,7 +14,7 @@ from .models import Vimeo
 from .models import Youtube
 from .models import Spotify
 import json
-
+from django.contrib.auth.hashers import make_password
 # Create your views here.
 
 
@@ -59,7 +59,7 @@ class UsuariosView(View):
         if len(registro) == 0:
             Usuarios.objects.create(nombre=jd['nombre'],apellidos=jd['apellidos'],
             correo_electronico=jd['correo_electronico'],fecha_nacimiento=jd['fecha_nacimiento'],
-            username=jd['username'],contrasena=jd['contrasena'],acerca_de_mi=jd['acerca_de_mi'],
+            username=jd['username'],contrasena=make_password(jd['contrasena']),acerca_de_mi=jd['acerca_de_mi'],
             genero_id=jd['genero_id']
             )
             registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values())

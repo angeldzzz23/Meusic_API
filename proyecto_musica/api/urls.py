@@ -11,7 +11,7 @@ from .views import VimeoView
 from .views import YoutubeView
 from .views import SpotifyView
 urlpatterns = [
-    path('usuarios/?limit=<int:limite>', UsuariosView.as_view(), name='usuarios_lista'),
+    path('usuarios/', UsuariosView.as_view(), name='usuarios_lista'),
     path('usuarios/<str:id>', UsuariosView.as_view(), name='usuario_por_id'),
     path('genero/', GeneroView.as_view(), name='generos_lista'),
     path('genero/<str:name>', GeneroView.as_view(), name='generos_nombre'),
