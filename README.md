@@ -49,3 +49,8 @@ To run Django project
 ```bash
 pip install -r requirements.txt
 ```
+
+EndPoints
+
+https://docs.google.com/document/d/1-Lhuk_N4GfUZFXqtigT5030osPyzw5oE7R_ehfXe8o8/edit#
+
