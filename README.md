@@ -12,7 +12,7 @@ Make sure you are in the python virtual enviroment.
 
  activate virtual environment 
 ```bash
-$ source python3-virtualenv/bin/activate
+$ source env/bin/activate
 ```
 
 
