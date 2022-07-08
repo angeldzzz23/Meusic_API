@@ -29,7 +29,9 @@ class UsuariosView(View):
         print(id)
         if (id !=""):
             datos_usuarios = list(Usuarios.objects.prefetch_related('Genero').filter(usuario_id=id).values(
-                "genero__genero_descripcion","genero_id","nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
+                "genero__genero_descripcion","genero_id","nombre","apellidos",
+                "fecha_nacimiento","username","acerca_de_mi","correo_electronico",
+                "skill_1_id","skill_2_id","skill_3_id","skill_4_id","skill_5_id"))
             if len(datos_usuarios) > 0:
                 informacion = datos_usuarios[0]
                 
@@ -38,7 +40,11 @@ class UsuariosView(View):
                 datos = {'codigo':"200",'message': "Users not found..."}
             return JsonResponse(datos)
         else:
-            datos_usuarios = list(Usuarios.objects.prefetch_related('Genero').values("genero__genero_descripcion","genero_id","nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
+            datos_usuarios = list(Usuarios.objects.prefetch_related('Genero')
+                    .values("genero__genero_descripcion","genero_id","nombre",
+                        "apellidos","fecha_nacimiento","username","acerca_de_mi",
+                        "correo_electronico","skill_1_id","skill_2_id",
+                        "skill_3_id","skill_4_id","skill_5_id"))
             if len(datos_usuarios) > 0:
                 datos = {'codigo':"200", 'message': "Success", 'result': datos_usuarios}
             else:
