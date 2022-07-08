@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.http.response import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -57,11 +58,57 @@ class UsuariosView(View):
             datos = {'codigo':"400",'message': "El correo electronico ya existe"}   
             return JsonResponse(datos)
         if len(registro) == 0:
+
+            # error checking
+            if 'skill_1' in jd:
+                s1 = jd['skill_1']
+
+                if not s1.isnumeric():
+                    datos = {'codigo':"400",'message': "Please enter numeric skill id"}
+                    return JsonResponse(datos)
+                skill_1 = Habilidad.objects.filter(habilidad_id=s1)
+                if not skill_1:
+                    datos = {'codigo':"400",'message': "Skill not found in database"}
+                    return JsonResponse(datos)
+                skill_1 = Habilidad.objects.get(habilidad_id=s1)
+            else:
+                skill_1 = None
+
+
+            # TODO: for rest of skills
+            
+            skill_2 = (Habilidad.objects.get(habilidad_id=jd['skill_2']) if 
+            'skill_2' in jd else None)
+            skill_3 = (Habilidad.objects.get(habilidad_id=jd['skill_3']) if 
+            'skill_3' in jd else None)
+            skill_4 = (Habilidad.objects.get(habilidad_id=jd['skill_4']) if 
+            'skill_4' in jd else None)
+            skill_5 = (Habilidad.objects.get(habilidad_id=jd['skill_5']) if 
+            'skill_5' in jd else None)
+            
+
             Usuarios.objects.create(nombre=jd['nombre'],apellidos=jd['apellidos'],
             correo_electronico=jd['correo_electronico'],fecha_nacimiento=jd['fecha_nacimiento'],
-            username=jd['username'],contrasena=make_password(jd['contrasena']),acerca_de_mi=jd['acerca_de_mi'],
-            genero_id=jd['genero_id']
+            username=jd['username'],contrasena=make_password(jd['contrasena']),
+            acerca_de_mi=jd['acerca_de_mi'],genero_id=jd['genero_id'],
+            skill_1=skill_1,skill_2=skill_2,skill_3=skill_3,skill_4=skill_4,
+            skill_5=skill_5
             )
+
+            # post to Usuario_habilidad db
+            userid= Usuarios.objects.filter(username=jd['username']).values('usuario_id')
+
+            if 'skill_1' in jd:
+                Usuario_habilidad.objects.create(usuario_id=userid,habilidad_id=jd['skill_1'])
+            if 'skill_2' in jd:
+                Usuario_habilidad.objects.create(usuario_id=userid,habilidad_id=jd['skill_2'])
+            if 'skill_3' in jd:
+                Usuario_habilidad.objects.create(usuario_id=userid,habilidad_id=jd['skill_3'])
+            if 'skill_4' in jd:
+                Usuario_habilidad.objects.create(usuario_id=userid,habilidad_id=jd['skill_4'])
+            if 'skill_5' in jd:
+                Usuario_habilidad.objects.create(usuario_id=userid,habilidad_id=jd['skill_5'])
+
             registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values())
             
             datos = {'codigo':"200",'message': "Success","result":registro}

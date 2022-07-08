@@ -33,11 +33,11 @@ class Usuarios(models.Model):
     contrasena =models.CharField(max_length=250)
     fecha_creacion=models.DateField(auto_now=False,auto_now_add=True)
     acerca_de_mi =models.CharField(max_length=250)
-    skill_1 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_1_id', related_name='+', default='')
-    skill_2 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_2_id', related_name='+', default='')
-    skill_3 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_3_id', related_name='+', default='')
-    skill_4 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_4_id', related_name='+', default='')
-    skill_5 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_5_id', related_name='+', default='')
+    skill_1 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_1_id', related_name='+', null=True, default='')
+    skill_2 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_2_id', related_name='+', null=True, default='')
+    skill_3 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_3_id', related_name='+', null=True, default='')
+    skill_4 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_4_id', related_name='+', null=True, default='')
+    skill_5 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_5_id', related_name='+', null=True, default='')
     def __str__(self):
         return self.usuario_id
     class Meta:
