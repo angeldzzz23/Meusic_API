@@ -11,7 +11,16 @@ class Genero(models.Model):
         return self.genero_id
     class Meta:
         db_table = 'Genero'
- 
+
+class Habilidad(models.Model):
+    habilidad_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='habilidad_id')
+    habilidad_descripcion =models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.habilidad_id
+    class Meta:
+        db_table = 'habilidad'
+
 class Usuarios(models.Model):
     usuario_id=models.UUIDField(default=uuid.uuid4,editable=False,primary_key=True,unique=True,null=False,verbose_name='usuario_id')
     nombre = models.CharField(max_length=100)
@@ -24,6 +33,11 @@ class Usuarios(models.Model):
     contrasena =models.CharField(max_length=250)
     fecha_creacion=models.DateField(auto_now=False,auto_now_add=True)
     acerca_de_mi =models.CharField(max_length=250)
+    skill_1 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_1_id', related_name='+', default='')
+    skill_2 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_2_id', related_name='+', default='')
+    skill_3 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_3_id', related_name='+', default='')
+    skill_4 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_4_id', related_name='+', default='')
+    skill_5 =models.ForeignKey('habilidad', on_delete=models.CASCADE, verbose_name='skill_5_id', related_name='+', default='')
     def __str__(self):
         return self.usuario_id
     class Meta:
@@ -36,15 +50,6 @@ class Usuario_artista(models.Model):
    
     class Meta:
         db_table = 'usuario_artista'
-
-class Habilidad(models.Model):
-    habilidad_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='habilidad_id')
-    habilidad_descripcion =models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.habilidad_id
-    class Meta:
-        db_table = 'habilidad'
 
 class Usuario_habilidad(models.Model):
     usuario_habilidad_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='Usuario_habilidad_id')
