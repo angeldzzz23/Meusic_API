@@ -161,10 +161,13 @@ class UsuariosView(View):
                 skill_1 = Habilidad.objects.get(habilidad_id=s1)
                 
                 x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_1).values('usuario_habilidad_id').first()
-                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
-                registro_habilidades.usuario_id = id
-                registro_habilidades.habilidad_id = jd['skill_1']
-                registro_habilidades.save()
+                if not x:
+                    Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_1'])
+                else:
+                    registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                    registro_habilidades.usuario_id = id
+                    registro_habilidades.habilidad_id = jd['skill_1']
+                    registro_habilidades.save()
 
                 registro.skill_1 = skill_1
 
@@ -176,10 +179,13 @@ class UsuariosView(View):
                 skill_2 = Habilidad.objects.get(habilidad_id=s2)
                 
                 x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_2).values('usuario_habilidad_id').first()
-                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
-                registro_habilidades.usuario_id = id
-                registro_habilidades.habilidad_id = jd['skill_2']
-                registro_habilidades.save()
+                if not x:
+                    Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_2'])
+                else:
+                    registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                    registro_habilidades.usuario_id = id
+                    registro_habilidades.habilidad_id = jd['skill_2']
+                    registro_habilidades.save()
 
                 registro.skill_2 = skill_2
 
@@ -191,10 +197,13 @@ class UsuariosView(View):
                 skill_3 = Habilidad.objects.get(habilidad_id=s3)
                 
                 x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_3).values('usuario_habilidad_id').first()
-                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
-                registro_habilidades.usuario_id = id
-                registro_habilidades.habilidad_id = jd['skill_3']
-                registro_habilidades.save()
+                if not x:
+                    Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_3'])
+                else:
+                    registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                    registro_habilidades.usuario_id = id
+                    registro_habilidades.habilidad_id = jd['skill_3']
+                    registro_habilidades.save()
 
                 registro.skill_3 = skill_3
 
@@ -206,10 +215,13 @@ class UsuariosView(View):
                 skill_4 = Habilidad.objects.get(habilidad_id=s4)
                 
                 x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_4).values('usuario_habilidad_id').first()
-                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
-                registro_habilidades.usuario_id = id
-                registro_habilidades.habilidad_id = jd['skill_4']
-                registro_habilidades.save()
+                if not x:
+                    Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_4'])
+                else:
+                    registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                    registro_habilidades.usuario_id = id
+                    registro_habilidades.habilidad_id = jd['skill_4']
+                    registro_habilidades.save()
 
                 registro.skill_4 = skill_4
 
@@ -221,10 +233,13 @@ class UsuariosView(View):
                 skill_5 = Habilidad.objects.get(habilidad_id=s5)
                 
                 x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_5).values('usuario_habilidad_id').first()
-                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
-                registro_habilidades.usuario_id = id
-                registro_habilidades.habilidad_id = jd['skill_5']
-                registro_habilidades.save()
+                if not x:
+                    Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_5'])
+                else:
+                    registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                    registro_habilidades.usuario_id = id
+                    registro_habilidades.habilidad_id = jd['skill_5']
+                    registro_habilidades.save()
 
                 registro.skill_5 = skill_5
 
@@ -270,14 +285,42 @@ class UsuariosView(View):
                 return JsonResponse(datos)
             skill_1 = Habilidad.objects.get(habilidad_id=s1)
 
-            x = Usuario_habilidad.objects.filter(usuario_id = id, habilidad_id = registro.skill_1).values('usuario_habilidad_id').first()
-            registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id = x['usuario_habilidad_id'])
-            registro_habilidades.usuario_id = id
-            registro_habilidades.habilidad_id = jd['skill_1']
-            registro_habilidades.save()
+            # check if user_id, skill_1 exists in usario_habilidad
+            x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id = registro.skill_1).values('usuario_habilidad_id').first()
+            if not x:
+                Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_1'])
+            else:
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id = x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_1']
+                registro_habilidades.save()
 
             registro.skill_1 = skill_1
-            
+
+
+
+
+            s2 = jd['skill_2']
+            if not s2.isnumeric():
+                datos = {'codigo' : "400", 'message' : "Please enter numeric skill id"}
+                return JsonResponse(datos)
+            skill_2 = Habilidad.objects.filter(habilidad_id=s2)
+            if not skill_2:
+                datos = {'codigo' : "400", 'message' :  "Skill not found in database"}
+                return JsonResponse(datos)
+            skill_2 = Habilidad.objects.get(habilidad_id=s2)
+
+            x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id = registro.skill_2).values('usuario_habilidad_id').first()
+            if not x:
+                Usuario_habilidad.objects.create(usuario_id=id, habilidad_id=jd['skill_2'])
+            else:
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id = x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_2']
+                registro_habilidades.save()
+
+            registro.skill_2 = skill_2
+
             registro.save()
             registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values(  
             "nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico",
@@ -420,21 +463,20 @@ class UsuarioHabiliadView(View):
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, id=0):
-        if (id!=0):
+        if id != 0:
             habilidad = list(Usuario_habilidad.objects.prefetch_related('Habilidad').filter(usuario_id=id).values(
                 "habilidad__habilidad_descripcion","habilidad__habilidad_id"
             ))
             if len(habilidad) > 0:
                 informacion = habilidad
-                datos = {'codigo':"200",'message': "Success", 'artistas': informacion}
+                datos = {'codigo':"200",'message': "Success", 'User skills': informacion}
                 return JsonResponse(datos)
             else:
-                datos = {'codigo':"400",'message': "artistas not found..."}
+                datos = {'codigo':"400",'message': "Skills not found for this user..."}
                 return JsonResponse(datos)
+
     def post(self, request):
-        # print(request.body)
         jd = json.loads(request.body)
-        # print(jd)
         registro= Usuario_habilidad.objects.filter(usuario_id=jd['usuario_id'])
         if len(registro) ==5:
             datos = {'codigo':"400",'message': "Solo debe elegir 5 habilidades"}  
@@ -450,14 +492,15 @@ class UsuarioHabiliadView(View):
             datos = {'codigo':"201",'message': "Success"}
        
         return JsonResponse(datos)
+
     def delete(self, request, id):
         jd = json.loads(request.body)
-        registro = list(Usuario_habilidad.objects.filter(usuario_id=id,habilidad_id=jd['habilidad_id']).values())
+        registro = list(Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=jd['habilidad_id']).values())
         if len(registro) > 0:
-            Usuario_habilidad.objects.filter(usuario_id=id,habilidad_id=jd['habilidad_id']).delete()
+            Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=jd['habilidad_id']).delete()
             datos = {'codigo':"200",'message': "Success"}
         else:
-            datos = {'codigo':"400",'message': "El usuario ya no se encuentra relacionado con el artita"}
+            datos = {'codigo':"400",'message': "El usuario ya no se encuentra relacionado con el habilidad"}
         return JsonResponse(datos)
 
 class UsuarioGeneroMusicalView(View):
