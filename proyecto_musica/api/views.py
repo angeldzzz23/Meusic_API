@@ -121,11 +121,31 @@ class UsuariosView(View):
        
             return JsonResponse(datos)
 
+    '''def patch(self, request, id):
+        jd = json.loads(request.body)
+        registro = Usuarios.objects.filter(username = jd['username'])
+        usuario_edit = list(Usuarios.objects.filter(usuario_id = id).values())
+        if len(usuario_edit) > 0:
+            registro = Usuarios.objects.get(usuario_id=id)
+            
+            if (registro.nombre is None and "nombre" in jd)
+            or (registro.apellidos is None and "nombre" in jd)
+
+
+
+            :
+                datos = {'codigo' : "400", 'message' : "Field does not exist for user."}
+                return JsonResponse(datos)'''
+
+
     def put(self, request, id):
         jd = json.loads(request.body)
         registro= Usuarios.objects.filter(username=jd['username'])
         usuario_edit= list(Usuarios.objects.filter(usuario_id=id).values())
         if len(usuario_edit) > 0:
+
+            # TO DO with serializers: user must pass in all fields
+
             registro = Usuarios.objects.get(usuario_id=id)
             registro.nombre=jd['nombre']
             registro.apellidos=jd['apellidos']
@@ -138,12 +158,6 @@ class UsuariosView(View):
 
 
             # TODO: repeat for rest of skills
-            # TODO: repeat this if block for fields above
-            # trying to update a field that was empty
-            if registro.skill_1 is None and "skill_1" in jd:
-                datos = {'codigo' : "400", 'message' : "Field does not exist for user."}
-                return JsonResponse(datos)
-
             # check entry is in Skills database
             s1 = jd['skill_1']
             if not s1.isnumeric():
