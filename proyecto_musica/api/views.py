@@ -495,12 +495,28 @@ class UsuarioHabiliadView(View):
 
     def delete(self, request, id):
         jd = json.loads(request.body)
-        registro = list(Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=jd['habilidad_id']).values())
-        if len(registro) > 0:
-            Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=jd['habilidad_id']).delete()
+        registro = Usuario_habilidad.objects.get(usuario_habilidad_id=id)
+        user_skills_list = list(Usuario_habilidad.objects.filter(usuario_habilidad_id=id).values())
+        if len(user_skills_list) > 0:
+
+            user = Usuarios.objects.get(usuario_id=registro.usuario_id)
+
+            if user.skill_1 == registro.habilidad_id:
+                Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_1=None)
+            elif user.skill_2 == registro.habilidad_id:
+                Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_2=None)
+            elif user.skill_3 == registro.habilidad_id:
+                Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_3=None)
+            elif user.skill_4 == registro.habilidad_id:
+                Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_4=None)
+            elif user.skill_5 == registro.habilidad_id:
+                Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_5=None)
+
+            Usuario_habilidad.objects.filter(usuario_habilidad_id=id).delete()
+            
             datos = {'codigo':"200",'message': "Success"}
         else:
-            datos = {'codigo':"400",'message': "El usuario ya no se encuentra relacionado con el habilidad"}
+            datos = {'codigo':"400",'message': "There is no entry with that ID"}
         return JsonResponse(datos)
 
 class UsuarioGeneroMusicalView(View):
