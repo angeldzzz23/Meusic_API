@@ -500,16 +500,17 @@ class UsuarioHabiliadView(View):
         if len(user_skills_list) > 0:
 
             user = Usuarios.objects.get(usuario_id=registro.usuario_id)
+            skill_to_delete = Habilidad.objects.get(habilidad_id=registro.habilidad_id)
 
-            if user.skill_1 == registro.habilidad_id:
+            if user.skill_1 == skill_to_delete:
                 Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_1=None)
-            elif user.skill_2 == registro.habilidad_id:
+            elif user.skill_2 == skill_to_delete:
                 Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_2=None)
-            elif user.skill_3 == registro.habilidad_id:
+            elif user.skill_3 == skill_to_delete:
                 Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_3=None)
-            elif user.skill_4 == registro.habilidad_id:
+            elif user.skill_4 == skill_to_delete:
                 Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_4=None)
-            elif user.skill_5 == registro.habilidad_id:
+            elif user.skill_5 == skill_to_delete:
                 Usuarios.objects.filter(usuario_id=registro.usuario_id).update(skill_5=None)
 
             Usuario_habilidad.objects.filter(usuario_habilidad_id=id).delete()
