@@ -121,21 +121,122 @@ class UsuariosView(View):
        
             return JsonResponse(datos)
 
-    '''def patch(self, request, id):
+    def patch(self, request, id):
         jd = json.loads(request.body)
-        registro = Usuarios.objects.filter(username = jd['username'])
-        usuario_edit = list(Usuarios.objects.filter(usuario_id = id).values())
+        registro = Usuarios.objects.filter(username=jd['username'])
+        usuario_edit = list(Usuarios.objects.filter(usuario_id=id).values())
         if len(usuario_edit) > 0:
             registro = Usuarios.objects.get(usuario_id=id)
             
-            if (registro.nombre is None and "nombre" in jd)
-            or (registro.apellidos is None and "nombre" in jd)
+            if 'nombre' in jd:
+                registro.nombre = jd['nombre']
 
+            if 'apellidos' in jd:
+                registro.apellidos = jd['apellidos']
 
+            if 'correo_electronico' in jd:
+                registro.correo_electronico = jd['correo_electronico']
 
-            :
-                datos = {'codigo' : "400", 'message' : "Field does not exist for user."}
-                return JsonResponse(datos)'''
+            if 'fecha_nacimiento' in jd:
+                registro.fecha_nacimiento = jd['fecha_nacimiento']
+
+            if 'username' in jd:
+                registro.username = jd['username']
+
+            if 'contrasena' in jd:
+                registro.contrasena = jd['contrasena']
+
+            if 'acerca_de_mi' in jd:
+                registro.acerca_de_mi = jd['acerca_de_mi']
+
+            if 'genero_id' in jd:
+                registro.genero_id = jd['genero_id']
+
+            datos = {'codigo' : "400", 'message' :  "Skill not found in database"}
+            if 'skill_1' in jd:
+                s1 = jd['skill_1']
+                skill_1 = Habilidad.objects.filter(habilidad_id=s1)
+                if not skill_1:
+                    return JsonResponse(datos)
+                skill_1 = Habilidad.objects.get(habilidad_id=s1)
+                
+                x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_1).values('usuario_habilidad_id').first()
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_1']
+                registro_habilidades.save()
+
+                registro.skill_1 = skill_1
+
+            if 'skill_2' in jd:
+                s2 = jd['skill_2']
+                skill_2 = Habilidad.objects.filter(habilidad_id=s2)
+                if not skill_2:
+                    return JsonResponse(datos)
+                skill_2 = Habilidad.objects.get(habilidad_id=s2)
+                
+                x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_2).values('usuario_habilidad_id').first()
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_2']
+                registro_habilidades.save()
+
+                registro.skill_2 = skill_2
+
+            if 'skill_3' in jd:
+                s3 = jd['skill_3']
+                skill_3 = Habilidad.objects.filter(habilidad_id=s3)
+                if not skill_3:
+                    return JsonResponse(datos)
+                skill_3 = Habilidad.objects.get(habilidad_id=s3)
+                
+                x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_3).values('usuario_habilidad_id').first()
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_3']
+                registro_habilidades.save()
+
+                registro.skill_3 = skill_3
+
+            if 'skill_4' in jd:
+                s4 = jd['skill_4']
+                skill_4 = Habilidad.objects.filter(habilidad_id=s4)
+                if not skill_4:
+                    return JsonResponse(datos)
+                skill_4 = Habilidad.objects.get(habilidad_id=s4)
+                
+                x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_4).values('usuario_habilidad_id').first()
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_4']
+                registro_habilidades.save()
+
+                registro.skill_4 = skill_4
+
+            if 'skill_5' in jd:
+                s5 = jd['skill_5']
+                skill_5 = Habilidad.objects.filter(habilidad_id=s5)
+                if not skill_5:
+                    return JsonResponse(datos)
+                skill_5 = Habilidad.objects.get(habilidad_id=s5)
+                
+                x = Usuario_habilidad.objects.filter(usuario_id=id, habilidad_id=registro.skill_5).values('usuario_habilidad_id').first()
+                registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id=x['usuario_habilidad_id'])
+                registro_habilidades.usuario_id = id
+                registro_habilidades.habilidad_id = jd['skill_5']
+                registro_habilidades.save()
+
+                registro.skill_5 = skill_5
+
+            registro.save()
+            registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values(  
+            "nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico",
+            "skill_1", "skill_2", "skill_3", "skill_3", "skill_4", "skill_5"))
+            datos = {'codigo' : "200", 'message': "Success", "result": registro}
+       
+        else:
+            datos = {'codigo' : "400", 'message' : "User not found..."}
+        return JsonResponse(datos)
 
 
     def put(self, request, id):
