@@ -54,7 +54,7 @@ class UsuariosView(View):
     def post(self, request):
         # print(request.body)
         jd = json.loads(request.body)
-        # 
+        
         registro= Usuarios.objects.filter(username=jd['username'])
         if len(registro) > 0:
             datos = {'codigo':"400",'message': "El username ya existe"}  
@@ -135,9 +135,62 @@ class UsuariosView(View):
             registro.contrasena=jd['contrasena']
             registro.acerca_de_mi=jd['acerca_de_mi']
             registro.genero_id=jd['genero_id']
+
+
+            # TODO: repeat for rest of skills
+            # TODO: repeat this if block for fields above
+            # trying to update a field that was empty
+            if registro.skill_1 is None and "skill_1" in jd:
+                datos = {'codigo' : "400", 'message' : "Field does not exist for user."}
+                return JsonResponse(datos)
+
+            # check entry is in Skills database
+            s1 = jd['skill_1']
+            if not s1.isnumeric():
+                datos = {'codigo' : "400", 'message' : "Please enter numeric skill id"}
+                return JsonResponse(datos)
+            skill_1 = Habilidad.objects.filter(habilidad_id=s1)
+            if not skill_1:
+                datos = {'codigo' : "400", 'message' :  "Skill not found in database"}
+                return JsonResponse(datos)
+            skill_1 = Habilidad.objects.get(habilidad_id=s1)
+
+
+            # set in UsariosHabilidades db
+            x = Usuario_habilidad.objects.filter(usuario_id = id, habilidad_id = registro.skill_1).values('usuario_habilidad_id').first()
+            registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id = x['usuario_habilidad_id'])
+            registro_habilidades.usuario_id = id
+            registro_habilidades.habilidad_id = jd['skill_1']
+            registro_habilidades.save()
+
+            # set in user db
+            registro.skill_1 = skill_1
+            
+
+            '''if registro.skill_2 is not None and "skill_2" in jd:
+                registro.skill_2 = jd['skill_2']
+            else: 
+                return JsonResponse(datos)
+            
+            if (registro.skill_3 is not None and "skill_3" in jd): 
+                registro.skill_3 = jd['skill_3']
+            else: 
+                return JsonResponse(datos)
+
+            if registro.skill_4 is not None and "skill_4" in jd:
+                registro.skill_4 = jd['skill_4']
+            else: 
+                return JsonResponse(datos)
+            
+            if registro.skill_5 is not None and "skill_5" in jd:
+                registro.skill_5 = jd['skill_5']
+            else: 
+                return JsonResponse(datos)'''
+            
             registro.save()
             registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values(  
-            "nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico"))
+            "nombre","apellidos","fecha_nacimiento","username","acerca_de_mi","correo_electronico",
+            "skill_1", "skill_2", "skill_3", "skill_3", "skill_4", "skill_5"))
             datos = {'codigo':"200",'message': "Success","result":registro}
        
         else:
