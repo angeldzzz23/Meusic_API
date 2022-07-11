@@ -155,37 +155,13 @@ class UsuariosView(View):
                 return JsonResponse(datos)
             skill_1 = Habilidad.objects.get(habilidad_id=s1)
 
-
-            # set in UsariosHabilidades db
             x = Usuario_habilidad.objects.filter(usuario_id = id, habilidad_id = registro.skill_1).values('usuario_habilidad_id').first()
             registro_habilidades = Usuario_habilidad.objects.get(usuario_habilidad_id = x['usuario_habilidad_id'])
             registro_habilidades.usuario_id = id
             registro_habilidades.habilidad_id = jd['skill_1']
             registro_habilidades.save()
 
-            # set in user db
             registro.skill_1 = skill_1
-            
-
-            '''if registro.skill_2 is not None and "skill_2" in jd:
-                registro.skill_2 = jd['skill_2']
-            else: 
-                return JsonResponse(datos)
-            
-            if (registro.skill_3 is not None and "skill_3" in jd): 
-                registro.skill_3 = jd['skill_3']
-            else: 
-                return JsonResponse(datos)
-
-            if registro.skill_4 is not None and "skill_4" in jd:
-                registro.skill_4 = jd['skill_4']
-            else: 
-                return JsonResponse(datos)
-            
-            if registro.skill_5 is not None and "skill_5" in jd:
-                registro.skill_5 = jd['skill_5']
-            else: 
-                return JsonResponse(datos)'''
             
             registro.save()
             registro = list(Usuarios.objects.filter(correo_electronico=jd['correo_electronico']).values(  
