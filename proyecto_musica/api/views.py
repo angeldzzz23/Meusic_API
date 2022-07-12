@@ -477,18 +477,35 @@ class UsuarioHabiliadView(View):
 
     def post(self, request):
         jd = json.loads(request.body)
-        registro= Usuario_habilidad.objects.filter(usuario_id=jd['usuario_id'])
-        if len(registro) ==5:
+        registro = Usuario_habilidad.objects.filter(usuario_id=jd['usuario_id'])
+        if len(registro) == 5:
             datos = {'codigo':"400",'message': "Solo debe elegir 5 habilidades"}  
             return JsonResponse(datos)
-        registro= Usuario_habilidad.objects.filter(usuario_id=jd['usuario_id'],habilidad_id=jd['habilidad_id'])
-        if len(registro) >0:
-            datos = {'codigo':"400",'message': "Habilidad previamente guaradada"}  
+        registro = Usuario_habilidad.objects.filter(usuario_id=jd['usuario_id'],habilidad_id=jd['habilidad_id'])
+        if len(registro) > 0:
+            datos = {'codigo':"400",'message': "Habilidad previamente guardada"}  
             return JsonResponse(datos)
-        if len(registro) <5:
-            Usuario_habilidad.objects.create(usuario_id=jd['usuario_id'],habilidad_id=jd['habilidad_id'],
-           
-            )
+        else:
+            skill = Habilidad.objects.filter(habilidad_id=jd['habilidad_id'])
+            if not skill:
+                datos = {'codigo':"400",'message': "Skill not found in database"}
+                return JsonResponse(datos)
+            skill = Habilidad.objects.get(habilidad_id=jd['habilidad_id'])
+            user = Usuarios.objects.get(usuario_id=jd['usuario_id'])
+
+            if user.skill_1 is None:
+                Usuarios.objects.filter(usuario_id=jd['usuario_id']).update(skill_1=skill)
+            elif user.skill_2 is None:
+                Usuarios.objects.filter(usuario_id=jd['usuario_id']).update(skill_2=skill)
+            elif user.skill_3 is None:
+                Usuarios.objects.filter(usuario_id=jd['usuario_id']).update(skill_3=skill)
+            elif user.skill_4 is None:
+                Usuarios.objects.filter(usuario_id=jd['usuario_id']).update(skill_4=skill)
+            elif user.skill_5 is None:
+                Usuarios.objects.filter(usuario_id=jd['usuario_id']).update(skill_5=skill)
+
+            Usuario_habilidad.objects.create(usuario_id=jd['usuario_id'], habilidad_id=jd['habilidad_id'])           
+
             datos = {'codigo':"201",'message': "Success"}
        
         return JsonResponse(datos)
