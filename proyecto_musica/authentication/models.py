@@ -15,10 +15,10 @@ from django.conf import settings
 
 # Create your models here.
 
-# modify me Rashel 
+# modify me Rashel
 class MyUserManager(UserManager):
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, email, password, skill_1=None,**extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -28,15 +28,26 @@ class MyUserManager(UserManager):
         if not email:
             raise ValueError('The given email must be set')
 
+
+        if not skill_1:
+            raise ValueError('no skill 1')
+
+
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
+        user = self.model(username=username, email=email,skill_1=skill_1, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        '''if skill_1 is not None:
+
+        # LOOOK at me gooooooo Rashel!!!
+        # you might want to put this in views.py
+        # this should only be done if an account is created
+        # an accoutn shouldnt be created if any of the skills doesnt exist
+        if skill_1 is not None:
             user_id = User.objects.filter(username=username).values('id')
-            user_skill = User_Skills(user=user_id, skill=skill_1)
-            user_skill.save()'''
+            User_Skills.objects.create(user=user,skill=skill_1)
+
+
 
         return user
 
@@ -59,7 +70,7 @@ class MyUserManager(UserManager):
 
 class Skills(models.Model):
     skill_id = models.BigAutoField(
-        auto_created=True, 
+        auto_created=True,
         primary_key=True,
         unique=True,
         null=False,
@@ -104,38 +115,38 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     )
     skill_1 = models.ForeignKey(
         Skills,
-        on_delete=models.CASCADE, 
-        verbose_name='skill_1_id', 
-        related_name='skill_1', 
-        null=True, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_1_id',
+        related_name='skill_1',
+        null=True,
     )
     skill_2 = models.ForeignKey(
         Skills,
-        on_delete=models.CASCADE, 
-        verbose_name='skill_2_id', 
-        related_name='skill_2', 
-        null=True, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_2_id',
+        related_name='skill_2',
+        null=True,
     )
     skill_3 = models.ForeignKey(
         Skills,
-        on_delete=models.CASCADE, 
-        verbose_name='skill_3_id', 
-        related_name='skill_3', 
-        null=True, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_3_id',
+        related_name='skill_3',
+        null=True,
     )
     skill_4 = models.ForeignKey(
         Skills,
-        on_delete=models.CASCADE, 
-        verbose_name='skill_4_id', 
-        related_name='skill_4', 
-        null=True, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_4_id',
+        related_name='skill_4',
+        null=True,
     )
     skill_5 = models.ForeignKey(
         Skills,
-        on_delete=models.CASCADE, 
-        verbose_name='skill_5_id', 
-        related_name='skill_5', 
-        null=True, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_5_id',
+        related_name='skill_5',
+        null=True,
     )
     is_active = models.BooleanField(
         _('active'),
@@ -183,7 +194,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
 
 class User_Skills(models.Model):
     user_skill_id = models.BigAutoField(
-        auto_created=True, 
+        auto_created=True,
         primary_key=True,
         unique=True,
         null=False,
@@ -195,7 +206,7 @@ class User_Skills(models.Model):
         verbose_name='user_id'
     )
     skill = models.ForeignKey(
-        Skills, 
+        Skills,
         on_delete=models.CASCADE,
         verbose_name='skill_id'
     )
