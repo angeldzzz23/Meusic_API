@@ -33,6 +33,11 @@ class MyUserManager(UserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+        '''if skill_1 is not None:
+            user_id = User.objects.filter(username=username).values('id')
+            user_skill = User_Skills(user=user_id, skill=skill_1)
+            user_skill.save()'''
+
         return user
 
     def create_user(self, username, email, password=None, **extra_fields):
@@ -54,11 +59,11 @@ class MyUserManager(UserManager):
 
 class Skills(models.Model):
     skill_id = models.BigAutoField(
-            auto_created=True, 
-            primary_key=True,
-            unique=True,
-            null=False,
-            verbose_name='skill_id',
+        auto_created=True, 
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='skill_id',
     )
     skill_name = models.CharField(max_length=200)
 
@@ -75,7 +80,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     admin-compliant permissions.
     Username and password are required. Other fields are optional.
     """
-    id=models.UUIDField(default=uuid.uuid4,editable=False,primary_key=True,unique=True,null=False,verbose_name='usuario_id')
+    id=models.UUIDField(default=uuid.uuid4,editable=False,primary_key=True,unique=True,null=False,verbose_name='user_id')
 
     username_validator = UnicodeUsernameValidator()
 
@@ -101,7 +106,35 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         Skills,
         on_delete=models.CASCADE, 
         verbose_name='skill_1_id', 
-        related_name='+', 
+        related_name='skill_1', 
+        null=True, 
+    )
+    skill_2 = models.ForeignKey(
+        Skills,
+        on_delete=models.CASCADE, 
+        verbose_name='skill_2_id', 
+        related_name='skill_2', 
+        null=True, 
+    )
+    skill_3 = models.ForeignKey(
+        Skills,
+        on_delete=models.CASCADE, 
+        verbose_name='skill_3_id', 
+        related_name='skill_3', 
+        null=True, 
+    )
+    skill_4 = models.ForeignKey(
+        Skills,
+        on_delete=models.CASCADE, 
+        verbose_name='skill_4_id', 
+        related_name='skill_4', 
+        null=True, 
+    )
+    skill_5 = models.ForeignKey(
+        Skills,
+        on_delete=models.CASCADE, 
+        verbose_name='skill_5_id', 
+        related_name='skill_5', 
         null=True, 
     )
     is_active = models.BooleanField(
@@ -127,6 +160,16 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+
+    '''def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.id is None:
+            if self.skill_1 is not None:
+                user_obj = User.objects.get(id=self.id)
+                user_skill = User_Skills(user=user_obj, skill=self.skill_1)
+                user_skill.save()'''
+
+
     # this returns a token that expires in 24 hours
     @property
     def token(self):
@@ -136,3 +179,26 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
             settings.SECRET_KEY, algorithm='HS256')
 
         return token
+
+
+class User_Skills(models.Model):
+    user_skill_id = models.BigAutoField(
+        auto_created=True, 
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_skill_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    skill = models.ForeignKey(
+        Skills, 
+        on_delete=models.CASCADE,
+        verbose_name='skill_id'
+    )
+
+    class Meta:
+        db_table = 'User_Skills'
