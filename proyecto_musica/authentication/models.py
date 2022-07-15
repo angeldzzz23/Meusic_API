@@ -52,20 +52,20 @@ class MyUserManager(UserManager):
         return self._create_user(username, email, password, **extra_fields)
 
 
-class Habilidad(models.Model):
-    habilidad_id = models.BigAutoField(
+class Skills(models.Model):
+    skill_id = models.BigAutoField(
             auto_created=True, 
             primary_key=True,
             unique=True,
             null=False,
-            verbose_name='habilidad_id',
+            verbose_name='skill_id',
     )
-    habilidad_descripcion = models.CharField(max_length=200)
+    skill_name = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.habilidad_id
+        return self.skill_id
     class Meta:
-        db_table = 'habilidad'
+        db_table = 'Skills'
 
 
 # modify me Rashel
@@ -98,7 +98,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
             'Designates whether the user can log into this admin site.'),
     )
     skill_1 = models.ForeignKey(
-        Habilidad,
+        Skills,
         on_delete=models.CASCADE, 
         verbose_name='skill_1_id', 
         related_name='+', 
