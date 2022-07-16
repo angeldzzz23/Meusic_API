@@ -18,7 +18,8 @@ from django.conf import settings
 # modify me Rashel
 class MyUserManager(UserManager):
 
-    def _create_user(self, username, email, password, skill_1=None,**extra_fields):
+    def _create_user(self, username, email, password, skill_1=None, skill_2=None, 
+            skill_3=None, skill_4=None, skill_5=None, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -28,26 +29,13 @@ class MyUserManager(UserManager):
         if not email:
             raise ValueError('The given email must be set')
 
-
-        if not skill_1:
-            raise ValueError('no skill 1')
-
-
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email,skill_1=skill_1, **extra_fields)
+        user = self.model(username=username, email=email, skill_1=skill_1, 
+                skill_2=skill_2, skill_3=skill_3, skill_4=skill_4, skill_5=skill_5,
+                **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
-        # LOOOK at me gooooooo Rashel!!!
-        # you might want to put this in views.py
-        # this should only be done if an account is created
-        # an accoutn shouldnt be created if any of the skills doesnt exist
-        if skill_1 is not None:
-            user_id = User.objects.filter(username=username).values('id')
-            User_Skills.objects.create(user=user,skill=skill_1)
-
-
 
         return user
 
