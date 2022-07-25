@@ -18,8 +18,7 @@ from django.conf import settings
 # modify me Rashel
 class MyUserManager(UserManager):
 
-    def _create_user(self, username, email, password, skill_1=None, skill_2=None, 
-            skill_3=None, skill_4=None, skill_5=None, **extra_fields):
+    def _create_user(self, username, email, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -31,9 +30,7 @@ class MyUserManager(UserManager):
 
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, skill_1=skill_1, 
-                skill_2=skill_2, skill_3=skill_3, skill_4=skill_4, skill_5=skill_5,
-                **extra_fields)
+        user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
@@ -101,41 +98,6 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
-    skill_1 = models.ForeignKey(
-        Skills,
-        on_delete=models.CASCADE,
-        verbose_name='skill_1_id',
-        related_name='skill_1',
-        null=True,
-    )
-    skill_2 = models.ForeignKey(
-        Skills,
-        on_delete=models.CASCADE,
-        verbose_name='skill_2_id',
-        related_name='skill_2',
-        null=True,
-    )
-    skill_3 = models.ForeignKey(
-        Skills,
-        on_delete=models.CASCADE,
-        verbose_name='skill_3_id',
-        related_name='skill_3',
-        null=True,
-    )
-    skill_4 = models.ForeignKey(
-        Skills,
-        on_delete=models.CASCADE,
-        verbose_name='skill_4_id',
-        related_name='skill_4',
-        null=True,
-    )
-    skill_5 = models.ForeignKey(
-        Skills,
-        on_delete=models.CASCADE,
-        verbose_name='skill_5_id',
-        related_name='skill_5',
-        null=True,
-    )
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -158,16 +120,6 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
-
-
-    '''def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.id is None:
-            if self.skill_1 is not None:
-                user_obj = User.objects.get(id=self.id)
-                user_skill = User_Skills(user=user_obj, skill=self.skill_1)
-                user_skill.save()'''
-
 
     # this returns a token that expires in 24 hours
     @property

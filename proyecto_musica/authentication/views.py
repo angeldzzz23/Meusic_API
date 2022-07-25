@@ -23,6 +23,9 @@ class AuthUserAPIView(GenericAPIView):
         serializer = RegisterSerializer(user)
         return response.Response({'user': serializer.data})
 
+    #def patch(self, request):
+    #    user = request.user
+    #    return response.Response({'user': serializer.data})
 
 class RegisterAPIView(GenericAPIView):
 
@@ -34,30 +37,6 @@ class RegisterAPIView(GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
-
-            # TODO rashel: do i need to serialize the data? check serializers.py...
-            jd = request.data
-            if 'skill_1' in jd:
-                user = User.objects.get(email=jd['email'])
-                skill = Skills.objects.get(skill_id=jd['skill_1'])
-                User_Skills.objects.create(user=user,skill=skill)
-            if 'skill_2' in jd:
-                user = User.objects.get(email=jd['email'])
-                skill = Skills.objects.get(skill_id=jd['skill_2'])
-                User_Skills.objects.create(user=user,skill=skill)
-            if 'skill_3' in jd:
-                user = User.objects.get(email=jd['email'])
-                skill = Skills.objects.get(skill_id=jd['skill_3'])
-                User_Skills.objects.create(user=user,skill=skill)
-            if 'skill_4' in jd:
-                user = User.objects.get(email=jd['email'])
-                skill = Skills.objects.get(skill_id=jd['skill_4'])
-                User_Skills.objects.create(user=user,skill=skill)
-            if 'skill_5' in jd:
-                user = User.objects.get(email=jd['email'])
-                skill = Skills.objects.get(skill_id=jd['skill_5'])
-                User_Skills.objects.create(user=user,skill=skill)
-
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
