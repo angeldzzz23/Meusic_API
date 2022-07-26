@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from authentication.serializers import RegisterSerializer
+from authentication.serializers import SkillsSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
@@ -23,9 +24,34 @@ class AuthUserAPIView(GenericAPIView):
         serializer = RegisterSerializer(user)
         return response.Response({'user': serializer.data})
 
-    #def patch(self, request):
-    #    user = request.user
-    #    return response.Response({'user': serializer.data})
+    def patch(self, request):
+        # TODO: serialize password first?
+            #user = request.user
+            #serializer = RegisterSerializer(user)
+            # serialized_password = serializer.password
+    
+        # print(request.skills)
+        
+        #user_skills_object = User_Skills.objects.get(user_id=id)
+        #data = request.data
+        
+        #serializer = self.serializer_class(data=request.data)
+        jd = request.data
+        user_obj = User.objects.get(email=jd['email'])
+
+        serializer = SkillsSerializer(user_obj, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        #return response.Response({'user': 'test'})
+
+        #user = request.user
+        #serializer = SkillsSerializer(user)
+        #return response.Response({'user': serializer.data}) # worked: jd['skills']
+
 
 class RegisterAPIView(GenericAPIView):
 
