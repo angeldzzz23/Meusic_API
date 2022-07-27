@@ -18,6 +18,8 @@ import json
 class AuthUserAPIView(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = SkillsSerializer
 
     def get(self, request):
         user = request.user
@@ -25,32 +27,22 @@ class AuthUserAPIView(GenericAPIView):
         return response.Response({'user': serializer.data})
 
     def patch(self, request):
-        # TODO: serialize password first?
-            #user = request.user
-            #serializer = RegisterSerializer(user)
-            # serialized_password = serializer.password
-    
-        # print(request.skills)
-        
-        #user_skills_object = User_Skills.objects.get(user_id=id)
-        #data = request.data
-        
-        #serializer = self.serializer_class(data=request.data)
+        # Assumes email is non-editable for patch to work properly
         jd = request.data
         user_obj = User.objects.get(email=jd['email'])
 
         serializer = SkillsSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
+            #self.object = self.get_object()
+            if 'password' in jd:
+                user_obj.set_password(jd['password'])
+                #self.object.set_password(jd['password'])
+            #self.object.save()
             serializer.save()
+            user_obj.save()
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        #return response.Response({'user': 'test'})
-
-        #user = request.user
-        #serializer = SkillsSerializer(user)
-        #return response.Response({'user': serializer.data}) # worked: jd['skills']
 
 
 class RegisterAPIView(GenericAPIView):
