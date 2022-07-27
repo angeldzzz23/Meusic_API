@@ -125,7 +125,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     @property
     def token(self):
         token = jwt.encode(
-            {'username': self.username, 'email': self.email,
+            {'id': str(self.id),
                 'exp': datetime.utcnow() + timedelta(hours=24)},
             settings.SECRET_KEY, algorithm='HS256')
 

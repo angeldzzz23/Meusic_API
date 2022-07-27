@@ -18,7 +18,6 @@ import json
 class AuthUserAPIView(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
-    queryset = User.objects.all()
     serializer_class = SkillsSerializer
 
     def get(self, request):
@@ -33,13 +32,10 @@ class AuthUserAPIView(GenericAPIView):
 
         serializer = SkillsSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
-            #self.object = self.get_object()
             if 'password' in jd:
                 user_obj.set_password(jd['password'])
-                #self.object.set_password(jd['password'])
-            #self.object.save()
-            serializer.save()
             user_obj.save()
+            serializer.save()
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
