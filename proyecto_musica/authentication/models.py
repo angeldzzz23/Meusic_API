@@ -52,6 +52,24 @@ class MyUserManager(UserManager):
 
         return self._create_user(username, email, password, **extra_fields)
 
+    '''def update_user(self, username=None, email=None, password=None, **extra_fields):
+        
+        user = User.objects.get(email=email)
+        n_username = self.model.normalize_username(username)
+        user.username = n_username
+        user.save(using=self._db)
+        return user
+        n_email = self.normalize_email(email)
+        n_username = self.model.normalize_username(username)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+
+        # todo: update other fields in db?
+
+        return user'''
+
+
 
 class Skills(models.Model):
     skill_id = models.BigAutoField(

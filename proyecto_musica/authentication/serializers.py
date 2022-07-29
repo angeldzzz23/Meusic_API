@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from authentication.models import User, Skills
+from rest_framework.validators import UniqueValidator
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -15,23 +16,31 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class SkillsSerializer(serializers.ModelSerializer):
-    '''skills = serializers.ListField(
-        child=serializers.IntegerField(min_value=1),
-        allow_empty=True,
-        max_length=5
-    )'''
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
+    email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
+    # check if works --> email = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
 
     class Meta:
         model=User
         fields=('username','email','password')#,'skills')
 
-    '''def update(self, instance, validated_data):
+    def update(self, instance, validated_data):
+        original_email = validated_data.get('email', instance.email)
+        original_username = validated_data.get('username', instance.username)
+        original_password = validated_data.get('password', instance.password)
+        
+        # TODO: normalize email/username
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.username = validated_data.get('username', instance.username)
         if 'password' in validated_data:
             password = validated_data.pop('password')
-            instance.set_password(password)
-
-        return super().update(instance, validated_data)'''
+            instance.set_password(original_password)
+        
+        instance.save()
+        
+        return instance
+        #return User.objects.update_user(**validated_data)
 
 class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)

@@ -25,16 +25,11 @@ class AuthUserAPIView(GenericAPIView):
         serializer = RegisterSerializer(user)
         return response.Response({'user': serializer.data})
 
-    def patch(self, request):
-        # Assumes email is non-editable for patch to work properly
+    def patch(self, request, id=None):
         jd = request.data
-        user_obj = User.objects.get(email=jd['email'])
-
+        user_obj = User.objects.get(id=id)
         serializer = SkillsSerializer(user_obj, data=request.data, partial=True)
         if serializer.is_valid():
-            if 'password' in jd:
-                user_obj.set_password(jd['password'])
-            user_obj.save()
             serializer.save()
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
 
