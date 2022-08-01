@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from authentication.models import User, Skills
 from rest_framework.validators import UniqueValidator
-
+#from authentication.functions import normalize_email
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class RegisterSerializer(serializers.ModelSerializer):
     # how long we want yhr password to be
@@ -18,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class SkillsSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
-    # check if works --> email = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
+    username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
 
     class Meta:
         model=User
@@ -29,10 +30,11 @@ class SkillsSerializer(serializers.ModelSerializer):
         original_username = validated_data.get('username', instance.username)
         original_password = validated_data.get('password', instance.password)
         
-        # TODO: normalize email/username
+        # get id
+        #print(self.context.get("id"))
 
-        instance.email = validated_data.get('email', instance.email)
-        instance.username = validated_data.get('username', instance.username)
+        instance.email = BaseUserManager.normalize_email(original_email)
+        instance.username = AbstractBaseUser.normalize_username(original_username)
         if 'password' in validated_data:
             password = validated_data.pop('password')
             instance.set_password(original_password)
@@ -40,7 +42,7 @@ class SkillsSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
-        #return User.objects.update_user(**validated_data)
+
 
 class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
