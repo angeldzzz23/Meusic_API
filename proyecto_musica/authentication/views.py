@@ -29,7 +29,13 @@ class AuthUserAPIView(GenericAPIView):
         jd = request.data
         user_obj = User.objects.get(id=id)
 
-        serializer = SkillsSerializer(user_obj, data=request.data, context={'id': id}, partial=True)
+        if 'skills' in jd:
+            serializer = SkillsSerializer(user_obj, data=request.data, 
+                    context={'id': id, 'skills': jd['skills']}, partial=True)
+        else:
+            serializer = SkillsSerializer(user_obj, data=request.data, 
+                    context={'id': id}, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -20,10 +20,20 @@ class SkillsSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
+    '''skills = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        allow_empty=True,
+        max_length=5
+    )'''
+    skills = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('username','email','password')#,'skills')
+        fields=('username','email','password','skills')
+
+    def get_skills(self, obj):
+        skillsss = self.context.get("skills")
+        return skillsss
 
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
@@ -32,7 +42,10 @@ class SkillsSerializer(serializers.ModelSerializer):
         
         # get id
         #print(self.context.get("id"))
+        
+        skillsss = self.context.get("skills")
 
+        #print(validated_data) # skills not here
         instance.email = BaseUserManager.normalize_email(original_email)
         instance.username = AbstractBaseUser.normalize_username(original_username)
         if 'password' in validated_data:
