@@ -32,18 +32,22 @@ class SkillsSerializer(serializers.ModelSerializer):
         fields=('username','email','password','skills')
 
     def get_skills(self, obj):
-        skillsss = self.context.get("skills")
-        return skillsss
+        id = self.context.get("id")
+        skills = self.context.get("skills")
+       
+        # TODO: check skills belong to skills, size limit 5, push to User_skills
+        
+        skill_names = []
+        for skill in skills:
+            s0 = Skills.objects.filter(skill_id=skill).values('skill_name')
+            skill_names.append(s0[0]['skill_name'])
+
+        return skill_names
 
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
         original_username = validated_data.get('username', instance.username)
         original_password = validated_data.get('password', instance.password)
-        
-        # get id
-        #print(self.context.get("id"))
-        
-        skillsss = self.context.get("skills")
 
         #print(validated_data) # skills not here
         instance.email = BaseUserManager.normalize_email(original_email)
