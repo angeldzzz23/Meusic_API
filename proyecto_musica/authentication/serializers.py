@@ -7,10 +7,26 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 class RegisterSerializer(serializers.ModelSerializer):
     # how long we want yhr password to be
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
+    skills = serializers.SerializerMethodField()
 
     class Meta():
         model=User
-        fields=('username','email','password')
+        fields=('username','email','password','skills')
+
+    def get_skills(self, obj):
+        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
+        skill_nums = User_Skills.objects.filter(user_id=user_id).values('skill_id')
+        
+        if skill_nums is None:
+            return None
+
+        skill_names = []
+        for ele in skill_nums:
+            skill_id = ele['skill_id']
+            s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
+            skill_names.append(s0[0]['skill_name'])
+
+        return skill_names
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -32,7 +48,6 @@ class SkillsSerializer(serializers.ModelSerializer):
 
         if skills is None:
             return None
-        # TODO: check skills belong to skills, size limit 5, push to User_skills
         
         skill_names = []
         for skill in skills:
