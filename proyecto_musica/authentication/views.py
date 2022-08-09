@@ -27,7 +27,12 @@ class AuthUserAPIView(GenericAPIView):
 
     def patch(self, request, id=None):
         jd = request.data
-        user_obj = User.objects.get(id=id)
+
+        try:
+            user_obj = User.objects.get(id=id)
+        except User.DoesNotExist:
+            message = {'message' : "User id does not exist"}
+            return response.Response(message, status=status.HTTP_400_BAD_REQUEST)
 
         # edge case: if user passes in wrong type of input (list of strings instead, an integer), what happens?
         if 'skills' in jd:
