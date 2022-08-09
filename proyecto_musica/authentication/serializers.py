@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User, Skills
+from authentication.models import User, Skills, User_Skills
 from rest_framework.validators import UniqueValidator
 #from authentication.functions import normalize_email
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
@@ -34,7 +34,9 @@ class SkillsSerializer(serializers.ModelSerializer):
     def get_skills(self, obj):
         id = self.context.get("id")
         skills = self.context.get("skills")
-       
+
+        if skills is None:
+            return None
         # TODO: check skills belong to skills, size limit 5, push to User_skills
         
         skill_names = []
@@ -49,7 +51,6 @@ class SkillsSerializer(serializers.ModelSerializer):
         original_username = validated_data.get('username', instance.username)
         original_password = validated_data.get('password', instance.password)
 
-        #print(validated_data) # skills not here
         instance.email = BaseUserManager.normalize_email(original_email)
         instance.username = AbstractBaseUser.normalize_username(original_username)
         if 'password' in validated_data:

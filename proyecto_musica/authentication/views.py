@@ -29,16 +29,41 @@ class AuthUserAPIView(GenericAPIView):
         jd = request.data
         user_obj = User.objects.get(id=id)
 
+        # edge case: if user passes in wrong type of input (list of strings instead, an integer), what happens?
         if 'skills' in jd:
+            skills = jd['skills']
+
+            if len(skills) > 5:
+                message = {'message': "Cannot submit more than 5 skills."}
+                return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+            for skill in skills:
+                skill_from_db = Skills.objects.filter(skill_id=skill)
+                if not skill_from_db:
+                    message = {'message': "Skill not found in database"}
+                    return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+            # delete exisiting entries
+            User_Skills.objects.filter(user_id=id).delete()
+            
+            # add to User_Skills
+            for skill in skills:    
+                User_Skills.objects.create(user_id=id, skill_id=skill)
+            
             serializer = SkillsSerializer(user_obj, data=request.data, 
-                    context={'id': id, 'skills': jd['skills']}, partial=True)
+                    context={'id': id, 'skills': skills}, partial=True)
         else:
             serializer = SkillsSerializer(user_obj, data=request.data, 
                     context={'id': id}, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            serialized_data = serializer.data
+            if serialized_data['skills'] is None:
+                serialized_data.pop('skills')
+            
+            return response.Response(serialized_data, status=status.HTTP_201_CREATED)
 
         return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
