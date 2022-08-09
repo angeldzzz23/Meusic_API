@@ -31,31 +31,35 @@ class AuthUserAPIView(GenericAPIView):
         try:
             user_obj = User.objects.get(id=id)
         except User.DoesNotExist:
-            message = {'message' : "User id does not exist"}
-            return response.Response(message, status=status.HTTP_400_BAD_REQUEST)
+            res = {'success' : False, 'error' : "User id does not exist."}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
         # edge case: if user passes in wrong type of input (list of strings instead, an integer), what happens?
         if 'skills' in jd:
             skills = jd['skills']
 
             if not isinstance(skills, list):
-                message = {'message': "Skills should be in a list."}
-                return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+                res = {'success' : False, 'error' : "Skills should be in a list."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
             if len(skills) > 5:
-                message = {'message': "Cannot submit more than 5 skills."}
-                return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+                res = {'success' : False, 'error' : "Cannot submit more than 5 skills."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
+            if len(skills) != len(set(skills)):
+                res = {'success' : False, 'error' : "Cannot submit duplicate skills."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
             for skill in skills:
                 if isinstance(skill, str) and (not skill.isnumeric()):
-                    message = {'message': "Please enter numeric skills."}
-                    return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+                    res = {'success' : False, 'error' : "Please enter numeric skills."}
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
             for skill in skills:
                 skill_from_db = Skills.objects.filter(skill_id=skill)
                 if not skill_from_db:
-                    message = {'message': "Skill not found in database"}
-                    return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+                    res = {'success' : False, 'error' : "Skill not found in database."}
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
             # delete exisiting entries
             User_Skills.objects.filter(user_id=id).delete()
@@ -76,10 +80,12 @@ class AuthUserAPIView(GenericAPIView):
             serialized_data = serializer.data
             if serialized_data['skills'] is None:
                 serialized_data.pop('skills')
-            
-            return response.Response(serialized_data, status=status.HTTP_201_CREATED)
+           
+            res = {'success' : True, 'user': serialized_data}
+            return response.Response(res, status=status.HTTP_201_CREATED)
 
-        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        res = {'success' : False, 'user': serializer.errors}
+        return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterAPIView(GenericAPIView):
