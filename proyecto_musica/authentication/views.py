@@ -38,9 +38,18 @@ class AuthUserAPIView(GenericAPIView):
         if 'skills' in jd:
             skills = jd['skills']
 
+            if not isinstance(skills, list):
+                message = {'message': "Skills should be in a list."}
+                return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
             if len(skills) > 5:
                 message = {'message': "Cannot submit more than 5 skills."}
                 return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
+
+            for skill in skills:
+                if isinstance(skill, str) and (not skill.isnumeric()):
+                    message = {'message': "Please enter numeric skills."}
+                    return response.Response(message, status=status.HTTP_401_UNAUTHORIZED)
 
             for skill in skills:
                 skill_from_db = Skills.objects.filter(skill_id=skill)
