@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from authentication.models import User, Skills, User_Skills
 from rest_framework.validators import UniqueValidator
-#from authentication.functions import normalize_email
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -30,8 +29,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         the_user =  User.objects.create_user(**validated_data)
-            
-        # add to user_skills
+        skills = self.context.get("skills")                   
+
+        # Add skills to User_Skills
+        if skills:                                                      
+            user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
+            for skill in skills:    
+                User_Skills.objects.create(user_id=user_id, skill_id=skill)
+
         return the_user
 
 

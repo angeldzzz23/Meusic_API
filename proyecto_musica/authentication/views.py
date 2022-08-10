@@ -35,7 +35,6 @@ class AuthUserAPIView(GenericAPIView):
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        # edge case: if user passes in wrong type of input (list of strings instead, an integer), what happens?
         if 'skills' in jd:
             skills = jd['skills']
 
@@ -96,8 +95,32 @@ class RegisterAPIView(GenericAPIView):
     def post(self,request):
         jd = request.data
 
-        # send data to serializer to turn json data into python objects
         if 'skills' in jd:
+            # Error checking skills
+            skills = jd['skills']
+            if not isinstance(skills, list):
+                res = {'success' : False, 'error' : "Skills should be in a list."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
+            if len(skills) > 5:
+                res = {'success' : False, 'error' : "Cannot submit more than 5 skills."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
+            if len(skills) != len(set(skills)):
+                res = {'success' : False, 'error' : "Cannot submit duplicate skills."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
+            for skill in skills:
+                if isinstance(skill, str) and (not skill.isnumeric()):
+                    res = {'success' : False, 'error' : "Please enter numeric skills."}
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
+            for skill in skills:
+                skill_from_db = Skills.objects.filter(skill_id=skill)
+                if not skill_from_db:
+                    res = {'success' : False, 'error' : "Skill not found in database."}
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+
             serializer = self.serializer_class(data=request.data, 
                          context={'skills': jd['skills']})
         else:
