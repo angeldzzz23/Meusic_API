@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from authentication.serializers import RegisterSerializer
-from authentication.serializers import SkillsSerializer
+from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
@@ -18,12 +18,13 @@ import json
 class AuthUserAPIView(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = SkillsSerializer
+    serializer_class = EditSerializer
 
     def get(self, request):
         user = request.user
         serializer = RegisterSerializer(user)
-        return response.Response({'user': serializer.data})
+        res = {'success' : True, 'user': serializer.data}
+        return response.Response(res)
 
     def patch(self, request, id=None):
         jd = request.data
@@ -68,10 +69,10 @@ class AuthUserAPIView(GenericAPIView):
             for skill in skills:    
                 User_Skills.objects.create(user_id=id, skill_id=skill)
             
-            serializer = SkillsSerializer(user_obj, data=request.data, 
+            serializer = EditSerializer(user_obj, data=request.data, 
                     context={'id': id, 'skills': skills}, partial=True)
         else:
-            serializer = SkillsSerializer(user_obj, data=request.data, 
+            serializer = EditSerializer(user_obj, data=request.data, 
                     context={'id': id}, partial=True)
 
         if serializer.is_valid():
@@ -93,8 +94,14 @@ class RegisterAPIView(GenericAPIView):
     serializer_class= RegisterSerializer
 
     def post(self,request):
-        serializer = self.serializer_class(data=request.data)
+        jd = request.data
+
         # send data to serializer to turn json data into python objects
+        if 'skills' in jd:
+            serializer = self.serializer_class(data=request.data, 
+                         context={'skills': jd['skills']})
+        else:
+            serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             serializer.save()

@@ -29,10 +29,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return skill_names
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        the_user =  User.objects.create_user(**validated_data)
+            
+        # add to user_skills
+        return the_user
 
 
-class SkillsSerializer(serializers.ModelSerializer):
+class EditSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
