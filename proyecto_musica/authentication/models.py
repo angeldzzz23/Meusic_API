@@ -70,23 +70,6 @@ class MyUserManager(UserManager):
         return user'''
 
 
-
-class Skills(models.Model):
-    skill_id = models.BigAutoField(
-        auto_created=True,
-        primary_key=True,
-        unique=True,
-        null=False,
-        verbose_name='skill_id',
-    )
-    skill_name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.skill_id
-    class Meta:
-        db_table = 'Skills'
-
-
 # modify me Rashel
 class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     """
@@ -150,6 +133,22 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         return token
 
 
+class Skills(models.Model):
+    skill_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='skill_id',
+    )
+    skill_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.skill_id
+    class Meta:
+        db_table = 'Skills'
+
+
 class User_Skills(models.Model):
     user_skill_id = models.BigAutoField(
         auto_created=True,
@@ -171,3 +170,43 @@ class User_Skills(models.Model):
 
     class Meta:
         db_table = 'User_Skills'
+
+
+class Genres(models.Model):
+    genre_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='genre_id',
+    )
+    genre_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.genre_id
+    class Meta:
+        db_table = 'Genres'
+
+
+class User_Genres(models.Model):
+    user_genre_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_genre_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    genre = models.ForeignKey(
+        Genres,
+        on_delete=models.CASCADE,
+        verbose_name='genre_id'
+    )
+
+    class Meta:
+        db_table = 'User_Genres'
+
