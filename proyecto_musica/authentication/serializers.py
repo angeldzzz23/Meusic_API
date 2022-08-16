@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres
-from authentication.functions import List_Fields
+from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
@@ -15,31 +15,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
-        # TODO: add external helper function 
-        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
-        skill_nums = User_Skills.objects.filter(user_id=user_id).values('skill_id')
-        
-        if skill_nums:
-            skill_names = []
-            for ele in skill_nums:
-                skill_id = ele['skill_id']
-                s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
-                skill_names.append(s0[0]['skill_name'])
-
-            return skill_names
+        return get_list_field(obj.email, "skill")
     
     def get_genres(self, obj):
-        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
-        genre_nums = User_Genres.objects.filter(user_id=user_id).values('genre_id')
-        
-        if genre_nums:
-            genre_names = []
-            for ele in genre_nums:
-                genre_id = ele['genre_id']
-                s0 = Genres.objects.filter(genre_id=genre_id).values('genre_name')
-                genre_names.append(s0[0]['genre_name'])
-
-            return genre_names
+        return get_list_field(obj.email, "genre")
 
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
