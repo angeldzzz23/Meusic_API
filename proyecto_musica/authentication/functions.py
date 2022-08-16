@@ -1,7 +1,13 @@
 from authentication.models import Skills, Genres
 from rest_framework import response, status
+from enum import Enum
 
-# Helper function
+
+class List_Fields(Enum):
+    SKILLS = 'skills'
+    GENRES = 'genres'
+
+
 def validate_field(field_name, field_list): 
     if not isinstance(field_list, list):
         return {'success' : False, 

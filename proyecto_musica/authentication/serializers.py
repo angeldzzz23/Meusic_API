@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres
+from authentication.functions import List_Fields
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
@@ -7,37 +8,56 @@ class RegisterSerializer(serializers.ModelSerializer):
     # how long we want yhr password to be
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     skills = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
 
     class Meta():
         model=User
-        fields=('username','email','password','skills')
+        fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
+        # TODO: add external helper function 
         user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
         skill_nums = User_Skills.objects.filter(user_id=user_id).values('skill_id')
         
-        if skill_nums is None:
-            return None
+        if skill_nums:
+            skill_names = []
+            for ele in skill_nums:
+                skill_id = ele['skill_id']
+                s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
+                skill_names.append(s0[0]['skill_name'])
 
-        skill_names = []
-        for ele in skill_nums:
-            skill_id = ele['skill_id']
-            s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
-            skill_names.append(s0[0]['skill_name'])
+            return skill_names
+    
+    def get_genres(self, obj):
+        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
+        genre_nums = User_Genres.objects.filter(user_id=user_id).values('genre_id')
+        
+        if genre_nums:
+            genre_names = []
+            for ele in genre_nums:
+                genre_id = ele['genre_id']
+                s0 = Genres.objects.filter(genre_id=genre_id).values('genre_name')
+                genre_names.append(s0[0]['genre_name'])
 
-        return skill_names
+            return genre_names
 
     def create(self, validated_data):
-        the_user =  User.objects.create_user(**validated_data)
-        skills = self.context.get("skills")                   
+        user =  User.objects.create_user(**validated_data)
+        user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
 
-        # Add skills to User_Skills
-        if skills:                                                      
-            user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
-            for skill in skills:    
-                User_Skills.objects.create(user_id=user_id, skill_id=skill)
+        for list_field in List_Fields:
+            field_name = list_field.value 
+            field_list = self.context.get(field_name)
 
-        return the_user
+            if field_list:
+                if field_name == 'skills':
+                    for obj in field_list:
+                        User_Skills.objects.create(user_id=user_id, skill_id=obj)
+                if field_name == 'genres':
+                    for obj in field_list:
+                        User_Genres.objects.create(user_id=user_id, genre_id=obj)
+
+        return user
 
 
 class EditSerializer(serializers.ModelSerializer):

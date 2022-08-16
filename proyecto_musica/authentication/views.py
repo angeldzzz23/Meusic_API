@@ -5,20 +5,14 @@ from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
-from authentication.models import User, User_Skills, Skills
-from authentication.functions import validate_field
+from authentication.models import User, User_Skills, Skills, Genres, User_Genres
+from authentication.functions import validate_field, List_Fields
 
 import json
-from enum import Enum
 
 
 # TODO: implement delete user functionality
 # Create your views here.
-
-
-class List_Fields(Enum):
-    SKILLS = 'skills'
-    GENRES = 'genres'
 
 
 class AuthUserAPIView(GenericAPIView):
