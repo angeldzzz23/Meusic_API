@@ -17,6 +17,8 @@ from proyecto_musica.settings import MEDIA_URL
 # the picture serializer
 
 from api.serializers import PictureSerialiser
+from rest_framework import response, status, permissions
+
 
 
 #import mimetypes
@@ -25,9 +27,13 @@ from api.serializers import PictureSerialiser
 #from rest_framework import response, status, permissions
 #from django.contrib.auth import authenticate
 
+# add
+# TODO: add an update method
+
 class UpdateImage(GenericAPIView):
 
     serializer_class= PictureSerialiser
+    permission_classes = (permissions.IsAuthenticated,)
 
     # create serializer
     # TODO: Ignore messy code
@@ -111,8 +117,6 @@ class UpdateImage(GenericAPIView):
             newurl = str(url)
             newpic.url = newurl
             newpic.save()
-
-
 
             datos = {'codigo':"200",'message': "success", "url": newpic.url}
             return JsonResponse(datos)
