@@ -7,12 +7,17 @@ from datetime import datetime
 
 import random
 
-
+# TODO: make cleaner
 def get_uplaod_file_name(userpic, filename):
     print("userpic object: ", userpic.title)
+
+
     ext = filename.split('.')[-1]
     newName = userpic.title + '.' + ext
     print(newName)
+
+    if userpic.title == "profile_image":
+        return u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName)
 
 
     return u'photos/%s/%s' % (str(userpic.user.id),newName)
@@ -48,6 +53,8 @@ class Image(models.Model):
     url = models.URLField(max_length = 200, null=True)
     title = models.CharField(max_length=50)
     image = models.ImageField(upload_to=get_uplaod_file_name)
+    created_at = models.DateTimeField(auto_now_add=True)
+
 
 # this contains all of the types of media that we can have
 class Multimedia_type(models.Model):
