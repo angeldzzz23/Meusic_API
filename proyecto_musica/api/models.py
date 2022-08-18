@@ -1,7 +1,53 @@
 # create user model
+from django.shortcuts import render
 
 from django.db import models
 from authentication.models import User
+from datetime import datetime
+
+import random
+
+
+def get_uplaod_file_name(userpic, filename):
+    print("userpic object: ", userpic.title)
+    ext = filename.split('.')[-1]
+    newName = userpic.title + '.' + ext
+    print(newName)
+
+
+    return u'photos/%s/%s' % (str(userpic.user.id),newName)
+
+# these are the images for the profile page
+    # image_1
+    # image_2
+    # image_3
+    # image_4
+    # image_5
+    # image_6
+# Profile_image
+    # profile_image
+
+
+
+# change name of image_One
+
+class Image(models.Model):
+    image_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='image_id'
+  )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+   )
+
+    url = models.URLField(max_length = 200, null=True)
+    title = models.CharField(max_length=50)
+    image = models.ImageField(upload_to=get_uplaod_file_name)
 
 # this contains all of the types of media that we can have
 class Multimedia_type(models.Model):
@@ -56,6 +102,37 @@ class Format(models.Model):
     class Meta:
         db_table = 'Format'
 
+
+# imagen 1
+
+# iimage 2
+
+# iimage 3
+
+# imagen_5
+
+# iimage 5
+
+
+# When updating I would have to image
+
+# TODO: Validate the max amount permitted
+
+
+
+'''
+
+
+ class Video:
+    multimedia_id
+    user_id
+
+    title = models.CharField(max_length=50)
+    video = models.Video('video/')
+'''
+
+
+
 # this is table is where we save all of our user multimedia files that are uploade
 class Multimedia(models.Model):
 
@@ -71,6 +148,7 @@ class Multimedia(models.Model):
         on_delete=models.CASCADE,
         verbose_name='user_id'
     )
+
 
     multimedia_type = models.ForeignKey(
         Multimedia_type,
