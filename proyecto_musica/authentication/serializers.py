@@ -5,7 +5,6 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # how long we want yhr password to be
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
@@ -15,10 +14,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
-        return get_list_field(obj.email, "skill")
+        skills = self.context.get("skills")        
+        return get_list_field(None, obj.email, "skill", skills)
     
     def get_genres(self, obj):
-        return get_list_field(obj.email, "genre")
+        genres = self.context.get("genres")        
+        return get_list_field(None, obj.email, "genre", genres)
 
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -44,25 +45,22 @@ class EditSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     skills = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('username','email','password','skills')
+        fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
         id = self.context.get("id")
-        skills = self.context.get("skills")
+        skills = self.context.get("skills")        
+        return get_list_field(id, None, "skill", skills)
 
-        if skills is None:
-            return None
-        
-        skill_names = []
-        for skill in skills:
-            s0 = Skills.objects.filter(skill_id=skill).values('skill_name')
-            skill_names.append(s0[0]['skill_name'])
-
-        return skill_names
-
+    def get_genres(self, obj):
+        id = self.context.get("id")
+        genres = self.context.get("genres")        
+        return get_list_field(id, None, "genre", genres)
+    
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
         original_username = validated_data.get('username', instance.username)

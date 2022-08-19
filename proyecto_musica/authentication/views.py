@@ -28,36 +28,51 @@ class AuthUserAPIView(GenericAPIView):
 
     def patch(self, request, id=None):
         jd = request.data
+        context = {}
+        context['id'] = id
 
         try:
             user_obj = User.objects.get(id=id)
         except User.DoesNotExist:
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-
-        if 'skills' in jd:
-            skills = jd['skills']
-            validate_field("skill", skills)
-
-            # delete exisiting entries
-            User_Skills.objects.filter(user_id=id).delete()
+        
+        for field in List_Fields:
+            field_name = field.value
             
-            # add to User_Skills
-            for skill in skills:    
-                User_Skills.objects.create(user_id=id, skill_id=skill)
-            
-            serializer = EditSerializer(user_obj, data=request.data, 
-                    context={'id': id, 'skills': skills}, partial=True)
-        else:
-            serializer = EditSerializer(user_obj, data=request.data, 
-                    context={'id': id}, partial=True)
+            if field_name in jd:
+                field_list = jd[field_name]
+                res = validate_field(field_name, field_list)
+                if res:
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+                context[field_name] = field_list
+
+
+        serializer = EditSerializer(user_obj, data=jd, 
+                                           context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
+           
+           # Add skills/genres to User_Skills/User_Genres
+            for field in List_Fields:
+                field_name = field.value
+                if field_name in jd:
+                    field_list = jd[field_name]        
+                    if field_name == "skills":
+                        User_Skills.objects.filter(user_id=id).delete()
+                        for obj in field_list:    
+                            User_Skills.objects.create(user_id=id, skill_id=obj)
+                    elif field_name == "genres":
+                        User_Genres.objects.filter(user_id=id).delete()
+                        for obj in field_list:    
+                            User_Genres.objects.create(user_id=id, genre_id=obj)
 
             serialized_data = serializer.data
-            if serialized_data['skills'] is None:
-                serialized_data.pop('skills')
+            for field in List_Fields:
+                field_name = field.value
+                if field_name not in jd:
+                    serialized_data.pop(field_name)
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)

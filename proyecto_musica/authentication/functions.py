@@ -8,27 +8,25 @@ class List_Fields(Enum):
     GENRES = 'genres'
 
 
-def get_list_field(email, f_name): # pass in singular of field_name!! 
-    user_id = (User.objects.filter(email=email).values('id'))[0]['id']
+def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!! 
+    user_id = id if id else (User.objects.filter(email=email).values('id'))[0]['id']
     field_id = f_name + "_id"
     field_name = f_name + "_name"
-
+    field_names = []
+    
     if f_name == 'skill':
-        field_ids = User_Skills.objects.filter(user_id=user_id).values(field_id)
+        field_ids = f_ids if f_ids else User_Skills.objects.filter(user_id=user_id).values(field_id)
         if field_ids:
-            field_names = []
             for obj in field_ids:
-                the_id = obj[field_id]
+                the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
                 field_names.append(x[0][field_name])
             return field_names
-
-    if f_name == 'genre':
-        field_ids = User_Genres.objects.filter(user_id=user_id).values(field_id)
+    elif f_name == 'genre':
+        field_ids = f_ids if f_ids else User_Genres.objects.filter(user_id=user_id).values(field_id)
         if field_ids:
-            field_names = []
             for obj in field_ids:
-                the_id = obj[field_id]
+                the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
                 field_names.append(x[0][field_name])
             return field_names
