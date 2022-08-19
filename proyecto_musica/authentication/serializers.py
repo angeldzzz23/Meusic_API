@@ -28,12 +28,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         for list_field in List_Fields:
             field_name = list_field.value 
             field_list = self.context.get(field_name)
-
             if field_list:
                 if field_name == 'skills':
                     for obj in field_list:
                         User_Skills.objects.create(user_id=user_id, skill_id=obj)
-                if field_name == 'genres':
+                elif field_name == 'genres':
                     for obj in field_list:
                         User_Genres.objects.create(user_id=user_id, genre_id=obj)
 
@@ -53,7 +52,7 @@ class EditSerializer(serializers.ModelSerializer):
 
     def get_skills(self, obj):
         id = self.context.get("id")
-        skills = self.context.get("skills")        
+        skills = self.context.get("skills")
         return get_list_field(id, None, "skill", skills)
 
     def get_genres(self, obj):
@@ -73,6 +72,20 @@ class EditSerializer(serializers.ModelSerializer):
             instance.set_password(original_password)
         
         instance.save()
+        
+        # update skills/genres in corresponding tables
+        id = self.context.get('id')
+        for field in List_Fields:
+            field_name = field.value
+            field_list = self.context.get(field_name)
+            if field_name == 'skills':
+                User_Skills.objects.filter(user_id=id).delete()
+                for obj in field_list:    
+                    User_Skills.objects.create(user_id=id, skill_id=obj)
+            elif field_name == 'genres':
+                User_Genres.objects.filter(user_id=id).delete()
+                for obj in field_list:    
+                    User_Genres.objects.create(user_id=id, genre_id=obj)
         
         return instance
 

@@ -47,27 +47,13 @@ class AuthUserAPIView(GenericAPIView):
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
 
-
         serializer = EditSerializer(user_obj, data=jd, 
                                            context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
-           
-           # Add skills/genres to User_Skills/User_Genres
-            for field in List_Fields:
-                field_name = field.value
-                if field_name in jd:
-                    field_list = jd[field_name]        
-                    if field_name == "skills":
-                        User_Skills.objects.filter(user_id=id).delete()
-                        for obj in field_list:    
-                            User_Skills.objects.create(user_id=id, skill_id=obj)
-                    elif field_name == "genres":
-                        User_Genres.objects.filter(user_id=id).delete()
-                        for obj in field_list:    
-                            User_Genres.objects.create(user_id=id, genre_id=obj)
 
+            # only return list fields that were modified
             serialized_data = serializer.data
             for field in List_Fields:
                 field_name = field.value
