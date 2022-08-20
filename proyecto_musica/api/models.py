@@ -44,6 +44,8 @@ class Images(models.Model):
         verbose_name='user_id'
    )
 
+
+
     url = models.URLField(max_length = 200, null=True)
     title = models.CharField(max_length=50)
     image = models.ImageField(upload_to=get_uplaod_file_name)
