@@ -56,6 +56,12 @@ class UpdateImage(GenericAPIView):
     def post(self,request,id=None):
         jd = request.data
 
+        #making sure that the body is only 2
+        if len(jd) != 2:
+            res = {'success' : False, 'error': "you didnt add all of the parameters"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        #verifying that we have a valid user
         try:
             user_obj = User.objects.get(id=id)
         except User.DoesNotExist:
@@ -64,6 +70,25 @@ class UpdateImage(GenericAPIView):
 
         img = request.FILES["image"]
         newpic = Image(user=user_obj, title=jd['title'], image = img)
+
+        valid_titles = ["image_1","image_2","image_3","image_4","image_5","image_6", "profile_image"]
+
+        # making sure that we have a valid title name
+        
+        if jd['title'] not in valid_titles:
+            res = {'success' : False,'error': "not a valid image type"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
 
         picture_serializer = PictureSerialiser(data=jd, context={'user': user_obj, 'img' : img, 'request': request})
 
