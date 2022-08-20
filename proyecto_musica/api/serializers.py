@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from api.models import Image
+from api.models import Images
 from authentication.models import User
+
 
 
 # TODo serializer for the image
@@ -9,7 +10,7 @@ class PictureSerialiser(serializers.ModelSerializer):
     #title = serializers.SerializerMethodField()
 
     class Meta:
-        model = Image
+        model = Images
         fields = ('image_id','title', 'url', 'created_at')
 
 
@@ -28,9 +29,9 @@ class PictureSerialiser(serializers.ModelSerializer):
         # check if the user has other images
         # maybe there is a more pythonic way of doing this
         # https://stackoverflow.com/questions/34371959/django-property-update-a-model-instance
-        CurrentUsrimages = Image.objects.filter(user=user_obj, title=title2)
+        CurrentUsrimages = Images.objects.filter(user=user_obj, title=title2)
         if len(CurrentUsrimages) == 1:
-            editedimage = Image.objects.get(user=user_obj, title=title2)
+            editedimage = Images.objects.get(user=user_obj, title=title2)
             editedimage.image.delete(save=True)
             editedimage.image = img
             editedimage.save()
@@ -40,9 +41,7 @@ class PictureSerialiser(serializers.ModelSerializer):
             editedimage.url = newurl
             editedimage.save()
             return editedimage
-
-
-        pic = Image(user=user_obj, title=title2, image = img)
+        pic = Images(user=user_obj, title=title2, image = img)
         pic.save()
 
         url = request.build_absolute_uri(pic.image.url)
