@@ -20,9 +20,7 @@ from api.serializers import PictureSerialiser
 from rest_framework import response, status, permissions
 
 
-
 #import mimetypes
-
 #from django.http import HttpResponse
 #from rest_framework import response, status, permissions
 #from django.contrib.auth import authenticate
@@ -51,19 +49,43 @@ class UpdateImage(GenericAPIView):
 
         datos = {'codigo':"200",'message': "this is a get request...", 'url': "newurl"}
 
-
-
-
         return JsonResponse(datos)
 
 
+    # creating ids
+    def post(self,request,id=None):
+        jd = request.data
+
+        try:
+            user_obj = User.objects.get(id=id)
+        except User.DoesNotExist:
+            res = {'success' : False, 'error' : "User id does not exist."}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        img = request.FILES["image"]
+        newpic = Image(user=user_obj, title=jd['title'], image = img)
+
+        picture_serializer = PictureSerialiser(data=jd, context={'user': user_obj, 'img' : img, 'request': request})
+
+        if picture_serializer.is_valid():
+            # implementation goes here
+            picture_serializer.save()
+            datos = {'success':True,'data':picture_serializer.data}
+
+            return response.Response(datos, status=status.HTTP_201_CREATED)
+        else:
+                datos = {'codigo':"200",'message': "success", "url": newpic.url}
+                return JsonResponse(datos)
+
+
+
+        '''
     # TODO:
     # renaming an image file
     # TODO: figure out a more efficient way to do this
     def post(self,request,id=None):
         serializer = self.serializer_class(data=request.data)
         jd = request.data
-
 
         # check if user added to
         if len(jd) != 2:
@@ -84,21 +106,21 @@ class UpdateImage(GenericAPIView):
             return JsonResponse(datos)
 
         # make sure serializer is valid
-        '''
+
         if serializer.is_valid():
             # implementation goes here
 
         else:
             # Return some error
             print("nah b")
-        '''
+
+
         valid_titles = ["image_1","image_2","image_3","image_4","image_5","image_6", "profile_image"]
         # make sure title is valid
 
         if jd['title'] not in valid_titles:
             datos = {'codigo':"404",'message': "not a valid image name"}
             return JsonResponse(datos)
-
 
         # does the user already have an image_1, if they do then we
         CurrentUsrimages = Image.objects.filter(user=user_obj, title=jd['title'])
@@ -120,3 +142,4 @@ class UpdateImage(GenericAPIView):
 
             datos = {'codigo':"200",'message': "success", "url": newpic.url}
             return JsonResponse(datos)
+            '''

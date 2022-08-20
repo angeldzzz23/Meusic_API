@@ -128,8 +128,6 @@ class Format(models.Model):
 
 
 '''
-
-
  class Video:
     multimedia_id
     user_id
