@@ -10,6 +10,8 @@ import json
 from authentication.models import User
 import pathlib
 from PIL import Image
+from django.core import serializers
+
 
 
 
@@ -20,6 +22,8 @@ from proyecto_musica.settings import MEDIA_URL
 # the picture serializer
 
 from api.serializers import PictureSerialiser
+from api.serializers import PicturesSerializer
+
 from rest_framework import response, status, permissions
 
 
@@ -39,9 +43,19 @@ class UpdateImage(GenericAPIView):
 
     # create serializer
     # TODO: Ignore messy code
+
+    # this returns all of the imags that bellong to a user
     def get(self,request, id):
+
+        user = request.user
+        serializer = PicturesSerializer(user)
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res)
+
+
+
         #datos = {'codigo':"402",'message': "this is a get request..."}
-        user_obj = User.objects.get(id=id)
+
 
 
         #img_objs = Image.objects.get(image_id=1)
@@ -49,17 +63,12 @@ class UpdateImage(GenericAPIView):
         #img_objs2 = Image.objects.filter(user=user_obj, title=)
         #url = request.build_absolute_uri(img_objs2.image_1.url)
     #    newurl = str(url)
-        datos = {'codigo':"200",'message': "this is a get request...", 'url': "newurl"}
-        return JsonResponse(datos)
 
 
     # this post method requires an id
     # creates an an image record for the user
         # in the case of when the user already has an image saved in the specific spot
             # we override the image
-
-
-
     def post(self,request,id=None):
         jd = request.data
 
@@ -85,11 +94,7 @@ class UpdateImage(GenericAPIView):
             res = {'success' : False, 'error' : "not a valid image format"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
         newpic = Images(user=user_obj, title=jd['title'], image = img)
-
         # TODO: imeplement enums
         valid_titles = ["image_1","image_2","image_3","image_4","image_5","image_6", "profile_image"]
 

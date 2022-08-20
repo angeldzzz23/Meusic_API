@@ -4,11 +4,23 @@ from authentication.models import User
 
 
 
+class PicturesSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    class Meta:
+        model = Images
+        fields = ('images',)
+
+    def get_images(self, obj):
+        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
+        image_nums = Images.objects.filter(user_id=user_id).order_by('title').values('title','url', 'image_id', 'created_at')
+        return image_nums
+
+
+
 # TODo serializer for the image
 class PictureSerialiser(serializers.ModelSerializer):
     #photo_url = serializers.Serializer
     #title = serializers.SerializerMethodField()
-
     class Meta:
         model = Images
         fields = ('image_id','title', 'url', 'created_at')
@@ -50,42 +62,3 @@ class PictureSerialiser(serializers.ModelSerializer):
         pic.save()
 
         return pic
-
-
-'''
-class RegisterSerializer(serializers.ModelSerializer):
-    # how long we want yhr password to be
-    password = serializers.CharField(max_length=128, min_length=6, write_only=True)
-    skills = serializers.SerializerMethodField()
-
-    class Meta():
-        model=User
-        fields=('username','email','password','skills')
-
-    def get_skills(self, obj):
-        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
-        skill_nums = User_Skills.objects.filter(user_id=user_id).values('skill_id')
-
-        if skill_nums is None:
-            return None
-
-        skill_names = []
-        for ele in skill_nums:
-            skill_id = ele['skill_id']
-            s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
-            skill_names.append(s0[0]['skill_name'])
-
-        return skill_names
-
-    def create(self, validated_data):
-        the_user =  User.objects.create_user(**validated_data)
-        skills = self.context.get("skills")
-
-        # Add skills to User_Skills
-        if skills:
-            user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
-            for skill in skills:
-                User_Skills.objects.create(user_id=user_id, skill_id=skill)
-
-        return the_user
-'''
