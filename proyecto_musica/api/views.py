@@ -52,7 +52,11 @@ class UpdateImage(GenericAPIView):
         return JsonResponse(datos)
 
 
-    # creating ids
+    # this post method requires an id
+    # creates an an image record for the user
+        # in the case of when the user already has an image saved in the specific spot
+            # we override the image
+
     def post(self,request,id=None):
         jd = request.data
 
@@ -74,21 +78,12 @@ class UpdateImage(GenericAPIView):
         valid_titles = ["image_1","image_2","image_3","image_4","image_5","image_6", "profile_image"]
 
         # making sure that we have a valid title name
-        
         if jd['title'] not in valid_titles:
-            res = {'success' : False,'error': "not a valid image type"}
+            res = {'success' : False, 'error': "not a valid image type"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-
-
-
-
-
-
-
+        # does the user already have an image_1, if they do then we
+        CurrentUsrimages = Image.objects.filter(user=user_obj, title=jd['title'])
 
         picture_serializer = PictureSerialiser(data=jd, context={'user': user_obj, 'img' : img, 'request': request})
 

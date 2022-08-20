@@ -15,7 +15,6 @@ class PictureSerialiser(serializers.ModelSerializer):
 
         # this will return the image
 
-
     # question:
         # is there any way to pass all of the that information as validated data
     def create(self, validated_data):
@@ -25,6 +24,24 @@ class PictureSerialiser(serializers.ModelSerializer):
         request = self.context.get("request")
 
         title2 = validated_data['title']
+
+        # check if the user has other images
+        # maybe there is a more pythonic way of doing this
+        # https://stackoverflow.com/questions/34371959/django-property-update-a-model-instance
+        CurrentUsrimages = Image.objects.filter(user=user_obj, title=title2)
+        if len(CurrentUsrimages) == 1:
+            editedimage = Image.objects.get(user=user_obj, title=title2)
+            editedimage.image.delete(save=True)
+            editedimage.image = img
+            editedimage.save()
+
+            url = request.build_absolute_uri(editedimage.image.url)
+            newurl = str(url)
+            editedimage.url = newurl
+            editedimage.save()
+            return editedimage
+
+
         pic = Image(user=user_obj, title=title2, image = img)
         pic.save()
 
@@ -34,11 +51,6 @@ class PictureSerialiser(serializers.ModelSerializer):
         pic.save()
 
         return pic
-
-
-
-
-
 
 
 '''
