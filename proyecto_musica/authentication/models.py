@@ -141,7 +141,7 @@ class Skills(models.Model):
         null=False,
         verbose_name='skill_id',
     )
-    skill_name = models.CharField(max_length=200)
+    skill_name = models.CharField(unique=True, max_length=200)
 
     def __str__(self):
         return self.skill_id
@@ -180,7 +180,7 @@ class Genres(models.Model):
         null=False,
         verbose_name='genre_id',
     )
-    genre_name = models.CharField(max_length=200)
+    genre_name = models.CharField(unique=True, max_length=200)
 
     def __str__(self):
         return self.genre_id

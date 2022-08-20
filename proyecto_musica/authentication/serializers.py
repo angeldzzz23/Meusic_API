@@ -1,43 +1,42 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres
+from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # how long we want yhr password to be
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     skills = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
 
     class Meta():
         model=User
-        fields=('username','email','password','skills')
+        fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
-        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
-        skill_nums = User_Skills.objects.filter(user_id=user_id).values('skill_id')
-        
-        if skill_nums is None:
-            return None
-
-        skill_names = []
-        for ele in skill_nums:
-            skill_id = ele['skill_id']
-            s0 = Skills.objects.filter(skill_id=skill_id).values('skill_name')
-            skill_names.append(s0[0]['skill_name'])
-
-        return skill_names
+        skills = self.context.get("skills")        
+        return get_list_field(None, obj.email, "skill", skills)
+    
+    def get_genres(self, obj):
+        genres = self.context.get("genres")        
+        return get_list_field(None, obj.email, "genre", genres)
 
     def create(self, validated_data):
-        the_user =  User.objects.create_user(**validated_data)
-        skills = self.context.get("skills")                   
+        user =  User.objects.create_user(**validated_data)
+        user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
 
-        # Add skills to User_Skills
-        if skills:                                                      
-            user_id = (User.objects.filter(email=validated_data['email']).values('id'))[0]['id']
-            for skill in skills:    
-                User_Skills.objects.create(user_id=user_id, skill_id=skill)
+        for list_field in List_Fields:
+            field_name = list_field.value 
+            field_list = self.context.get(field_name)
+            if field_list:
+                if field_name == 'skills':
+                    for obj in field_list:
+                        User_Skills.objects.create(user_id=user_id, skill_id=obj)
+                elif field_name == 'genres':
+                    for obj in field_list:
+                        User_Genres.objects.create(user_id=user_id, genre_id=obj)
 
-        return the_user
+        return user
 
 
 class EditSerializer(serializers.ModelSerializer):
@@ -45,25 +44,22 @@ class EditSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     username = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())]) 
     skills = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('username','email','password','skills')
+        fields=('username','email','password','skills','genres')
 
     def get_skills(self, obj):
         id = self.context.get("id")
         skills = self.context.get("skills")
+        return get_list_field(id, None, "skill", skills)
 
-        if skills is None:
-            return None
-        
-        skill_names = []
-        for skill in skills:
-            s0 = Skills.objects.filter(skill_id=skill).values('skill_name')
-            skill_names.append(s0[0]['skill_name'])
-
-        return skill_names
-
+    def get_genres(self, obj):
+        id = self.context.get("id")
+        genres = self.context.get("genres")        
+        return get_list_field(id, None, "genre", genres)
+    
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
         original_username = validated_data.get('username', instance.username)
@@ -76,6 +72,20 @@ class EditSerializer(serializers.ModelSerializer):
             instance.set_password(original_password)
         
         instance.save()
+        
+        # update skills/genres in corresponding tables
+        id = self.context.get('id')
+        for field in List_Fields:
+            field_name = field.value
+            field_list = self.context.get(field_name)
+            if field_name == 'skills':
+                User_Skills.objects.filter(user_id=id).delete()
+                for obj in field_list:    
+                    User_Skills.objects.create(user_id=id, skill_id=obj)
+            elif field_name == 'genres':
+                User_Genres.objects.filter(user_id=id).delete()
+                for obj in field_list:    
+                    User_Genres.objects.create(user_id=id, genre_id=obj)
         
         return instance
 

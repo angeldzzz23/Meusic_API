@@ -5,13 +5,13 @@ from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
-from authentication.models import User, User_Skills, Skills
+from authentication.models import User, User_Skills, Skills, Genres, User_Genres
+from authentication.functions import validate_field, List_Fields
 
 import json
 
-# TODO: implement the edit user functionality - patch
-# TODO: implement delete user functionality
 
+# TODO: implement delete user functionality
 # Create your views here.
 
 
@@ -28,58 +28,37 @@ class AuthUserAPIView(GenericAPIView):
 
     def patch(self, request, id=None):
         jd = request.data
+        context = {}
+        context['id'] = id
 
         try:
             user_obj = User.objects.get(id=id)
         except User.DoesNotExist:
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-
-        if 'skills' in jd:
-            skills = jd['skills']
-
-            if not isinstance(skills, list):
-                res = {'success' : False, 'error' : "Skills should be in a list."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            if len(skills) > 5:
-                res = {'success' : False, 'error' : "Cannot submit more than 5 skills."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            if len(skills) != len(set(skills)):
-                res = {'success' : False, 'error' : "Cannot submit duplicate skills."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            for skill in skills:
-                if isinstance(skill, str) and (not skill.isnumeric()):
-                    res = {'success' : False, 'error' : "Please enter numeric skills."}
-                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            for skill in skills:
-                skill_from_db = Skills.objects.filter(skill_id=skill)
-                if not skill_from_db:
-                    res = {'success' : False, 'error' : "Skill not found in database."}
-                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            # delete exisiting entries
-            User_Skills.objects.filter(user_id=id).delete()
+        
+        for field in List_Fields:
+            field_name = field.value
             
-            # add to User_Skills
-            for skill in skills:    
-                User_Skills.objects.create(user_id=id, skill_id=skill)
-            
-            serializer = EditSerializer(user_obj, data=request.data, 
-                    context={'id': id, 'skills': skills}, partial=True)
-        else:
-            serializer = EditSerializer(user_obj, data=request.data, 
-                    context={'id': id}, partial=True)
+            if field_name in jd:
+                field_list = jd[field_name]
+                res = validate_field(field_name, field_list)
+                if res:
+                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+                context[field_name] = field_list
+
+        serializer = EditSerializer(user_obj, data=jd, 
+                                           context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
 
+            # only return list fields that were modified
             serialized_data = serializer.data
-            if serialized_data['skills'] is None:
-                serialized_data.pop('skills')
+            for field in List_Fields:
+                field_name = field.value
+                if field_name not in jd:
+                    serialized_data.pop(field_name)
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
@@ -94,37 +73,20 @@ class RegisterAPIView(GenericAPIView):
 
     def post(self,request):
         jd = request.data
+        context = {}
 
-        if 'skills' in jd:
-            # Error checking skills
-            skills = jd['skills']
-            if not isinstance(skills, list):
-                res = {'success' : False, 'error' : "Skills should be in a list."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            if len(skills) > 5:
-                res = {'success' : False, 'error' : "Cannot submit more than 5 skills."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            if len(skills) != len(set(skills)):
-                res = {'success' : False, 'error' : "Cannot submit duplicate skills."}
-                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            for skill in skills:
-                if isinstance(skill, str) and (not skill.isnumeric()):
-                    res = {'success' : False, 'error' : "Please enter numeric skills."}
+        for field in List_Fields:
+            field_name = field.value
+            
+            if field_name in jd:
+                field_list = jd[field_name]
+                res = validate_field(field_name, field_list)
+                if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+                context[field_name] = field_list
 
-            for skill in skills:
-                skill_from_db = Skills.objects.filter(skill_id=skill)
-                if not skill_from_db:
-                    res = {'success' : False, 'error' : "Skill not found in database."}
-                    return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-
-            serializer = self.serializer_class(data=request.data, 
-                         context={'skills': jd['skills']})
-        else:
-            serializer = self.serializer_class(data=request.data)
+        serializer = self.serializer_class(data=jd, 
+                                           context=context)
 
         if serializer.is_valid():
             serializer.save()
