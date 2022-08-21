@@ -1,4 +1,4 @@
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists
 from rest_framework import response, status
 from enum import Enum
 
@@ -6,6 +6,7 @@ from enum import Enum
 class List_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
+    ARTISTS = 'artists'
 
 
 def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!! 
@@ -49,11 +50,14 @@ def validate_field(field_name, field_list):
         if isinstance(obj, str) and (not obj.isnumeric()):
             return {'success' : False, 
                     'error' : "Please enter numeric " + field_name + "."}
+   
+    if field_name == "artists":
+        return None
 
     for obj in field_list:
         if field_name == "skills":
             field_from_db = Skills.objects.filter(skill_id=obj)
-        if field_name == "genres":
+        elif field_name == "genres":
             field_from_db = Genres.objects.filter(genre_id=obj)
 
         if not field_from_db:

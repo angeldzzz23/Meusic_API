@@ -5,7 +5,7 @@ from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
-from authentication.models import User, User_Skills, Skills, Genres, User_Genres
+from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders
 from authentication.functions import validate_field, List_Fields
 
 import json
@@ -71,7 +71,7 @@ class RegisterAPIView(GenericAPIView):
 
     serializer_class= RegisterSerializer
 
-    def post(self,request):
+    def post(self, request):
         jd = request.data
         context = {}
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders
 from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
@@ -8,10 +8,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
+    artists = serializers.SerializerMethodField()
 
     class Meta():
         model=User
-        fields=('username','email','password','skills','genres')
+        fields=('username','email','password','skills','genres','artists')
+
+    def get_artists(self, obj):
+        return self.context.get("artists")
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        
@@ -35,6 +39,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                 elif field_name == 'genres':
                     for obj in field_list:
                         User_Genres.objects.create(user_id=user_id, genre_id=obj)
+                elif field_name == 'artists':
+                    for obj in field_list:
+                        User_Artists.objects.create(user_id=user_id, artist=obj)
 
         return user
 
