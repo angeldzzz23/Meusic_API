@@ -52,25 +52,7 @@ class MyUserManager(UserManager):
 
         return self._create_user(username, email, password, **extra_fields)
 
-    '''def update_user(self, username=None, email=None, password=None, **extra_fields):
-        
-        user = User.objects.get(email=email)
-        n_username = self.model.normalize_username(username)
-        user.username = n_username
-        user.save(using=self._db)
-        return user
-        n_email = self.normalize_email(email)
-        n_username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
 
-        # todo: update other fields in db?
-
-        return user'''
-
-
-# modify me Rashel
 class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     """
     An abstract base class implementing a fully featured User model with
@@ -210,3 +192,63 @@ class User_Genres(models.Model):
     class Meta:
         db_table = 'User_Genres'
 
+
+class User_Artists(models.Model):
+    user_artist_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_artist_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    artist = models.IntegerField(
+        null=False,
+        verbose_name='artist_id'
+    )
+
+    class Meta:
+        db_table = 'User_Artists'
+
+
+class Genders(models.Model):
+    gender_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='gender_id',
+    )
+    gender_name = models.CharField(unique=True, max_length=200)
+
+    def __str__(self):
+        return self.gender_id
+    class Meta:
+        db_table = 'Genders'
+
+
+class User_Gender(models.Model):
+    user_gender_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_gender_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    gender = models.ForeignKey(
+        Genders,
+        on_delete=models.CASCADE,
+        verbose_name='gender_id'
+    )
+
+    class Meta:
+        db_table = 'User_Gender'
