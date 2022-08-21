@@ -207,7 +207,6 @@ class User_Artists(models.Model):
         verbose_name='user_id'
     )
     artist = models.IntegerField(
-        null=False,
         verbose_name='artist_id'
     )
 
@@ -230,25 +229,3 @@ class Genders(models.Model):
     class Meta:
         db_table = 'Genders'
 
-
-class User_Gender(models.Model):
-    user_gender_id = models.BigAutoField(
-        auto_created=True,
-        primary_key=True,
-        unique=True,
-        null=False,
-        verbose_name='user_gender_id'
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name='user_id'
-    )
-    gender = models.ForeignKey(
-        Genders,
-        on_delete=models.CASCADE,
-        verbose_name='gender_id'
-    )
-
-    class Meta:
-        db_table = 'User_Gender'
