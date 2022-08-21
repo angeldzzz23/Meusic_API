@@ -1,117 +1,181 @@
+# create user model
+from django.shortcuts import render
+
 from django.db import models
-import uuid
+from authentication.models import User
+from datetime import datetime
 
-# Create your models here.
+import random
 
 
-class Genero(models.Model):
-    genero_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='genero_id')
-    genero_descripcion = models.CharField(max_length=200)
+# TODO: make cleaner
+def get_uplaod_file_name(userpic, filename):
+    ext = filename.split('.')[-1]
+    newName = userpic.title + '.' + ext
+    if userpic.title == "profile_image":
+        return u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName)
+    return u'photos/%s/%s' % (str(userpic.user.id),newName)
+
+# these are the images for the profile page
+    # image_1
+    # image_2
+    # image_3
+    # image_4
+    # image_5
+    # image_6
+# Profile_image
+    # profile_image
+
+
+
+# change name of image_One
+
+class Images(models.Model):
+    image_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='image_id'
+  )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+   )
+
+
+
+    url = models.URLField(max_length = 200, null=True)
+    title = models.CharField(max_length=50)
+    image = models.ImageField(upload_to=get_uplaod_file_name)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+# this contains all of the types of media that we can have
+class Multimedia_type(models.Model):
+
+    multimedia_type_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='multimedia_type_id',
+    )
+
+    multimedia_desc = models.CharField(max_length=200)
+
     def __str__(self):
-        return self.genero_id
-    class Meta:
-        db_table = 'Genero'
- 
-class Usuarios(models.Model):
-    usuario_id=models.UUIDField(default=uuid.uuid4,editable=False,primary_key=True,unique=True,null=False,verbose_name='usuario_id')
-    nombre = models.CharField(max_length=100)
-    apellidos =models.CharField(max_length=100)
-    fecha_nacimiento=models.DateField()
-    genero =models.ForeignKey(Genero, on_delete=models.CASCADE,verbose_name='genero_id')
-    correo_electronico =models.CharField(max_length=100)
-    username =models.CharField(max_length=100)
-    contrasena =models.CharField(max_length=250)
-    contrasena =models.CharField(max_length=250)
-    fecha_creacion=models.DateField(auto_now=False,auto_now_add=True)
-    acerca_de_mi =models.CharField(max_length=250)
-    def __str__(self):
-        return self.usuario_id
-    class Meta:
-        db_table = 'usuarios'
+        return self.multimedia_type_id
 
-class Usuario_artista(models.Model):
-    usuario_artista_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='usuario_artista_id')
-    usuario =models.ForeignKey(Usuarios, on_delete=models.CASCADE,verbose_name='usuario_id')
-    artista_id = models.CharField(max_length=100)
-   
     class Meta:
-        db_table = 'usuario_artista'
+        db_table = 'Multimedia_type'
 
-class Habilidad(models.Model):
-    habilidad_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='habilidad_id')
-    habilidad_descripcion =models.CharField(max_length=200)
+# status multimedia of the multimedia
+# ex. visible, hidden, deleted
+class Multimedia_status(models.Model):
+    multimedia_status_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='multimedia_status_id',
+    )
+    multimedia_desc = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.habilidad_id
+        return self.multimedia_status_id
     class Meta:
-        db_table = 'habilidad'
+        db_table = 'Multimedia_status'
 
-class Usuario_habilidad(models.Model):
-    usuario_habilidad_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='Usuario_habilidad_id')
-    usuario =models.ForeignKey(Usuarios, on_delete=models.CASCADE,verbose_name='usuario_id')
-    habilidad =models.ForeignKey(Habilidad, on_delete=models.CASCADE,verbose_name='habilidad_id')
-   
-    class Meta:
-        db_table = 'Usuario_habilidad'
 
-class Genero_musical(models.Model):
-    genero_musical_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='genero_musical_id')
-    
+# this contains the type of formats that we allow the user to enter
+class Format(models.Model):
+    format_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='format_id',
+    )
+    format_desc = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.genero_musical_id
+        return self.format_id
     class Meta:
-        db_table = 'genero_musical'
+        db_table = 'Format'
 
-class Usuario_genero_musical(models.Model):
-    usuario_genero_musical_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='usuario_genero_musical_id')
-    usuario =models.ForeignKey(Usuarios, on_delete=models.CASCADE,verbose_name='usuario_id')
-    genero_musical =models.ForeignKey(Genero_musical, on_delete=models.CASCADE,verbose_name='genero_musical_id')
-   
+
+# imagen 1
+
+# iimage 2
+
+# iimage 3
+
+# imagen_5
+
+# iimage 5
+
+
+# When updating I would have to image
+
+# TODO: Validate the max amount permitted
+
+
+
+'''
+ class Video:
+    multimedia_id
+    user_id
+
+    title = models.CharField(max_length=50)
+    video = models.Video('video/')
+'''
+
+
+
+# this is table is where we save all of our user multimedia files that are uploade
+class Multimedia(models.Model):
+
+    multimedia_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='multimedia_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+
+
+    multimedia_type = models.ForeignKey(
+        Multimedia_type,
+        on_delete=models.CASCADE,
+        verbose_name='multimedia_type_id'
+    )
+
+    format = models.ForeignKey(
+        Format,
+        on_delete=models.CASCADE,
+        verbose_name='format_id'
+    )
+
+    url = models.CharField(max_length=200)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    description = models.CharField(max_length=200)
+
+    multimedia_status = models.ForeignKey(
+        Multimedia_status,
+        on_delete=models.CASCADE,
+        verbose_name='multimedia_status_id'
+    )
+
+    def __str__(self):
+        return self.multimedia_id
     class Meta:
-        db_table = 'usuario_genero_musical'
-
-class Plataforma(models.Model):
-     plataforma_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
-     plataforma_descripcion =models.CharField(max_length=200)
-     def __str__(self):
-        return self.plataforma_id
-     class Meta:
-        db_table = 'plataforma'
-
-class Usuario_plataforma(models.Model):
-     plataforma_usuario_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
-     plataforma =models.ForeignKey(Plataforma, on_delete=models.CASCADE,verbose_name='plataforma_id')
-     usuario =models.ForeignKey(Usuarios, on_delete=models.CASCADE,verbose_name='usuario_id')
-     url =models.CharField(max_length=200)
-     class Meta:
-        db_table = 'usuario_plataforma'
-
-class Vimeo(models.Model):
-    vimeo_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
-    client_id =models.CharField(max_length=255)
-    client_secret =models.CharField(max_length=255)
-    class Meta:
-        db_table = 'vimeo'
-        
-class Spotify(models.Model):
-    spotify_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
-    client_id =models.CharField(max_length=255)
-    client_secret =models.CharField(max_length=255)
-    class Meta:
-        db_table = 'spotify'
-
-class Youtube(models.Model):
-    youtube_id=models.BigAutoField(auto_created=True, primary_key=True,unique=True,null=False,verbose_name='plaforma_id')
-    key=models.CharField(max_length=255)
-    class Meta:
-        db_table = 'youtube'      
-
-
-
-
-
-
-
-
-
+        db_table = 'Multimedia'
