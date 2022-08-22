@@ -39,8 +39,7 @@ def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!!
             list_field_ids = []
             for obj in field_ids:
                 list_field_ids.append(obj[f_name])
-            return list_field_ids 
-
+            return list_field_ids if list_field_ids else None
 
 
 def validate_field(field_name, field_list): 
