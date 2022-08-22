@@ -18,7 +18,8 @@ from django.conf import settings
 # modify me Rashel
 class MyUserManager(UserManager):
 
-    def _create_user(self, username, email, gender_id, password, **extra_fields):
+    def _create_user(self, username, email, first_name, last_name, gender_id, 
+            about_me, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -30,16 +31,20 @@ class MyUserManager(UserManager):
 
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, gender_id=gender_id, **extra_fields)
+        user = self.model(username=username, email=email, first_name=first_name, 
+                last_name=last_name, gender_id=gender_id, about_me=about_me, 
+                **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_user(self, username, email, gender_id, password=None, **extra_fields):
+    def create_user(self, username, email, first_name, last_name, gender_id, 
+            about_me, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, email, gender_id, password, **extra_fields)
+        return self._create_user(username, email, first_name, last_name, 
+                gender_id, about_me, password, **extra_fields)
 
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -81,7 +86,10 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
+    first_name = models.CharField(null=True, max_length=100)
+    last_name = models.CharField(null=True, max_length=100)
     gender_id = models.IntegerField(null=True)
+    about_me = models.CharField(null=True, max_length=250) 
     is_active = models.BooleanField(
         _('active'),
         default=True,
