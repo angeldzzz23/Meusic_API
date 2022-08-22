@@ -26,8 +26,9 @@ class AuthUserAPIView(GenericAPIView):
         res = {'success' : True, 'user': serializer.data}
         return response.Response(res)
 
-    def patch(self, request, id=None):
+    def patch(self, request):
         jd = request.data
+        id = request.user.id
         context = {}
         context['id'] = id
 
@@ -46,26 +47,18 @@ class AuthUserAPIView(GenericAPIView):
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
-
+        
         serializer = EditSerializer(user_obj, data=jd, 
                                            context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
 
-            # only return list fields that were modified
+            # only return fields that were modified
             serialized_data = (serializer.data).copy()
-
-
             for field in serializer.data:
                 if field not in jd:
                     serialized_data.pop(field)
-
-
-            '''for field in List_Fields:
-                field_name = field.value
-                if field_name not in jd:
-                    serialized_data.pop(field_name)'''
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)

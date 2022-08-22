@@ -92,7 +92,7 @@ class EditSerializer(serializers.ModelSerializer):
         for field in List_Fields:
             field_name = field.value
             field_list = self.context.get(field_name)
-            if field_list:
+            if field_list is not None:
                 if field_name == 'skills':
                     User_Skills.objects.filter(user_id=id).delete()
                     for obj in field_list:    
