@@ -15,7 +15,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields=('username','email','password','skills','genres','artists')
 
     def get_artists(self, obj):
-        return self.context.get("artists")
+        artists = self.context.get("artists")
+        return get_list_field(None, obj.email, "artist", artists)
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        

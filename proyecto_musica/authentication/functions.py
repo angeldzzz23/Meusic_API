@@ -31,6 +31,16 @@ def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!!
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
                 field_names.append(x[0][field_name])
             return field_names
+    elif f_name == 'artist':
+        if f_ids:
+            return f_ids
+        else:
+            field_ids = User_Artists.objects.filter(user_id=user_id).values(f_name)
+            list_field_ids = []
+            for obj in field_ids:
+                list_field_ids.append(obj[f_name])
+            return list_field_ids 
+
 
 
 def validate_field(field_name, field_list): 
