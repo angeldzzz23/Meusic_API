@@ -12,7 +12,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta():
         model=User
-        fields=('username','email','password','skills','genres','artists')
+        fields=('username','email','gender_id','password','skills','genres','artists')
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        
