@@ -92,8 +92,8 @@ class RegisterAPIView(GenericAPIView):
             serializer.save()
             
             serialized_data = (serializer.data).copy()
-            if 'gender_id' in jd:
-                serialized_data.pop('gender_id')
+            if 'gender' in jd:
+                serialized_data.pop('gender')
 
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)

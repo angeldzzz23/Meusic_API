@@ -9,12 +9,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     artists = serializers.SerializerMethodField()
-    gender = serializers.SerializerMethodField()
+    gender_name = serializers.SerializerMethodField()
 
     class Meta():
         model=User
-        fields=('username','email','first_name','last_name', 'gender_id', 
-                'gender', 'about_me', 'password','skills','genres','artists')
+        fields=('username','email','first_name','last_name', 'gender', 
+                'gender_name', 'about_me', 'password','skills','genres','artists')
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        
@@ -28,7 +28,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         artists = self.context.get("artists")
         return get_list_field(None, obj.email, "artist", artists)
 
-    def get_gender(self, obj):
+    def get_gender_name(self, obj):
         gender_id = obj.gender_id
         if gender_id:
             res = Genders.objects.get(gender_id=gender_id)
@@ -65,8 +65,8 @@ class EditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=User
-        fields=('username','email','first_name','last_name', 'gender_id', 
-                'gender', 'about_me', 'password','skills','genres','artists')
+        fields=('username','email','first_name','last_name','gender', 
+                'about_me','password','skills','genres','artists')
 
     def get_skills(self, obj):
         id = self.context.get("id")
