@@ -65,3 +65,12 @@ class AllGenresSerializer(serializers.ModelSerializer):
         nums = Genres.objects.all().order_by('genre_name').values('genre_id','genre_name')
 
         return  nums
+
+#client_id =models.CharField(max_length=255)
+#client_secret =models.CharField(max_length=255)
+
+class SpotifySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Spotify
+        fields = ('client_id','client_secret')
