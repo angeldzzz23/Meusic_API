@@ -6,6 +6,7 @@ from misc.models import Vimeo,Spotify,Youtube
 
 
 # this skill set
+
 class SkillsSerializer(serializers.ModelSerializer):
     # skills = serializers.SerializerMethodField()
 
@@ -62,6 +63,8 @@ class AllGenresSerializer(serializers.ModelSerializer):
         return  nums
 
 
+# Platform serializers
+
 class SpotifySerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -74,3 +77,9 @@ class VimeoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vimeo
         fields = ('vimeo_id','client_id','client_secret')
+
+class YoutubeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Youtube
+        fields = ('youtube_id','key')

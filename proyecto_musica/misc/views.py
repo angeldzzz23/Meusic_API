@@ -9,7 +9,7 @@ from misc.serializers import AllGenresSerializer
 from misc.serializers import GenresSerializer
 from misc.serializers import SkillsSerializer
 from misc.serializers import AllSkillsSerializer
-from misc.serializers import  SpotifySerializer, VimeoSerializer
+from misc.serializers import  SpotifySerializer, VimeoSerializer, YoutubeSerializer
 
 from misc.models import Vimeo,Spotify,Youtube
 
@@ -17,7 +17,8 @@ from misc.models import Vimeo,Spotify,Youtube
 
 # Create your views here.
 
-# TODO: clean uo code  -  Angel
+# TODO: clean up code  -  Angel
+    # add helper method
 
 class SkillView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -136,7 +137,6 @@ class SpotifyPlatforms(GenericAPIView):
 
 
 class VimeoPlatforms(GenericAPIView):
-
     def post(self, request):
         jd = request.data
         if Vimeo.objects.count() != 0:
@@ -153,8 +153,6 @@ class VimeoPlatforms(GenericAPIView):
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
-
-
 
     def get(self, request):
         # TODO: Add super user code
@@ -180,6 +178,63 @@ class VimeoPlatforms(GenericAPIView):
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
         serializer=VimeoSerializer(vim,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : "invalid body requirements"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+# this
+class YoutubePlatforms(GenericAPIView):
+    # takes care of the post
+    def post(self, request):
+        jd = request.data
+        if Youtube.objects.count() != 0:
+            res = {'success' : False, 'error' : "there is already an obj"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+        # return error if body is too big
+        serializer=YoutubeSerializer(data=jd, context={"ss":"ss"})
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error': serializer.errors}
+            return response.Response(res, status=status.HTTP_201_CREATED)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        # TODO: Add super user code
+        # handles the case of when there are no objects
+        try:
+            youtube = Youtube.objects.all()[0]
+        except:
+            res = {'success' : True, 'data': {}}
+            return response.Response(res, status=status.HTTP_201_CREATED)
+
+        serializer=YoutubeSerializer(youtube)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+        # this takes the object id
+    def patch(self, request, id):
+        jd = request.data
+        try:
+            print("ss")
+            you = Youtube.objects.get(youtube_id=id)
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        print(you)
+
+        serializer=YoutubeSerializer(you,data=jd,partial=True)
 
         if serializer.is_valid():
             serializer.save()
