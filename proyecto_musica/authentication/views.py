@@ -66,6 +66,9 @@ class AuthUserAPIView(GenericAPIView):
             
             if 'gender' in jd:
                 serialized_data.pop('gender')
+
+            if 'gender' not in jd:
+                serialized_data.pop('gender_name')
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)

@@ -19,11 +19,12 @@ class RegisterSerializer(serializers.ModelSerializer):
                 'gender_name','DOB','about_me', 'password','skills','genres',
                 'artists','pictures')
 
-    def get_pictures(self, obj):
-        query = Images.objects.filter(user_id=obj.id).values('image_id', 
-                    'url', 'title')
-        return list(query)
-
+    def get_gender_name(self, obj):
+        gender_id = obj.gender_id
+        if gender_id:
+            res = Genders.objects.get(gender_id=gender_id)
+            return res.gender_name
+    
     def get_skills(self, obj):
         skills = self.context.get("skills")        
         return get_list_field(None, obj.email, "skill", skills)
@@ -35,12 +36,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_artists(self, obj):
         artists = self.context.get("artists")
         return get_list_field(None, obj.email, "artist", artists)
-
-    def get_gender_name(self, obj):
-        gender_id = obj.gender_id
-        if gender_id:
-            res = Genders.objects.get(gender_id=gender_id)
-            return res.gender_name
+ 
+    def get_pictures(self, obj):
+        query = Images.objects.filter(user_id=obj.id).values('image_id', 
+                    'url', 'title')
+        return list(query)
 
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -78,6 +78,12 @@ class EditSerializer(serializers.ModelSerializer):
                 'gender_name','DOB','about_me','password','skills','genres',
                 'artists')
 
+    def get_gender_name(self, obj):
+        gender_id = obj.gender_id
+        if gender_id:
+            res = Genders.objects.get(gender_id=gender_id)
+            return res.gender_name
+    
     def get_skills(self, obj):
         id = self.context.get("id")
         skills = self.context.get("skills")
@@ -92,12 +98,6 @@ class EditSerializer(serializers.ModelSerializer):
         id = self.context.get("id")
         artists = self.context.get("artists")
         return get_list_field(id, None, "artist", artists)
-    
-    def get_gender_name(self, obj):
-        gender_id = obj.gender_id
-        if gender_id:
-            res = Genders.objects.get(gender_id=gender_id)
-            return res.gender_name
     
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
