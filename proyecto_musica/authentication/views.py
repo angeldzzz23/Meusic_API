@@ -90,9 +90,16 @@ class RegisterAPIView(GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
-            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            serialized_data = (serializer.data).copy()
+            if 'gender_id' in jd:
+                serialized_data.pop('gender_id')
 
-        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            res = {'success' : True, 'user': serialized_data}
+            return response.Response(res, status=status.HTTP_201_CREATED)
+
+        res = {'success' : False, 'user': serializer.errors}
+        return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 
 # this used to log in the user
