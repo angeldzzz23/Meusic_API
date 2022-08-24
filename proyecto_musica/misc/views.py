@@ -10,6 +10,8 @@ from misc.serializers import GenresSerializer
 from misc.serializers import SkillsSerializer
 from misc.serializers import AllSkillsSerializer
 
+from misc.models import Vimeo,Spotify,Youtube
+
 
 
 # from misc.serializers import AllGenresSerializer
