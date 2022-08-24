@@ -36,11 +36,11 @@ class SkillView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            print("nagh")
+            res = {'success' : False, 'error' : "something wrong with serializer"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
-        datos = {'codigo':"400",'data': serializer.data}
-        return JsonResponse(datos)
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 
@@ -53,7 +53,6 @@ class GenreView(GenericAPIView):
         user = request.user
         serializer = AllGenresSerializer(user)
 
-
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
 
@@ -64,9 +63,9 @@ class GenreView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            print("error")
+            res = {'success' : False, 'error' : "something wrong with serializer"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-        datos = {'codigo':"400",'data': serializer.data}
-        return JsonResponse(datos)
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
