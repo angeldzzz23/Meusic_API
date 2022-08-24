@@ -1,21 +1,28 @@
 from rest_framework import serializers
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders
+from api.models import Images
 from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
+    gender_name = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     artists = serializers.SerializerMethodField()
-    gender_name = serializers.SerializerMethodField()
+    pictures = serializers.SerializerMethodField()
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender', 
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists')
+                'artists','pictures')
+
+    def get_pictures(self, obj):
+        query = Images.objects.filter(user_id=obj.id).values('image_id', 
+                    'url', 'title')
+        return list(query)
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        
