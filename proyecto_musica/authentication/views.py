@@ -23,7 +23,11 @@ class AuthUserAPIView(GenericAPIView):
     def get(self, request):
         user = request.user
         serializer = RegisterSerializer(user)
-        res = {'success' : True, 'user': serializer.data}
+        serialized_data = (serializer.data).copy()
+        if 'gender' in serializer.data:
+            serialized_data.pop('gender')
+
+        res = {'success' : True, 'user': serialized_data}
         return response.Response(res)
 
     def patch(self, request):
@@ -59,6 +63,9 @@ class AuthUserAPIView(GenericAPIView):
             for field in serializer.data:
                 if field not in jd:
                     serialized_data.pop(field)
+            
+            #if 'gender' in jd:
+            #    serialized_data.pop('gender')
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
@@ -92,8 +99,7 @@ class RegisterAPIView(GenericAPIView):
             serializer.save()
             
             serialized_data = (serializer.data).copy()
-            if 'gender' in jd:
-                serialized_data.pop('gender')
+            serialized_data.pop('gender')
 
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
