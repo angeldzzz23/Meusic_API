@@ -13,11 +13,8 @@ class SkillsSerializer(serializers.ModelSerializer):
         model = Skills
         fields = ('skill_id','skill_name',)
 
-
-
     def get_skills(self, obj):
         return Skills.objects.all().order_by('skill_name').values('skill_id','skill_name')
-
 
     def create(self, validated_data):
         skill =  Skills.objects.create(**validated_data)
@@ -61,16 +58,19 @@ class AllGenresSerializer(serializers.ModelSerializer):
         fields = ('genres',)
 
     def get_genres(self, obj):
-
         nums = Genres.objects.all().order_by('genre_name').values('genre_id','genre_name')
-
         return  nums
 
-#client_id =models.CharField(max_length=255)
-#client_secret =models.CharField(max_length=255)
 
 class SpotifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Spotify
         fields = ('spotify_id','client_id','client_secret')
+
+
+class VimeoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Vimeo
+        fields = ('vimeo_id','client_id','client_secret')
