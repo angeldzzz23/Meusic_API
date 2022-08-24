@@ -27,20 +27,20 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     def get_skills(self, obj):
         skills = self.context.get("skills")        
-        return get_list_field(None, obj.email, "skill", skills)
+        return get_list_field(obj.id, "skill", skills)
     
     def get_genres(self, obj):
         genres = self.context.get("genres")        
-        return get_list_field(None, obj.email, "genre", genres)
+        return get_list_field(obj.id, "genre", genres)
 
     def get_artists(self, obj):
         artists = self.context.get("artists")
-        return get_list_field(None, obj.email, "artist", artists)
+        return get_list_field(obj.id, "artist", artists)
  
     def get_pictures(self, obj):
         query = Images.objects.filter(user_id=obj.id).values('image_id', 
                     'url', 'title')
-        return list(query)
+        return list(query) if query else None
 
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -87,17 +87,17 @@ class EditSerializer(serializers.ModelSerializer):
     def get_skills(self, obj):
         id = self.context.get("id")
         skills = self.context.get("skills")
-        return get_list_field(id, None, "skill", skills)
+        return get_list_field(id, "skill", skills)
 
     def get_genres(self, obj):
         id = self.context.get("id")
         genres = self.context.get("genres")        
-        return get_list_field(id, None, "genre", genres)
+        return get_list_field(id, "genre", genres)
     
     def get_artists(self, obj):
         id = self.context.get("id")
         artists = self.context.get("artists")
-        return get_list_field(id, None, "artist", artists)
+        return get_list_field(id, "artist", artists)
     
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)

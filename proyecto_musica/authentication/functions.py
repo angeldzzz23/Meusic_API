@@ -9,8 +9,7 @@ class List_Fields(Enum):
     ARTISTS = 'artists'
 
 
-def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!! 
-    user_id = id if id else (User.objects.filter(email=email).values('id'))[0]['id']
+def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!! 
     field_id = f_name + "_id"
     field_name = f_name + "_name"
     field_names = []
