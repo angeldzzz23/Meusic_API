@@ -97,9 +97,6 @@ class SpotifyPlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "there is already an obj"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        datos = {'codigo':"400",'message': "El correo electronico ya existe"}
-        return JsonResponse(datos)
-
         # return error if body is too big
         serializer=SpotifySerializer(data=jd, context={"ss":"ss"})
 

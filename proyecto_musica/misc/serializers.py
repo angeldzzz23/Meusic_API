@@ -73,4 +73,4 @@ class SpotifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Spotify
-        fields = ('client_id','client_secret')
+        fields = ('spotify_id','client_id','client_secret')
