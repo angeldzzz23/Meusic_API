@@ -61,11 +61,11 @@ class AuthUserAPIView(GenericAPIView):
             # only return fields that were modified
             serialized_data = (serializer.data).copy()
             for field in serializer.data:
-                if field not in jd:
+                if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)
             
-            #if 'gender' in jd:
-            #    serialized_data.pop('gender')
+            if 'gender' in jd:
+                serialized_data.pop('gender')
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)

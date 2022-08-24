@@ -14,7 +14,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender', 
-                'gender_name', 'about_me', 'password','skills','genres','artists')
+                'gender_name', 'about_me', 'password','skills','genres',
+                'artists')
 
     def get_skills(self, obj):
         skills = self.context.get("skills")        
@@ -62,11 +63,13 @@ class EditSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     artists = serializers.SerializerMethodField()
+    gender_name = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('username','email','first_name','last_name','gender', 
-                'about_me','password','skills','genres','artists')
+        fields=('username','email','first_name','last_name','gender',
+                'gender_name','about_me','password','skills','genres',
+                'artists')
 
     def get_skills(self, obj):
         id = self.context.get("id")
@@ -82,6 +85,12 @@ class EditSerializer(serializers.ModelSerializer):
         id = self.context.get("id")
         artists = self.context.get("artists")
         return get_list_field(id, None, "artist", artists)
+    
+    def get_gender_name(self, obj):
+        gender_id = obj.gender_id
+        if gender_id:
+            res = Genders.objects.get(gender_id=gender_id)
+            return res.gender_name
     
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
