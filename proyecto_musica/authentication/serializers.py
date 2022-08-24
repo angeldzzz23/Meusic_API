@@ -68,7 +68,7 @@ class EditSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
-                'gender_name','about_me','password','skills','genres',
+                'gender_name','DOB','about_me','password','skills','genres',
                 'artists')
 
     def get_skills(self, obj):
@@ -102,6 +102,7 @@ class EditSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.gender = validated_data.get('gender', instance.gender)
+        instance.DOB = validated_data.get('DOB', instance.DOB)
         instance.about_me = validated_data.get('about_me', instance.about_me)
         if 'password' in validated_data:
             password = validated_data.pop('password')
