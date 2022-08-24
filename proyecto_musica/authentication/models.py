@@ -17,7 +17,7 @@ from django.conf import settings
 class MyUserManager(UserManager):
 
     def _create_user(self, username, email, first_name, last_name, gender,
-            about_me, password, **extra_fields):
+            DOB, about_me, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -30,7 +30,7 @@ class MyUserManager(UserManager):
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
         user = self.model(username=username, email=email, first_name=first_name,
-                last_name=last_name, gender=gender, about_me=about_me,
+                last_name=last_name, gender=gender, DOB=DOB, about_me=about_me,
                 **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -38,11 +38,11 @@ class MyUserManager(UserManager):
         return user
 
     def create_user(self, username, email, first_name=None, last_name=None, 
-            gender=None, about_me=None, password=None, **extra_fields):
+            gender=None, DOB=None, about_me=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(username, email, first_name, last_name,
-                gender, about_me, password, **extra_fields)
+                gender, DOB, about_me, password, **extra_fields)
 
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -106,8 +106,12 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         Genders,
         on_delete=models.CASCADE,
         blank=True,
-        null=True
+        null=True,
     )
+    DOB = models.DateField(
+            blank=True,
+            null=True,
+            )
     about_me = models.CharField(blank=True, null=True, max_length=250)
     is_active = models.BooleanField(
         _('active'),

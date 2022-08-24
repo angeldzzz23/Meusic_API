@@ -14,7 +14,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender', 
-                'gender_name', 'about_me', 'password','skills','genres',
+                'gender_name','DOB','about_me', 'password','skills','genres',
                 'artists')
 
     def get_skills(self, obj):
