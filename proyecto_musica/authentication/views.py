@@ -34,7 +34,6 @@ class AuthUserAPIView(GenericAPIView):
         jd = request.data
         id = request.user.id
         context = {}
-        context['id'] = id
 
         try:
             user_obj = User.objects.get(id=id)

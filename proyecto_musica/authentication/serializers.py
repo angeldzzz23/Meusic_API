@@ -85,19 +85,16 @@ class EditSerializer(serializers.ModelSerializer):
             return res.gender_name
     
     def get_skills(self, obj):
-        id = self.context.get("id")
         skills = self.context.get("skills")
-        return get_list_field(id, "skill", skills)
+        return get_list_field(obj.id, "skill", skills)
 
     def get_genres(self, obj):
-        id = self.context.get("id")
         genres = self.context.get("genres")        
-        return get_list_field(id, "genre", genres)
+        return get_list_field(obj.id, "genre", genres)
     
     def get_artists(self, obj):
-        id = self.context.get("id")
         artists = self.context.get("artists")
-        return get_list_field(id, "artist", artists)
+        return get_list_field(obj.id, "artist", artists)
     
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
@@ -118,7 +115,7 @@ class EditSerializer(serializers.ModelSerializer):
         instance.save()
         
         # update other fields in corresponding tables
-        id = self.context.get('id')
+        id = instance.id
         for field in List_Fields:
             field_name = field.value
             field_list = self.context.get(field_name)
