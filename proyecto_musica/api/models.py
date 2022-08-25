@@ -50,9 +50,6 @@ class Images(models.Model):
     title = models.CharField(max_length=50)
     image = models.ImageField(upload_to=get_uplaod_file_name)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        db_table = 'Images'
 
 
 # this contains all of the types of media that we can have
