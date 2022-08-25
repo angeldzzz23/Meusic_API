@@ -1,4 +1,4 @@
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists
 from rest_framework import response, status
 from enum import Enum
 
@@ -6,10 +6,10 @@ from enum import Enum
 class List_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
+    ARTISTS = 'artists'
 
 
-def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!! 
-    user_id = id if id else (User.objects.filter(email=email).values('id'))[0]['id']
+def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!! 
     field_id = f_name + "_id"
     field_name = f_name + "_name"
     field_names = []
@@ -30,6 +30,15 @@ def get_list_field(id, email, f_name, f_ids): # pass in singular of field_name!!
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
                 field_names.append(x[0][field_name])
             return field_names
+    elif f_name == 'artist':
+        if f_ids:
+            return f_ids
+        else:
+            field_ids = User_Artists.objects.filter(user_id=user_id).values(f_name)
+            list_field_ids = []
+            for obj in field_ids:
+                list_field_ids.append(obj[f_name])
+            return list_field_ids if list_field_ids else None
 
 
 def validate_field(field_name, field_list): 
@@ -49,11 +58,14 @@ def validate_field(field_name, field_list):
         if isinstance(obj, str) and (not obj.isnumeric()):
             return {'success' : False, 
                     'error' : "Please enter numeric " + field_name + "."}
+   
+    if field_name == "artists":
+        return None
 
     for obj in field_list:
         if field_name == "skills":
             field_from_db = Skills.objects.filter(skill_id=obj)
-        if field_name == "genres":
+        elif field_name == "genres":
             field_from_db = Genres.objects.filter(genre_id=obj)
 
         if not field_from_db:
