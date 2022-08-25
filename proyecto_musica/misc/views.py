@@ -20,6 +20,8 @@ from misc.models import Vimeo,Spotify,Youtube
 # TODO: clean up code  -  Angel
     # add helper method
 
+# TODO: add sex View (I think you barely created this rashel, so once we can add)
+
 class SkillView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -35,6 +37,10 @@ class SkillView(GenericAPIView):
         return response.Response(res)
 
     def post(self, request):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
         jd = request.data
         serializer = SkillsSerializer(data=jd)
         if serializer.is_valid():
@@ -62,6 +68,9 @@ class GenreView(GenericAPIView):
         return response.Response(res)
 
     def post(self, request):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
         jd = request.data
         serializer = GenresSerializer(data=jd)
 
@@ -77,7 +86,7 @@ class GenreView(GenericAPIView):
 
 
 class SpotifyPlatforms(GenericAPIView):
-
+    permission_classes = (permissions.IsAuthenticated,)
     # TODO: make sure that im only saving one
     def get(self, request):
         # TODO: Add super user code
@@ -97,6 +106,10 @@ class SpotifyPlatforms(GenericAPIView):
 
     # TODO: create get request to the spotify
     def post(self, request):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
         jd = request.data
         if Spotify.objects.count() != 0:
             res = {'success' : False, 'error' : "there is already an obj"}
@@ -116,6 +129,9 @@ class SpotifyPlatforms(GenericAPIView):
 
     # TODO: create patch to edit
     def patch(self, request, id):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
         # checking if the id exists
         jd = request.data
         try:
@@ -138,6 +154,9 @@ class SpotifyPlatforms(GenericAPIView):
 
 class VimeoPlatforms(GenericAPIView):
     def post(self, request):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
         jd = request.data
         if Vimeo.objects.count() != 0:
             res = {'success' : False, 'error' : "there is already an obj"}
@@ -170,6 +189,9 @@ class VimeoPlatforms(GenericAPIView):
 
     # this takes the object id
     def patch(self, request, id):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
         jd = request.data
         try:
             vim = Vimeo.objects.get(vimeo_id=id)
@@ -190,8 +212,15 @@ class VimeoPlatforms(GenericAPIView):
 
 # this
 class YoutubePlatforms(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     # takes care of the post
     def post(self, request):
+
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
         jd = request.data
         if Youtube.objects.count() != 0:
             res = {'success' : False, 'error' : "there is already an obj"}
@@ -211,6 +240,7 @@ class YoutubePlatforms(GenericAPIView):
     def get(self, request):
         # TODO: Add super user code
         # handles the case of when there are no objects
+
         try:
             youtube = Youtube.objects.all()[0]
         except:
@@ -225,14 +255,17 @@ class YoutubePlatforms(GenericAPIView):
         # this takes the object id
     def patch(self, request, id):
         jd = request.data
+
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
         try:
-            print("ss")
             you = Youtube.objects.get(youtube_id=id)
         except:
             res = {'success' : False, 'error' : "id does not exist"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-
-        print(you)
 
         serializer=YoutubeSerializer(you,data=jd,partial=True)
 
