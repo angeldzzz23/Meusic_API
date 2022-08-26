@@ -7,5 +7,5 @@ from api import views
 urlpatterns = [
     # when django matches the path, it calls hellAPIView
     path('image', views.UpdateImage.as_view(), name='image'),
-    path('image/<str:id>', views.UpdateImage.as_view(), name='image_by_id')
+    #path('image/<str:id>', views.UpdateImage.as_view(), name='image_by_id')
 ]

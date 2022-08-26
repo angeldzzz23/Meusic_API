@@ -11,6 +11,7 @@ class PicturesSerializer(serializers.ModelSerializer):
         fields = ('images',)
 
     def get_images(self, obj):
+        
         user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
         image_nums = Images.objects.filter(user_id=user_id).order_by('title').values('title','url', 'image_id', 'created_at')
         return image_nums

@@ -45,15 +45,12 @@ class UpdateImage(GenericAPIView):
     # TODO: Ignore messy code
 
     # this returns all of the imags that bellong to a user
-    
-    def get(self,request, id):
 
+    def get(self,request):
         user = request.user
         serializer = PicturesSerializer(user)
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
-
-
 
         #datos = {'codigo':"402",'message': "this is a get request..."}
 
@@ -80,7 +77,7 @@ class UpdateImage(GenericAPIView):
 
         #verifying that we have a valid user
         try:
-            user_obj = User.objects.get(id=id)
+            user_obj = request.user
         except User.DoesNotExist:
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
