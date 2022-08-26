@@ -37,7 +37,7 @@ class MyUserManager(UserManager):
 
         return user
 
-    def create_user(self, username, email, first_name=None, last_name=None, 
+    def create_user(self, username, email, first_name=None, last_name=None,
             gender=None, DOB=None, about_me=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
@@ -53,8 +53,8 @@ class MyUserManager(UserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, email, password, **extra_fields)
-
+        return self._create_user(username, email, None, None, None, None, None,
+                password, **extra_fields)
 
 class Genders(models.Model):
     gender_id = models.BigAutoField(
@@ -244,4 +244,3 @@ class User_Artists(models.Model):
 
     class Meta:
         db_table = 'User_Artists'
-
