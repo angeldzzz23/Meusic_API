@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     PermissionsMixin, UserManager, AbstractBaseUser)
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-
 from datetime import datetime, timedelta
 
 import jwt
@@ -13,12 +12,12 @@ import uuid
 
 from django.conf import settings
 
-# Create your models here.
 
-# modify me Rashel
+# Create your models here.
 class MyUserManager(UserManager):
 
-    def _create_user(self, username, email, password, **extra_fields):
+    def _create_user(self, username, email, first_name, last_name, gender,
+            DOB, about_me, password, **extra_fields):
         """
         Create and save a user with the given username, email, and password.
         """
@@ -30,16 +29,20 @@ class MyUserManager(UserManager):
 
         email = self.normalize_email(email)
         username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
+        user = self.model(username=username, email=email, first_name=first_name,
+                last_name=last_name, gender=gender, DOB=DOB, about_me=about_me,
+                **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_user(self, username, email, password=None, **extra_fields):
+    def create_user(self, username, email, first_name=None, last_name=None, 
+            gender=None, DOB=None, about_me=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, email, password, **extra_fields)
+        return self._create_user(username, email, first_name, last_name,
+                gender, DOB, about_me, password, **extra_fields)
 
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -50,28 +53,25 @@ class MyUserManager(UserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, email, None, None, None, None, None,
-                password, **extra_fields)
-
-    '''def update_user(self, username=None, email=None, password=None, **extra_fields):
-        
-        user = User.objects.get(email=email)
-        n_username = self.model.normalize_username(username)
-        user.username = n_username
-        user.save(using=self._db)
-        return user
-        n_email = self.normalize_email(email)
-        n_username = self.model.normalize_username(username)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-
-        # todo: update other fields in db?
-
-        return user'''
+        return self._create_user(username, email, password, **extra_fields)
 
 
-# modify me Rashel
+class Genders(models.Model):
+    gender_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='gender_id',
+    )
+    gender_name = models.CharField(unique=True, max_length=200)
+
+    def __str__(self):
+        return self.gender_id
+    class Meta:
+        db_table = 'Genders'
+
+
 class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     """
     An abstract base class implementing a fully featured User model with
@@ -100,6 +100,19 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
+    first_name = models.CharField(blank=True, null=True, max_length=100)
+    last_name = models.CharField(blank=True, null=True, max_length=100)
+    gender = models.ForeignKey(
+        Genders,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+    DOB = models.DateField(
+            blank=True,
+            null=True,
+            )
+    about_me = models.CharField(blank=True, null=True, max_length=250)
     is_active = models.BooleanField(
         _('active'),
         default=True,
@@ -210,4 +223,25 @@ class User_Genres(models.Model):
 
     class Meta:
         db_table = 'User_Genres'
+
+
+class User_Artists(models.Model):
+    user_artist_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_artist_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    artist = models.IntegerField(
+        verbose_name='artist_id'
+    )
+
+    class Meta:
+        db_table = 'User_Artists'
 
