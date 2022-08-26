@@ -5,7 +5,7 @@ from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
-from authentication.models import User, User_Skills, Skills, Genres, User_Genres
+from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders
 from authentication.functions import validate_field, List_Fields
 
 import json
@@ -23,13 +23,17 @@ class AuthUserAPIView(GenericAPIView):
     def get(self, request):
         user = request.user
         serializer = RegisterSerializer(user)
-        res = {'success' : True, 'user': serializer.data}
+        serialized_data = (serializer.data).copy()
+        if 'gender' in serializer.data:
+            serialized_data.pop('gender')
+
+        res = {'success' : True, 'user': serialized_data}
         return response.Response(res)
 
-    def patch(self, request, id=None):
+    def patch(self, request):
         jd = request.data
+        id = request.user.id
         context = {}
-        context['id'] = id
 
         try:
             user_obj = User.objects.get(id=id)
@@ -46,19 +50,24 @@ class AuthUserAPIView(GenericAPIView):
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
-
+        
         serializer = EditSerializer(user_obj, data=jd, 
                                            context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
 
-            # only return list fields that were modified
-            serialized_data = serializer.data
-            for field in List_Fields:
-                field_name = field.value
-                if field_name not in jd:
-                    serialized_data.pop(field_name)
+            # only return fields that were modified
+            serialized_data = (serializer.data).copy()
+            for field in serializer.data:
+                if field not in jd and field != 'gender_name':
+                    serialized_data.pop(field)
+            
+            if 'gender' in jd:
+                serialized_data.pop('gender')
+
+            if 'gender' not in jd:
+                serialized_data.pop('gender_name')
            
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
@@ -71,7 +80,7 @@ class RegisterAPIView(GenericAPIView):
 
     serializer_class= RegisterSerializer
 
-    def post(self,request):
+    def post(self, request):
         jd = request.data
         context = {}
 
@@ -90,9 +99,15 @@ class RegisterAPIView(GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
-            return response.Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            serialized_data = (serializer.data).copy()
+            serialized_data.pop('gender')
 
-        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            res = {'success' : True, 'user': serialized_data}
+            return response.Response(res, status=status.HTTP_201_CREATED)
+
+        res = {'success' : False, 'user': serializer.errors}
+        return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
 
 # this used to log in the user
