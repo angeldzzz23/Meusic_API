@@ -38,7 +38,7 @@ class GenderView(GenericAPIView):
         return response.Response(res)
 
     def post(self, request):
-        
+
         if request.user.is_superuser != True:
             res = {'success' : False, 'error' : "You do not have access to create objs"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
@@ -48,11 +48,12 @@ class GenderView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            res = {'success' : False, 'error' : "something wrong with serializer"}
+            res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
+
 
 
 class SkillView(GenericAPIView):
