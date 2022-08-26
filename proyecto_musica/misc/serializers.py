@@ -1,7 +1,43 @@
 from authentication.models import Skills
 from authentication.models import Genres
+from authentication.models import Genders
+
 from rest_framework import serializers
 from misc.models import Vimeo,Spotify,Youtube
+
+
+# adding the gender
+#gender_id
+#gender_name
+class GendersSerializer(serializers.ModelSerializer):
+    # skills = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Genders
+        fields = ('gender_id','gender_name',)
+
+    def get_genders(self, obj):
+        return Genders.objects.all().order_by('gender_name').values('gender_id','gender_name')
+
+    def create(self, validated_data):
+        gender =  Genders.objects.create(**validated_data)
+
+        return gender
+
+
+class AllGendersSerializer(serializers.ModelSerializer):
+    genders = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Genders
+        fields = ('genders',)
+
+    def get_genders(self, obj):
+
+        nums = Genders.objects.all().order_by('gender_name').values('gender_id','gender_name')
+
+        return  nums
+
 
 
 

@@ -9,6 +9,9 @@ from misc.serializers import AllGenresSerializer
 from misc.serializers import GenresSerializer
 from misc.serializers import SkillsSerializer
 from misc.serializers import AllSkillsSerializer
+from misc.serializers import AllGendersSerializer
+from misc.serializers import GendersSerializer
+
 from misc.serializers import  SpotifySerializer, VimeoSerializer, YoutubeSerializer
 
 from misc.models import Vimeo,Spotify,Youtube
@@ -21,6 +24,36 @@ from misc.models import Vimeo,Spotify,Youtube
     # add helper method
 
 # TODO: add sex View (I think you barely created this rashel, so once we can add)
+class GenderView(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        # TODO: Add super user code
+
+        # for testing pusposes I have it distabled
+        user = request.user
+        serializer = AllGendersSerializer(user)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res)
+
+    def post(self, request):
+        
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        jd = request.data
+        serializer = GendersSerializer(data=jd)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : "something wrong with serializer"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
 
 class SkillView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
