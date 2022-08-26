@@ -50,8 +50,7 @@ class MyUserManager(UserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self._create_user(username, email, None, None, None, None, None,
-                password, **extra_fields)
+        return self._create_user(username, email, password, **extra_fields)
 
     '''def update_user(self, username=None, email=None, password=None, **extra_fields):
         
