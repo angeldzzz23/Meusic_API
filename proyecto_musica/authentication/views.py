@@ -6,7 +6,7 @@ from authentication.serializers import LoginSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders
-from authentication.functions import validate_field, List_Fields
+from authentication.functions import validate_field, List_Fields, User_Fields
 
 import json
 
@@ -83,6 +83,15 @@ class RegisterAPIView(GenericAPIView):
     def post(self, request):
         jd = request.data
         context = {}
+        
+        # check body fields
+        request_keys = list(jd.keys())
+        allowed_keys = [e.value for e in User_Fields]
+        for key in request_keys:
+            if key not in allowed_keys:
+                res = {'success' : False, 
+                        'error' : "Wrong parameter(s) passed in request."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
         for field in List_Fields:
             field_name = field.value

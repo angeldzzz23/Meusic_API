@@ -9,6 +9,20 @@ class List_Fields(Enum):
     ARTISTS = 'artists'
 
 
+class User_Fields(Enum):
+    USERNAME = 'username'
+    EMAIL = 'email'
+    FIRSTNAME = 'first_name'
+    LASTNAME = 'last_name'
+    GENDER = 'gender'
+    DOB = 'DOB'
+    ABOUTME = 'about_me'
+    PASSWORD = 'password'
+    SKILLS = 'skills'
+    GENRES = 'genres'
+    ARTISTS = 'artists'
+
+
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!! 
     field_id = f_name + "_id"
     field_name = f_name + "_name"
