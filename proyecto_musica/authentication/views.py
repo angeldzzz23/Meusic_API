@@ -41,6 +41,15 @@ class AuthUserAPIView(GenericAPIView):
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
         
+        # check body fields
+        request_keys = list(jd.keys())
+        allowed_keys = [e.value for e in User_Fields]
+        for key in request_keys:
+            if key not in allowed_keys:
+                res = {'success' : False, 
+                        'error' : "Wrong parameter(s) passed in request."}
+                return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+        
         for field in List_Fields:
             field_name = field.value
             
