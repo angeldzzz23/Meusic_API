@@ -80,6 +80,29 @@ class GenderView(GenericAPIView):
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Genders.objects.get(gender_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=GendersSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : "invalid body requirements"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 class SkillView(GenericAPIView):
