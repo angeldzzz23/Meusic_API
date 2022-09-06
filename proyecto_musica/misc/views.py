@@ -16,6 +16,10 @@ from misc.serializers import  SpotifySerializer, VimeoSerializer, YoutubeSeriali
 
 from misc.models import Vimeo,Spotify,Youtube
 
+from authentication.models import Skills
+from authentication.models import Genres
+from authentication.models import Genders
+
 # from misc.serializers import AllGenresSerializer
 
 # Create your views here.
@@ -24,6 +28,10 @@ from misc.models import Vimeo,Spotify,Youtube
     # add helper method
 
 # TODO: add sex View (I think you barely created this rashel, so once we can add)
+
+
+
+
 class GenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -69,6 +77,27 @@ class SkillView(GenericAPIView):
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
+
+
+    def delete(self, request, id):
+        user = request.user
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        item = Skills.objects.filter(skill_id=id)
+
+        if len(item) is 0:
+            res = {'success' : False, 'error': "there is no object with that id"}
+            return response.Response(res)
+
+        item.delete()
+        res = {'success' : True, 'data': {}}
+
+        return response.Response(res)
+
+
+
 
     def post(self, request):
         if request.user.is_superuser != True:
