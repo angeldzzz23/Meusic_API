@@ -156,6 +156,29 @@ class SkillView(GenericAPIView):
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Skills.objects.get(skill_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=SkillsSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : serializer.errors}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 class GenreView(GenericAPIView):
