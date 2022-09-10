@@ -7,12 +7,19 @@ from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders
 from authentication.functions import validate_field, List_Fields, User_Fields
+from rest_framework_simplejwt.tokens import RefreshToken
+from authentication.Util import Util
+from django.contrib.sites.shortcuts import get_current_site
+import jwt
+from django.urls import reverse
 
+from django.conf import settings
 import json
 
 
 # TODO: implement delete user functionality
 # Create your views here.
+
 
 
 class AuthUserAPIView(GenericAPIView):
@@ -40,27 +47,27 @@ class AuthUserAPIView(GenericAPIView):
         except User.DoesNotExist:
             res = {'success' : False, 'error' : "User id does not exist."}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # check body fields
         request_keys = list(jd.keys())
         allowed_keys = [e.value for e in User_Fields]
         for key in request_keys:
             if key not in allowed_keys:
-                res = {'success' : False, 
+                res = {'success' : False,
                         'error' : "Wrong parameter(s) passed in request."}
                 return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
-        
+
         for field in List_Fields:
             field_name = field.value
-            
+
             if field_name in jd:
                 field_list = jd[field_name]
                 res = validate_field(field_name, field_list)
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
-        
-        serializer = EditSerializer(user_obj, data=jd, 
+
+        serializer = EditSerializer(user_obj, data=jd,
                                            context=context, partial=True)
 
         if serializer.is_valid():
@@ -71,13 +78,13 @@ class AuthUserAPIView(GenericAPIView):
             for field in serializer.data:
                 if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)
-            
+
             if 'gender' in jd:
                 serialized_data.pop('gender')
 
             if 'gender' not in jd:
                 serialized_data.pop('gender_name')
-           
+
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
@@ -92,19 +99,19 @@ class RegisterAPIView(GenericAPIView):
     def post(self, request):
         jd = request.data
         context = {}
-        
+
         # check body fields
         request_keys = list(jd.keys())
         allowed_keys = [e.value for e in User_Fields]
         for key in request_keys:
             if key not in allowed_keys:
-                res = {'success' : False, 
+                res = {'success' : False,
                         'error' : "Wrong parameter(s) passed in request."}
                 return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
         for field in List_Fields:
             field_name = field.value
-            
+
             if field_name in jd:
                 field_list = jd[field_name]
                 res = validate_field(field_name, field_list)
@@ -112,12 +119,30 @@ class RegisterAPIView(GenericAPIView):
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
 
-        serializer = self.serializer_class(data=jd, 
+        serializer = self.serializer_class(data=jd,
                                            context=context)
 
         if serializer.is_valid():
             serializer.save()
-            
+
+            #
+            user = User.objects.get(email=jd['email'])
+            token=RefreshToken.for_user(user).access_token
+
+            current_site=get_current_site(request).domain
+            relativeLink=reverse('email-verify')
+
+            absurl= 'http://' + current_site + relativeLink + "?token=" + str(token)
+            email_body = 'Hi ' + 'Use link below to verfy your email \n' + absurl
+            dat = {'email_body':email_body, 'to_email':user.email, 'email_subject':'Verify your email'}
+
+            print("ss")
+            Util.send_email(dat)
+            print("user", user)
+            print("token", token)
+
+
+
             serialized_data = (serializer.data).copy()
             serialized_data.pop('gender')
 
@@ -126,6 +151,35 @@ class RegisterAPIView(GenericAPIView):
 
         res = {'success' : False, 'user': serializer.errors}
         return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+class VerifyEmail(GenericAPIView):
+    def get(self, request):
+        # gives us the token
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY,algorithms='HS256')
+            print("xcdkwmdklqwmdklqwmdlkqwmdlkwmdlkmdlkqwm")
+            print("payload", payload)
+            print("xcdkwmdklqwmdklqwmdlkqwmdlkwmdlkmdlkqwm")
+
+            user = User.objects.get(id=payload['user_id'])
+            if not user.email_verified:
+                user.email_verified = True
+                user.save()
+
+            res = {'success' : True, "email": "successfully activated"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        except jwt.ExpiredSignatureError as identifier:
+            res = {'error' : 'activation expired'}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        except jwt.exceptions.DecodeError as identifier:
+            res = {'error' : 'Invalid token'}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 # this used to log in the user
