@@ -16,6 +16,10 @@ from misc.serializers import  SpotifySerializer, VimeoSerializer, YoutubeSeriali
 
 from misc.models import Vimeo,Spotify,Youtube
 
+from authentication.models import Skills
+from authentication.models import Genres
+from authentication.models import Genders
+
 # from misc.serializers import AllGenresSerializer
 
 # Create your views here.
@@ -24,6 +28,10 @@ from misc.models import Vimeo,Spotify,Youtube
     # add helper method
 
 # TODO: add sex View (I think you barely created this rashel, so once we can add)
+
+
+
+
 class GenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -36,6 +44,24 @@ class GenderView(GenericAPIView):
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
+
+    def delete(self, request, id):
+        user = request.user
+
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        item = Genders.objects.filter(gender_id=id)
+        if len(item) == 0:
+            res = {'success' : False, 'error': "there is no object with that id"}
+            return response.Response(res)
+
+        item.delete()
+        res = {'success' : True, 'data': {}}
+
+        return response.Response(res)
+
 
     def post(self, request):
 
@@ -54,6 +80,29 @@ class GenderView(GenericAPIView):
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Genders.objects.get(gender_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=GendersSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : "invalid body requirements"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 class SkillView(GenericAPIView):
@@ -69,6 +118,27 @@ class SkillView(GenericAPIView):
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
+
+
+    def delete(self, request, id):
+        user = request.user
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        item = Skills.objects.filter(skill_id=id)
+
+        if len(item) is 0:
+            res = {'success' : False, 'error': "there is no object with that id"}
+            return response.Response(res)
+
+        item.delete()
+        res = {'success' : True, 'data': {}}
+
+        return response.Response(res)
+
+
+
 
     def post(self, request):
         if request.user.is_superuser != True:
@@ -86,6 +156,29 @@ class SkillView(GenericAPIView):
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Skills.objects.get(skill_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=SkillsSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : serializer.errors}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 class GenreView(GenericAPIView):
@@ -117,6 +210,48 @@ class GenreView(GenericAPIView):
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, id):
+        user = request.user
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        item = Genres.objects.filter(genre_id=id)
+
+        if len(item) == 0:
+            res = {'success' : False, 'error': "there is no object with that id"}
+            return response.Response(res)
+
+        item.delete()
+        res = {'success' : True, 'data': {}}
+
+        return response.Response(res)
+
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Genres.objects.get(genre_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=GenresSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : serializer.errors}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
 
 
 class SpotifyPlatforms(GenericAPIView):

@@ -58,6 +58,11 @@ class SkillsSerializer(serializers.ModelSerializer):
 
         return skill
 
+    def destroy(self,request):
+        print("here")
+        return {}
+
+
 class AllSkillsSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
 
