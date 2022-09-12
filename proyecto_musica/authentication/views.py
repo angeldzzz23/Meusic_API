@@ -157,10 +157,16 @@ class VerifyEmail(GenericAPIView):
         datos = {'codigo':"400",'message': "a message"}
         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
+    # this post is in charge of sending an email
     def post(self, request):
         jd = request.data
         if 'email' in jd and 'code' not in jd:
             email = jd['email']
+            # check if email exists in database
+            verCodeObj = Verification.objects.filter(email=email)
+            if verCodeObj.count() > 0:
+                Verification.objects.filter(email=email).delete()
+            
             code = Util.random_with_N_digits(6) # generate code
             email_body = 'Hi, this is your confirmation code. It expires in 5 minutes.\n' + str(code)
             dat = {'email_body':email_body, 'to_email':email, 'email_subject':'Verify your email'}
@@ -177,9 +183,8 @@ class VerifyEmail(GenericAPIView):
             timediff = (now - verificationObj.created_at) # converted to
             if timediff <= datetime.timedelta(minutes=5):
                 if verificationObj.code == int(code):
-                    datos = {'success':True,'message': "account was confirmed"}
+                    datos = {'success':True,'message': "email was confirmed"}
                     return response.Response(datos, status=status.HTTP_201_CREATED)
-
                 else:
                     datos = {'success':False,'message': "invalid code"}
                     return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
