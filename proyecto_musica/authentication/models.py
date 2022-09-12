@@ -244,3 +244,16 @@ class User_Artists(models.Model):
 
     class Meta:
         db_table = 'User_Artists'
+
+
+class Verification(models.Model):
+  verification_id = models.BigAutoField(
+      auto_created=True,
+      primary_key=True,
+      unique=True,
+      null=False,
+      verbose_name='user_artist_id'
+  )
+  code = models.IntegerField(null=True)
+  email = models.EmailField(max_length = 254,blank=False, unique=True, default='SOME STRING')
+  created_at = models.DateTimeField(auto_now_add=True)
