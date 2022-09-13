@@ -8,7 +8,7 @@ import jwt
 from django.conf import settings
 
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
-# 
+#
 
 
 class JWTAuthentication(BaseAuthentication):
@@ -32,8 +32,18 @@ class JWTAuthentication(BaseAuthentication):
         try:
             payload = jwt.decode(
                 token, settings.SECRET_KEY, algorithms="HS256")
+            print("payloaddddd")
+            print(payload)
 
-            id_user = payload['id']
+            id_user = ""
+
+            if "id" not in payload:
+                print("hehe")
+                id_user = payload['user_id']
+            else:
+                print("hahah")
+                id_user = payload['id']
+
 
             user = User.objects.get(id=id_user
                                     )

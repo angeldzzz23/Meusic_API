@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders, Verification
 from authentication.functions import validate_field, List_Fields, User_Fields
 from authentication.Util import Util
+from rest_framework_simplejwt.tokens import RefreshToken
 import json
 
 from django.utils.timezone import utc
@@ -151,7 +152,7 @@ class LoginAPIView(GenericAPIView):
         return response.Response({'message': "invalid credentials, try again"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-
+# verifying email when creating an account
 class VerifyEmail(GenericAPIView):
     def get(self, request):
         datos = {'codigo':"400",'message': "a message"}
@@ -166,7 +167,7 @@ class VerifyEmail(GenericAPIView):
             verCodeObj = Verification.objects.filter(email=email)
             if verCodeObj.count() > 0:
                 Verification.objects.filter(email=email).delete()
-            
+
             code = Util.random_with_N_digits(6) # generate code
             email_body = 'Hi, this is your confirmation code. It expires in 5 minutes.\n' + str(code)
             dat = {'email_body':email_body, 'to_email':email, 'email_subject':'Verify your email'}
@@ -178,7 +179,10 @@ class VerifyEmail(GenericAPIView):
         elif 'code' in jd and 'email' in jd:
             email = jd['email']
             code = jd['code']
+
             verificationObj = Verification.objects.get(email=email)
+
+
             now = datetime.datetime.utcnow().replace(tzinfo=utc)
             timediff = (now - verificationObj.created_at) # converted to
             if timediff <= datetime.timedelta(minutes=5):
@@ -190,6 +194,102 @@ class VerifyEmail(GenericAPIView):
                     return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
             else:
                 # this meaans time has expired
-                SomeModel.objects.filter(email=email).delete()
+                Verification.objects.filter(email=email).delete()
                 datos = {'success':False,'message': "Time has expired. Please get a new token"}
                 return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        # send code to email
+
+# this view is used to reset the password of the user
+class ForgotPassword(GenericAPIView):
+    def post(self, request):
+        # if code equals to code that we have saved
+        # check if there is an email
+        jd = request.data
+
+        # verify that that we have enail
+        if 'email' not in jd:
+            # TODO add serializer
+            datos = {'success':False,'error': "no email"}
+            return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        # check if the email exists in out database
+        tot_users = User.objects.filter(email=jd['email']).count()
+
+        if tot_users != 1:
+            datos = {'success':False,'error': "not a valid user"}
+            return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        email = jd['email']
+
+        verCodeObj = Verification.objects.filter(email=email)
+        if verCodeObj.count() > 0:
+            Verification.objects.filter(email=email).delete()
+
+
+        code = Util.random_with_N_digits(6) # generate code
+        email_body = 'Hi, this is your confirmation code. It expires in 5 minutes.\n' + str(code)
+        dat = {'email_body':email_body, 'to_email':email, 'email_subject':'Verify your email'}
+        Verification.objects.create(code=code, email=email)
+        Util.send_email(dat)
+        # now here we send the code to their email
+
+        '''
+        user = User.objects.get(email=jd['email'])
+
+        # this code right here to reset the password
+        token=RefreshToken.for_user(user).access_token
+        '''
+
+        datos = {'success':True,'message': 'code has been sent'}
+        return response.Response(datos, status=status.HTTP_201_CREATED)
+
+class VerifyForgotPassword(GenericAPIView):
+    # this will return code that can be used to edit the password
+    def get(self, request):
+        datos = {'success':True,'message': "wowowowowowoowowowowow"}
+        return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self,request):
+        jd = request.data
+
+        if 'code' in jd and 'email' in jd:
+            email = jd['email']
+            code = jd['code']
+            # check if a verification code has been sent
+            if Verification.objects.filter(email=email).count() == 0:
+                datos = {'success':False,'message': "no code has been sent"}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+            verificationObj = Verification.objects.get(email=email)
+
+            if verificationObj.code != int(code):
+                datos = {'success':False,'message': "invalid token"}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+            now = datetime.datetime.utcnow().replace(tzinfo=utc)
+            timediff = (now - verificationObj.created_at) # converted to
+            if timediff <= datetime.timedelta(minutes=5):
+                if verificationObj.code == int(code):
+                    user = User.objects.get(email=jd['email'])
+                    # this code right here to reset the password
+                    token=RefreshToken.for_user(user).access_token
+
+                    datos = {'success':True,'message': str(token)}
+                    return response.Response(datos, status=status.HTTP_201_CREATED)
+                else:
+                    datos = {'success':False,'message': "invalid code"}
+                    return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                # this meaans time has expired
+                Verification.objects.filter(email=email).delete()
+                datos = {'success':False,'message': "Time has expired. Please get a new token"}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(email=jd['email'])
+
+        # this code right here to reset the password
+        token=RefreshToken.for_user(user).access_token
+
+        datos = {'success':False,'token': str(token)}
+        return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
