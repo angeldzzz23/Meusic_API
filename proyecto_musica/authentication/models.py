@@ -21,9 +21,6 @@ class MyUserManager(UserManager):
         """
         Create and save a user with the given username, email, and password.
         """
-        if not username:
-            raise ValueError('The given username must be set')
-
         if not email:
             raise ValueError('The given email must be set')
 
@@ -37,7 +34,7 @@ class MyUserManager(UserManager):
 
         return user
 
-    def create_user(self, username, email, first_name=None, last_name=None,
+    def create_user(self, email,username=None, first_name=None, last_name=None,
             gender=None, DOB=None, about_me=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
@@ -86,6 +83,8 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         _('username'),
         max_length=150,
         unique=True,
+        blank=True,
+        null=True,
         help_text=_(
             'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
         validators=[username_validator],
