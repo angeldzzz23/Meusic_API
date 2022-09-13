@@ -32,16 +32,12 @@ class JWTAuthentication(BaseAuthentication):
         try:
             payload = jwt.decode(
                 token, settings.SECRET_KEY, algorithms="HS256")
-            print("payloaddddd")
-            print(payload)
 
             id_user = ""
 
             if "id" not in payload:
-                print("hehe")
                 id_user = payload['user_id']
             else:
-                print("hahah")
                 id_user = payload['id']
 
 
