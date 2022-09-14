@@ -16,6 +16,13 @@ def get_uplaod_file_name(userpic, filename):
         return u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName)
     return u'photos/%s/%s' % (str(userpic.user.id),newName)
 
+def get_uplaod_video_name(userpic, filename):
+    ext = filename.split('.')[-1]
+    newName = userpic.title + '.' + ext
+    if userpic.title == "profile_image":
+        return u'photos/%s/videos//%s' % (str(userpic.user.id),newName)
+    return u'photos/%s/%s' % (str(userpic.user.id),newName)
+
 # these are the images for the profile page
     # image_1
     # image_2
@@ -44,15 +51,35 @@ class Images(models.Model):
         verbose_name='user_id'
    )
 
-
-
     url = models.URLField(max_length = 200, null=True)
     title = models.CharField(max_length=50)
     image = models.ImageField(upload_to=get_uplaod_file_name)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     class Meta:
         db_table = 'Images'
+
+class Video(models.Model):
+    video_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='image_id'
+  )
+  
+    user = models.ForeignKey(
+          User,
+          on_delete=models.CASCADE,
+          verbose_name='user_id'
+     )
+    url = models.URLField(max_length = 200, null=True)
+    title = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+    video = models.FileField(upload_to=get_uplaod_video_name)
+
+
+
 
 
 # this contains all of the types of media that we can have
