@@ -59,20 +59,21 @@ class Images(models.Model):
     class Meta:
         db_table = 'Images'
 
-class Video(models.Model):
+class Videos(models.Model):
     video_id = models.BigAutoField(
         auto_created=True,
         primary_key=True,
         unique=True,
         null=False,
-        verbose_name='image_id'
+        verbose_name='video_id'
   )
-  
+
     user = models.ForeignKey(
           User,
           on_delete=models.CASCADE,
           verbose_name='user_id'
      )
+
     url = models.URLField(max_length = 200, null=True)
     title = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -115,3 +115,11 @@ class UpdateImage(GenericAPIView):
         else:
                 datos = {'codigo':"200",'message': "success", "url": newpic.url}
                 return JsonResponse(datos)
+
+class UpdateVideo(GenericAPIView):
+
+        def get(self,request):
+            res = {'success' : True, 'data': "serializer.data"}
+            return response.Response(res)
+
+        
