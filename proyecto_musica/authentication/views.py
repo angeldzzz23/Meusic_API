@@ -163,6 +163,11 @@ class VerifyEmail(GenericAPIView):
         jd = request.data
         if 'email' in jd and 'code' not in jd:
             email = jd['email']
+
+            if User.objects.filter(email=email).count() > 0:
+                datos = {'success':False,'message': "an account with that email already exists"}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
             # check if email exists in database
             verCodeObj = Verification.objects.filter(email=email)
             if verCodeObj.count() > 0:
@@ -179,6 +184,11 @@ class VerifyEmail(GenericAPIView):
         elif 'code' in jd and 'email' in jd:
             email = jd['email']
             code = jd['code']
+
+            # just in case that email is already verified
+            if User.objects.filter(email=email).count() > 0:
+                datos = {'success':False,'message': "an account with that email is already verified"}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
             verificationObj = Verification.objects.get(email=email)
 
@@ -287,9 +297,9 @@ class VerifyForgotPassword(GenericAPIView):
                 return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.get(email=jd['email'])
-
         # this code right here to reset the password
         token=RefreshToken.for_user(user).access_token
 
         datos = {'success':False,'token': str(token)}
+
         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
