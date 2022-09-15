@@ -90,24 +90,25 @@ class Videoerialiser(serializers.ModelSerializer):
         # check if the user has other images
         # maybe there is a more pythonic way of doing this
         # https://stackoverflow.com/questions/34371959/django-property-update-a-model-instance
-        CurrentUsrimages = Videos.objects.filter(user=user_obj, title=title2)
-        if len(CurrentUsrimages) == 1:
-            editedimage = Videos.objects.get(user=user_obj, title=title2)
-            editedimage.video.delete(save=True)
-            editedimage.video = videooo
-            editedimage.save()
+        currentUsrVideo = Videos.objects.filter(user=user_obj, title=title2)
+        if len(currentUsrVideo) == 1:
+            editedVideo = Videos.objects.get(user=user_obj, title=title2)
+            editedVideo.video.delete(save=True)
+            editedVideo.video = videooo
+            editedVideo.save()
 
-            url = request.build_absolute_uri(editedimage.video.url)
+            url = request.build_absolute_uri(editedVideo.video.url)
             newurl = str(url)
-            editedimage.url = newurl
-            editedimage.save()
-            return editedimage
-        pic = Videos(user=user_obj, title=title2, video = videooo)
-        pic.save()
+            editedVideo.url = newurl
+            editedVideo.save()
+            return editedVideo
 
-        url = request.build_absolute_uri(pic.video.url)
+        newVid = Videos(user=user_obj, title=title2, video = videooo)
+        newVid.save()
+
+        url = request.build_absolute_uri(newVid.video.url)
         newurl = str(url)
-        pic.url = newurl
-        pic.save()
+        newVid.url = newurl
+        newVid.save()
 
-        return pic
+        return newVid
