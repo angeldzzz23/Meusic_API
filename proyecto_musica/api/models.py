@@ -20,8 +20,8 @@ def get_uplaod_video_name(userpic, filename):
     ext = filename.split('.')[-1]
     newName = userpic.title + '.' + ext
     if userpic.title == "profile_image":
-        return u'photos/%s/videos//%s' % (str(userpic.user.id),newName)
-    return u'photos/%s/%s' % (str(userpic.user.id),newName)
+        return u'videos/%s/vids//%s' % (str(userpic.user.id),newName)
+    return u'videos/%s/%s' % (str(userpic.user.id),newName)
 
 # these are the images for the profile page
     # image_1
