@@ -129,6 +129,31 @@ class UpdateVideo(GenericAPIView):
             res = {'success' : True, 'data': serializer.data}
             return response.Response(res)
 
+
+        # adding the delete methodb
+        def delete(self, request, id=None):
+
+            vid = Videos.objects.filter(video_id=id, user=request.user)
+            if len(vid) == 0:
+                res = {'success' : False, 'error': 'video with that id does not exist'}
+                return response.Response(res)
+
+
+
+
+            #n = Videos.objects.filter(video_id=id)[0]
+
+
+
+            #n.video.delete()
+            #n.delete()
+
+
+            res = {'success' : True, 'videos': []}
+
+            return response.Response(res)
+
+
         def post(self,request,id=None):
             jd = request.data
             try:
@@ -147,13 +172,6 @@ class UpdateVideo(GenericAPIView):
                     datos = {'success':False,'data':"file is not of type .mp4"}
                     return response.Response(datos, status=status.HTTP_201_CREATED)
 
-
-
-
-
-
-
-
             video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request})
 
             if video_serializer.is_valid():
@@ -162,9 +180,6 @@ class UpdateVideo(GenericAPIView):
                 return response.Response(datos, status=status.HTTP_201_CREATED)
             else:
                 return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
             res = {'success' : True, 'data': "serializer.data"}
             return response.Response(res)
