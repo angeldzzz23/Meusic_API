@@ -15,7 +15,7 @@ from django.core import serializers
 
 
 
-from api.models import Images
+from api.models import Images, Videos
 #pathlib.Path('save_path').mkdir(parents=True, exist_ok=True)
 from proyecto_musica.settings import MEDIA_URL
 
@@ -23,6 +23,8 @@ from proyecto_musica.settings import MEDIA_URL
 
 from api.serializers import PictureSerialiser
 from api.serializers import PicturesSerializer
+from api.serializers import Videoerialiser
+from api.serializers import VideosSerializer
 
 from rest_framework import response, status, permissions
 
@@ -115,3 +117,67 @@ class UpdateImage(GenericAPIView):
         else:
                 datos = {'codigo':"200",'message': "success", "url": newpic.url}
                 return JsonResponse(datos)
+
+class UpdateVideo(GenericAPIView):
+        serializer_class= PictureSerialiser
+        permission_classes = (permissions.IsAuthenticated,)
+
+
+        def get(self,request):
+            user = request.user
+            serializer = VideosSerializer(user)
+            res = {'success' : True, 'data': serializer.data}
+            return response.Response(res)
+
+
+        # adding the delete methodb
+
+        def delete(self, request, id=None):
+
+
+            vid = Videos.objects.filter(video_id=id, user=request.user.id)
+            print(Videos.objects.filter(video_id=id,user=request.user))
+
+            if len(vid) == 0:
+                res = {'success' : False, 'error': 'video with that id does not exist'}
+                return response.Response(res)
+
+            videoObj = vid[0]
+            videoObj.video.delete()
+            videoObj.delete()
+
+            res = {'success' : True, 'videos': []}
+
+            return response.Response(res)
+
+        # im only going to allow intro Videos
+        def post(self,request,id=None):
+            jd = request.data
+
+            try:
+                user_obj = request.user
+            except User.DoesNotExist:
+                res = {'success' : False, 'error' : "User id does not exist."}
+                return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+            video = request.FILES["video"]
+
+            # here we should check if the image is a video
+            if video:
+                filename = video.name
+
+                if  (filename.endswith('.MP4') or filename.endswith('.mp4')) == False :
+                    datos = {'success':False,'data':"file is not of type .mp4"}
+                    return response.Response(datos, status=status.HTTP_201_CREATED)
+
+            video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request})
+
+            if video_serializer.is_valid():
+                video_serializer.save()
+                datos = {'success':True,'data':video_serializer.data}
+                return response.Response(datos, status=status.HTTP_201_CREATED)
+            else:
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+            res = {'success' : True, 'data': "serializer.data"}
+            return response.Response(res)
