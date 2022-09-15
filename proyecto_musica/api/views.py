@@ -131,31 +131,29 @@ class UpdateVideo(GenericAPIView):
 
 
         # adding the delete methodb
+
         def delete(self, request, id=None):
 
-            vid = Videos.objects.filter(video_id=id, user=request.user)
+
+            vid = Videos.objects.filter(video_id=id, user=request.user.id)
+            print(Videos.objects.filter(video_id=id,user=request.user))
+
             if len(vid) == 0:
                 res = {'success' : False, 'error': 'video with that id does not exist'}
                 return response.Response(res)
 
-
-
-
-            #n = Videos.objects.filter(video_id=id)[0]
-
-
-
-            #n.video.delete()
-            #n.delete()
-
+            videoObj = vid[0]
+            videoObj.video.delete()
+            videoObj.delete()
 
             res = {'success' : True, 'videos': []}
 
             return response.Response(res)
 
-
+        # im only going to allow intro Videos
         def post(self,request,id=None):
             jd = request.data
+
             try:
                 user_obj = request.user
             except User.DoesNotExist:
@@ -163,10 +161,10 @@ class UpdateVideo(GenericAPIView):
                 return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
             video = request.FILES["video"]
+
             # here we should check if the image is a video
             if video:
                 filename = video.name
-                print(filename)
 
                 if  (filename.endswith('.MP4') or filename.endswith('.mp4')) == False :
                     datos = {'success':False,'data':"file is not of type .mp4"}
