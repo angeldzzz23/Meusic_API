@@ -24,6 +24,7 @@ from proyecto_musica.settings import MEDIA_URL
 from api.serializers import PictureSerialiser
 from api.serializers import PicturesSerializer
 from api.serializers import Videoerialiser
+from api.serializers import VideosSerializer
 
 from rest_framework import response, status, permissions
 
@@ -121,8 +122,11 @@ class UpdateVideo(GenericAPIView):
         serializer_class= PictureSerialiser
         permission_classes = (permissions.IsAuthenticated,)
 
+
         def get(self,request):
-            res = {'success' : True, 'data': "serializer.data"}
+            user = request.user
+            serializer = VideosSerializer(user)
+            res = {'success' : True, 'data': serializer.data}
             return response.Response(res)
 
         def post(self,request,id=None):

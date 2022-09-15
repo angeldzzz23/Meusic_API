@@ -65,15 +65,26 @@ class PictureSerialiser(serializers.ModelSerializer):
         return pic
 
 
+
+class VideosSerializer(serializers.ModelSerializer):
+    videos = serializers.SerializerMethodField()
+    class Meta:
+        model = Videos
+        fields = ('videos',)
+
+    def get_videos(self, obj):
+
+        user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
+        video_nums = Videos.objects.filter(user_id=user_id).order_by('title').values('title','url', 'video_id', 'created_at')
+        return video_nums
+
+
 class Videoerialiser(serializers.ModelSerializer):
     #photo_url = serializers.Serializer
     #title = serializers.SerializerMethodField()
     class Meta:
         model = Videos
         fields = ('video_id','title', 'url', 'created_at')
-
-
-        # this will return the image
 
     # question:
         # is there any way to pass all of the that information as validated data
@@ -84,8 +95,6 @@ class Videoerialiser(serializers.ModelSerializer):
         request = self.context.get("request")
 
         title2 = validated_data['title']
-
-
 
         # check if the user has other images
         # maybe there is a more pythonic way of doing this
