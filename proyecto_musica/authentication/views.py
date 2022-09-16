@@ -11,7 +11,7 @@ from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.models import Images
 from api.models import Videos
-
+import os
 import json
 
 from django.utils.timezone import utc
@@ -94,7 +94,6 @@ class AuthUserAPIView(GenericAPIView):
 
     # deleting the use
     def delete(self, request):
-
         id = request.user.id
         User_Genres.objects.filter(user_id=id).delete()
         User_Skills.objects.filter(user_id=id).delete()
@@ -102,6 +101,7 @@ class AuthUserAPIView(GenericAPIView):
 
         # deleting the pics
         pics = Images.objects.filter(user_id=id)
+
 
         for pic in pics:
             pic.image.delete()
@@ -114,14 +114,20 @@ class AuthUserAPIView(GenericAPIView):
             video.video.delete()
             video.delete()
 
-        # delete user
-        usr = User.objects.get(id = id)
-        usr.delete()
 
         # TODO: delete its folder
 
-        res = {'success' : False, 'user': 'serializer.errors'}
-        return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        #delete user
+        usr = User.objects.get(id = id)
+        usr.delete()
+
+
+
+
+
+        res = {'success' : True, 'message': 'user has been deleted'}
+        return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 
