@@ -54,15 +54,26 @@ class UpdateImage(GenericAPIView):
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res)
 
-        #datos = {'codigo':"402",'message': "this is a get request..."}
+
+    # deleting the image
+    def delete(self, request,id=None):
+        user = request.user
+        img = Images.objects.filter(image_id=id, user=request.user.id)
+
+        if len(img) == 0:
+            res = {'success' : False, 'error': 'video with that id does not exist'}
+            return response.Response(res)
+
+        imgeObj = img[0]
+        imgeObj.image.delete()
+        imgeObj.delete()
 
 
 
-        #img_objs = Image.objects.get(image_id=1)
-        # this will give me the size of the object
-        #img_objs2 = Image.objects.filter(user=user_obj, title=)
-        #url = request.build_absolute_uri(img_objs2.image_1.url)
-    #    newurl = str(url)
+        serializer = PicturesSerializer(user)
+
+        res = {'success' : True, 'data': serializer.data}
+        return response.Response(res)
 
 
     # this post method requires an id
@@ -133,10 +144,8 @@ class UpdateVideo(GenericAPIView):
         # adding the delete methodb
 
         def delete(self, request, id=None):
-
-
             vid = Videos.objects.filter(video_id=id, user=request.user.id)
-            print(Videos.objects.filter(video_id=id,user=request.user))
+
 
             if len(vid) == 0:
                 res = {'success' : False, 'error': 'video with that id does not exist'}
