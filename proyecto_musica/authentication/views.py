@@ -12,7 +12,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from api.models import Images
 from api.models import Videos
 import os
+from pathlib import Path
+
 import json
+import shutil
+import os
+from proyecto_musica.settings import BASE_DIR
 
 from django.utils.timezone import utc
 import datetime
@@ -94,6 +99,7 @@ class AuthUserAPIView(GenericAPIView):
 
     # deleting the use
     def delete(self, request):
+
         id = request.user.id
         User_Genres.objects.filter(user_id=id).delete()
         User_Skills.objects.filter(user_id=id).delete()
@@ -115,12 +121,26 @@ class AuthUserAPIView(GenericAPIView):
             video.delete()
 
 
-        # TODO: delete its folder
+        # TODO: delete its media folder
+        file_location = os.path.join(BASE_DIR, 'media/videos/' + str(id))
+        p = Path(file_location)
+        if p.is_dir():
+            shutil.rmtree(file_location, ignore_errors = False)
 
+
+
+        # deletes image folder
+        # delete its images folder
+        file_location = os.path.join(BASE_DIR, 'media/photos/' + str(id))
+        p = Path(file_location)
+
+        if p.is_dir():
+            shutil.rmtree(file_location, ignore_errors = False)
 
         #delete user
         usr = User.objects.get(id = id)
         usr.delete()
+
 
 
 
