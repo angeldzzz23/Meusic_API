@@ -9,6 +9,9 @@ from authentication.models import User, User_Skills, Skills, Genres, User_Genres
 from authentication.functions import validate_field, List_Fields, User_Fields
 from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
+from api.models import Images
+from api.models import Videos
+
 import json
 
 from django.utils.timezone import utc
@@ -87,6 +90,39 @@ class AuthUserAPIView(GenericAPIView):
 
         res = {'success' : False, 'user': serializer.errors}
         return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+    # deleting the use
+    def delete(self, request):
+
+        id = request.user.id
+        User_Genres.objects.filter(user_id=id).delete()
+        User_Skills.objects.filter(user_id=id).delete()
+        User_Artists.objects.filter(user_id=id).delete()
+
+        # deleting the pics
+        pics = Images.objects.filter(user_id=id)
+
+        for pic in pics:
+            pic.image.delete()
+            pic.delete()
+
+        # deleting the videos
+        vids = Videos.objects.filter(user_id=id)
+
+        for video in vids:
+            video.video.delete()
+            video.delete()
+
+        # delete user
+        usr = User.objects.get(id = id)
+        usr.delete()
+
+        # TODO: delete its folder
+
+        res = {'success' : False, 'user': 'serializer.errors'}
+        return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RegisterAPIView(GenericAPIView):
