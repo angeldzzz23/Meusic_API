@@ -28,5 +28,11 @@ class searchSkills(generics.ListCreateAPIView):
     queryset = Skills.objects.all()
     serializer_class = SkillsSerializer
 
+class searchGenres(generics.ListCreateAPIView):
+    search_fields = ['genre_name']
+    filter_backends = (filters.SearchFilter,)
+    queryset = Genres.objects.all()
+    serializer_class = GenresSerializer
+
 
 # searching the skills
