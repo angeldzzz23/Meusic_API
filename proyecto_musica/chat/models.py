@@ -40,7 +40,9 @@ class Inbox(models.Model):
          related_name='sender'
     )
     # last message - latest message by date
-    
+    latest_message = models.CharField(max_length=1000, null=True)
+
+
     #  # number of unseen messages
     unseen_messages = models.IntegerField(default=0)
 
