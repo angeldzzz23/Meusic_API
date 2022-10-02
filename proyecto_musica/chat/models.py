@@ -12,6 +12,36 @@ from authentication.models import User
 # inboxhash user_id and the id put together
 
 
+# currently just allow text
+
+class Chat(models.Model):
+    message_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='chat_id'
+        )
+
+    # the person who is sending the message
+    sender_id = models.ForeignKey(
+         User,
+         on_delete=models.CASCADE,
+         verbose_name='sender_id',
+         null=True,
+    )
+
+    message = models.CharField(max_length=1000, null=True)
+
+    # we hashed user_id + sender_id. We send this to
+    inbox_user_to_sender = models.CharField(max_length=1000, null=True)
+
+    # created at
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+
 
 class Inbox(models.Model):
     inbox_id = models.BigAutoField(

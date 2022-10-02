@@ -14,8 +14,11 @@ class InboxesSerializer(serializers.ModelSerializer):
 
         # getting the inbox when the user has been the receiver
         # and also when the user has been the senter
-        inbox_nums = Inbox.objects.filter(user_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified',)
-        inbox_receiver = Inbox.objects.filter(sender_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified',)
+        inbox_nums = Inbox.objects.filter(user_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender',)
+        inbox_receiver = Inbox.objects.filter(sender_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender', )
+        if inbox_nums.count() == 0 and inbox_receiver.count() == 0:
+            return inbox_receiver
+
 
         union_of_inbox = inbox_nums | inbox_receiver
 

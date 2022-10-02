@@ -12,6 +12,54 @@ from chat.serializers import InboxesSerializer
 
 import hashlib
 
+# chat method
+class ChatView(GenericAPIView):
+    # retrieves all of the chats between two users
+    # this requites the hashed chat
+    permission_classes = (permissions.IsAuthenticated,)
+    def get(self, request):
+
+        res = {'success' : True, 'data': 'aa'}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+    def post(self, request):
+        jd = request.data
+        user = request.user
+
+        inbox_hash = jd['inbox_hash']
+        message = jd['message']
+
+        inbox_count = Inbox.objects.filter(inbox_user_to_sender=hashed_str).count()
+
+        if inbox_count == 0:
+            res = {'success' : False, 'error' : "current inbox does not exist"}
+            
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+            # return an error for now since it doesnt exist
+
+
+
+
+
+        # check if convo even exists
+
+
+
+
+
+
+        res = {'success' : True, 'data': 'aa'}
+        jd = request
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+
 # this gets the inbox of the user
 class InboxView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -54,8 +102,6 @@ class InboxView(GenericAPIView):
         # return response.Response(res)
 
         # crete an inbox as soon as you send a message
-
-
 
     def post(self, request):
         jd = request.data

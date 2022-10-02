@@ -18,8 +18,10 @@ from django.urls import path
 
 from chat import views
 
+
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('inbox', views.InboxView.as_view(), name="inbox"),
+    path('convo', views.ChatView.as_view(), name="convo"),
 
 ]
