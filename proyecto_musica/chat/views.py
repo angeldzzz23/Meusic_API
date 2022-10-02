@@ -3,8 +3,11 @@ from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from rest_framework.generics import GenericAPIView
 from chat.models import Inbox
+from chat.models import Chat
 from authentication.models import User
 from chat.serializers import InboxesSerializer
+from chat.serializers import ChatsSerializer
+
 
 
 
@@ -18,8 +21,11 @@ class ChatView(GenericAPIView):
     # this requites the hashed chat
     permission_classes = (permissions.IsAuthenticated,)
     def get(self, request):
+        jd = request.data
+        inbox_hash = jd['inbox_hash']
+        serializer = ChatsSerializer(inbox_hash)
 
-        res = {'success' : True, 'data': 'aa'}
+        res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def post(self, request):
@@ -29,26 +35,18 @@ class ChatView(GenericAPIView):
         inbox_hash = jd['inbox_hash']
         message = jd['message']
 
-        inbox_count = Inbox.objects.filter(inbox_user_to_sender=hashed_str).count()
+        inbox_count = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).count()
 
         if inbox_count == 0:
             res = {'success' : False, 'error' : "current inbox does not exist"}
-            
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-            # return an error for now since it doesnt exist
 
 
+        new_message = Chat(sender_id=user,message=message, inbox_user_to_sender=inbox_hash)
+        new_message.save()
 
 
-
-        # check if convo even exists
-
-
-
-
-
-
-        res = {'success' : True, 'data': 'aa'}
+        res = {'success' : True, 'data': 'message was sent'}
         jd = request
         return response.Response(res, status=status.HTTP_201_CREATED)
 
