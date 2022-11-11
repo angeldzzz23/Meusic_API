@@ -5,6 +5,7 @@ from channels.generic.websocket import WebsocketConsumer
 from chat.models import Inbox
 
 from rest_framework import response, status, permissions
+from django.db.models import Q
 
 
 
@@ -44,7 +45,10 @@ class ChatConsumer(WebsocketConsumer):
         # get the id of the user
         used_id = data['id']
 
-        inboxes = Inbox.objects.filter(user_id=used_id)
+        inboxes = Inbox.objects.filter(Q(user_id=used_id) | Q(sender_id=used_id))
+
+
+
 
         content = {
             'command': 'inboxes',
@@ -69,8 +73,8 @@ class ChatConsumer(WebsocketConsumer):
     def inbox_to_json(self, inbox):
         return {
             'inbox_id': inbox.inbox_id,
-            # 'user_id': inbox.user_id,
-            # 'sender_id': inbox.sender_id,
+            'user_id': inbox.user_id.id,
+            'sender_id': inbox.sender_id.id,
             'latest_message': str(inbox.latest_message),
             'date_modified': str(inbox.date_modified),
             'unseen_messages': str(inbox.unseen_messages),
