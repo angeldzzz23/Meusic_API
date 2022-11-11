@@ -70,9 +70,9 @@ class ChatConsumer(WebsocketConsumer):
     def inbox_to_json(self, inbox,id):
         # we check if the user sent the message
 
-        if str(inbox.sender_id) == id:
+        if str(inbox.sender_id.id) == id:
             print("they are the same ")
-        elif str(inbox.user_id) == id:
+        elif str(inbox.user_id.id) == id:
             print("user is the user_id")
 
         return {
