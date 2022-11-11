@@ -210,6 +210,8 @@ class LoginAPIView(GenericAPIView):
 
         if user:
             serializer=self.serializer_class(user)
+            serializer.is_valid(raise_exception=True)
+
             user2 = serializer.validated_data
             login(request, user2) # <- This was missing
 
