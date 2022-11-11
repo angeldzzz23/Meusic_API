@@ -8,6 +8,8 @@ from authentication.models import User
 from chat.serializers import InboxesSerializer
 from chat.serializers import ChatsSerializer
 from channels.layers import get_channel_layer
+import json
+from asgiref.sync import async_to_sync
 
 
 
@@ -69,9 +71,13 @@ class InboxView(GenericAPIView):
         serializer = InboxesSerializer(user)
         channel_layer = get_channel_layer()
         # for chat_name in chats:
-        #     await channel_layer.group_send(chat_name,
-        #     {"type": "chat.system_message", "text": announcement_text},
-        #     )
+
+
+        async_to_sync(channel_layer.group_send)("chat", {"type": "chat.force_disconnect"})
+
+
+
+
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
