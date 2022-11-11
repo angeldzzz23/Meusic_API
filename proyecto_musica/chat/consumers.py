@@ -2,6 +2,7 @@ import json
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from chat.models import Inbox
 
 from rest_framework import response, status, permissions
 
@@ -40,6 +41,13 @@ class ChatConsumer(WebsocketConsumer):
         print('new message: ',data )
 
     def fetch_inbox(self, data):
+        # get the id of the user
+        used_id = data['id']
+
+
+        inbox_count = Inbox.objects.filter(user_id=used_id).count()
+        print(inbox_count)
+        
         print('fetching inbox: ',data )
 
     commands = {
