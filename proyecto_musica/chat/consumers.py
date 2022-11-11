@@ -87,6 +87,10 @@ class ChatConsumer(WebsocketConsumer):
             'inbox_user_to_sender': str(inbox.inbox_user_to_sender)
         }
 
+    # converts the user to json
+    def user_to_json():
+
+
     def disconnect(self, close_code):
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
