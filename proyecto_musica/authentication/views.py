@@ -22,6 +22,8 @@ from proyecto_musica.settings import BASE_DIR
 from django.utils.timezone import utc
 import datetime
 
+from django.contrib.auth import login
+
 
 # TODO: implement delete user functionality
 # Create your views here.
@@ -208,6 +210,8 @@ class LoginAPIView(GenericAPIView):
 
         if user:
             serializer=self.serializer_class(user)
+            user2 = serializer.validated_data
+            login(request, user2) # <- This was missing
 
             return response.Response(serializer.data, status.HTTP_200_OK)
 
