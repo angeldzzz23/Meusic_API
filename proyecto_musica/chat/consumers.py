@@ -88,7 +88,7 @@ class ChatConsumer(WebsocketConsumer):
         }
 
     # converts the user to json
-    def user_to_json(curUser):
+    def user_to_json(self,curUser):
         #lsksks
         return  {
             'user_id': str(curUser.id),
