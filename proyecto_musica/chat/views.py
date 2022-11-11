@@ -73,7 +73,7 @@ class InboxView(GenericAPIView):
         # for chat_name in chats:
 
 
-        async_to_sync(channel_layer.group_send)("chat", {"type": "chat.force_disconnect"})
+        async_to_sync(channel_layer.send)("channel1", { "type": "send.alert"})
 
 
 

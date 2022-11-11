@@ -102,6 +102,16 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name, self.channel_name
         )
 
+
+    async def send_alert(self, event):
+
+        # Send message to WebSocket
+        await self.send(text_data={
+            'type': 'alert',
+            'details': 'An external API api.external.com needs some data from you'
+        })
+
+
     # Receive message from WebSocket
     def receive(self, text_data):
 
