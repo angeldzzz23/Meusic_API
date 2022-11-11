@@ -72,7 +72,7 @@ class ChatConsumer(WebsocketConsumer):
         curUser = None
 
         if str(inbox.sender_id.id) == id:
-            curUser = inbox.sender_id
+            curUser = inbox.user_id
             print("they are the same ")
         elif str(inbox.user_id.id) == id:
             curUser = inbox.sender_id
