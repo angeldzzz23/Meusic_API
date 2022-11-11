@@ -26,12 +26,14 @@ SECRET_KEY = 'django-insecure-8a!9*2i&_st@z_wi7h83)q3c3*g7u-_weby6pwrn8bu%!ve8#u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['143.198.178.220']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -89,7 +91,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'proyecto_musica.wsgi.application'
+ASGI_APPLICATION = 'proyecto_musica.routing.application'
 
+# 3
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
