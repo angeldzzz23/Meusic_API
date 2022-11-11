@@ -3,8 +3,13 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
+from rest_framework import response, status, permissions
+
+
 
 class ChatConsumer(WebsocketConsumer):
+
+    permission_classes = (permissions.IsAuthenticated,)
 
     def fetch_messages(self, data):
         # get the last ten messages or so
