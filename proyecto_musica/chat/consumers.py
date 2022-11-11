@@ -39,9 +39,13 @@ class ChatConsumer(WebsocketConsumer):
     def new_message(self, data):
         print('new message: ',data )
 
+    def fetch_inbox(self, data):
+        print('fetching inbox: ',data )
+
     commands = {
         'fetch_messages': fetch_messages,
-        'new_message': new_message
+        'new_message': new_message,
+        'fetch_inbox' : fetch_inbox
     }
 
     def disconnect(self, close_code):
@@ -52,8 +56,6 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-        permission_classes = (permissions.IsAuthenticated,)
-        print(permission_classes)
         print("receiving", text_data)
         data = json.loads(text_data)
         self.commands[data['command']](self, data)
