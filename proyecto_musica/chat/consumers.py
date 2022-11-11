@@ -44,15 +44,12 @@ class ChatConsumer(WebsocketConsumer):
     def fetch_inbox(self, data):
         # get the id of the user
         used_id = data['id']
-
+        print("checking type of id", type(used_id))
         inboxes = Inbox.objects.filter(Q(user_id=used_id) | Q(sender_id=used_id))
-
-
-
 
         content = {
             'command': 'inboxes',
-            'messages': self.inboxes_to_json(inboxes)
+            'messages': self.inboxes_to_json(inboxes, used_id)
         }
 
         self.send_message(content)
@@ -64,13 +61,20 @@ class ChatConsumer(WebsocketConsumer):
         'fetch_inbox' : fetch_inbox
     }
 
-    def inboxes_to_json(self, inboxes):
+    def inboxes_to_json(self, inboxes, id):
         result = []
         for inbox in inboxes:
-            result.append(self.inbox_to_json(inbox))
+            result.append(self.inbox_to_json(inbox, id))
         return result
 
-    def inbox_to_json(self, inbox):
+    def inbox_to_json(self, inbox,id):
+        # we check if the user sent the message
+
+        if str(inbox.sender_id) == id:
+            print("they are the same ")
+        elif str(inbox.user_id) == id:
+            print("user is the user_id")
+
         return {
             'inbox_id': inbox.inbox_id,
             'user_id': str(inbox.user_id.id),
