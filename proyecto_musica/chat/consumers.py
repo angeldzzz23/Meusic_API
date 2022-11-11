@@ -80,7 +80,7 @@ class ChatConsumer(WebsocketConsumer):
 
         return {
             'inbox_id': inbox.inbox_id,
-            'user_id': str(curUser.id),
+            'user_id': self.user_to_json(curUser),
             'latest_message': str(inbox.latest_message),
             'date_modified': str(inbox.date_modified),
             'unseen_messages': str(inbox.unseen_messages),
@@ -88,7 +88,15 @@ class ChatConsumer(WebsocketConsumer):
         }
 
     # converts the user to json
-    def user_to_json():
+    def user_to_json(curUser):
+        #lsksks
+        return  {
+            'user_id': str(curUser.id),
+            'first_name': str(curUser.first_name),
+            'last_name': str(curUser.last_name)
+        }
+
+
 
 
     def disconnect(self, close_code):
