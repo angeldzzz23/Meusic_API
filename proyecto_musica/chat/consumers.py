@@ -69,8 +69,8 @@ class ChatConsumer(WebsocketConsumer):
     def inbox_to_json(self, inbox):
         return {
             'inbox_id': inbox.inbox_id,
-            'user_id': inbox.user_id,
-            'sender_id': inbox.sender_id,
+            # 'user_id': inbox.user_id,
+            # 'sender_id': inbox.sender_id,
             'latest_message': str(inbox.latest_message),
             'date_modified': str(inbox.date_modified),
             'unseen_messages': str(inbox.unseen_messages),
