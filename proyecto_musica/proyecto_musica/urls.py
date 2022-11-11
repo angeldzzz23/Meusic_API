@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings #3
 from django.conf.urls.static import static  #4
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import path, include
 
 
 urlpatterns = [
@@ -29,7 +30,6 @@ urlpatterns = [
     path('api/search/', include('search.urls')),
     path('api/chat/', include('chat.urls')),
     path("chat/", include('chat.urls',namespace='chat')),
-
 ]
 # Serving the media files in development mode
 if settings.DEBUG:
