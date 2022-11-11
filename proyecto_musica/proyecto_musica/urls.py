@@ -27,7 +27,8 @@ urlpatterns = [
     path('api/upload/', include('api.urls')),
     path('api/misc/', include('misc.urls')),
     path('api/search/', include('search.urls')),
-    path('api/chat/', include('chat.urls'))
+    path('api/chat/', include('chat.urls')),
+    path("chat/", include('chat.urls',namespace='chat')),
 
 ]
 # Serving the media files in development mode
