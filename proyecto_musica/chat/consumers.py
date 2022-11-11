@@ -96,9 +96,6 @@ class ChatConsumer(WebsocketConsumer):
             'last_name': str(curUser.last_name)
         }
 
-
-
-
     def disconnect(self, close_code):
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
@@ -107,7 +104,15 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-        print("receiving", text_data)
+
+        async_to_sync(self.channel_layer.group_send)( "chat",
+        {
+            "type": "chat.message",
+            "text": text_data,
+        },
+        )
+
+        # print("receiving", text_data)
         data = json.loads(text_data)
         self.commands[data['command']](self, data)
 

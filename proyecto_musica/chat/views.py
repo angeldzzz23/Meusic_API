@@ -7,6 +7,7 @@ from chat.models import Chat
 from authentication.models import User
 from chat.serializers import InboxesSerializer
 from chat.serializers import ChatsSerializer
+from channels.layers import get_channel_layer
 
 
 
@@ -66,8 +67,11 @@ class InboxView(GenericAPIView):
         # getting all of the user
         user = request.user
         serializer = InboxesSerializer(user)
-
-
+        channel_layer = get_channel_layer()
+        # for chat_name in chats:
+        #     await channel_layer.group_send(chat_name,
+        #     {"type": "chat.system_message", "text": announcement_text},
+        #     )
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
