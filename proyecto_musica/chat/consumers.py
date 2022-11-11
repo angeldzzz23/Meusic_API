@@ -45,7 +45,7 @@ class ChatConsumer(WebsocketConsumer):
         used_id = data['id']
 
         inboxes = Inbox.objects.filter(user_id=used_id)
-        
+
         content = {
             'command': 'inboxes',
             'messages': self.inboxes_to_json(inboxes)
@@ -63,7 +63,7 @@ class ChatConsumer(WebsocketConsumer):
     def inboxes_to_json(self, inboxes):
         result = []
         for inbox in inboxes:
-            result.append(self.message_to_json(inbox))
+            result.append(self.inbox_to_json(inbox))
         return result
 
     def inbox_to_json(self, inbox):
