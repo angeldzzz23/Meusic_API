@@ -44,17 +44,38 @@ class ChatConsumer(WebsocketConsumer):
         # get the id of the user
         used_id = data['id']
 
-
-        inbox_count = Inbox.objects.filter(user_id=used_id).count()
-        print(inbox_count)
+        inboxes = Inbox.objects.filter(user_id=used_id)
         
-        print('fetching inbox: ',data )
+        content = {
+            'command': 'inboxes',
+            'messages': self.inboxes_to_json(inboxes)
+        }
+
+        self.send_message(content)
+
 
     commands = {
         'fetch_messages': fetch_messages,
         'new_message': new_message,
         'fetch_inbox' : fetch_inbox
     }
+
+    def inboxes_to_json(self, inboxes):
+        result = []
+        for inbox in inboxes:
+            result.append(self.message_to_json(inbox))
+        return result
+
+    def inbox_to_json(self, inbox):
+        return {
+            'inbox_id': inbox.inbox_id,
+            'user_id': inbox.user_id,
+            'sender_id': inbox.sender_id,
+            'latest_message': str(inbox.latest_message),
+            'date_modified': str(inbox.date_modified),
+            'unseen_messages': str(inbox.unseen_messages),
+            'inbox_user_to_sender': str(inbox.inbox_user_to_sender)
+        }
 
     def disconnect(self, close_code):
         # Leave room group
