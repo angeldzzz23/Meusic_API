@@ -69,16 +69,18 @@ class ChatConsumer(WebsocketConsumer):
 
     def inbox_to_json(self, inbox,id):
         # we check if the user sent the message
+        currentnameID = None
 
         if str(inbox.sender_id.id) == id:
+            currentnameID = inbox.sender_id.id
             print("they are the same ")
         elif str(inbox.user_id.id) == id:
+            currentnameID = inbox.sender_id
             print("user is the user_id")
 
         return {
             'inbox_id': inbox.inbox_id,
-            'user_id': str(inbox.user_id.id),
-            'sender_id': str(inbox.sender_id.id),
+            'user_id': str(currentnameID.id),
             'latest_message': str(inbox.latest_message),
             'date_modified': str(inbox.date_modified),
             'unseen_messages': str(inbox.unseen_messages),
