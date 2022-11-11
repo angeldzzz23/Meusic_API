@@ -212,7 +212,6 @@ class LoginAPIView(GenericAPIView):
             serializer=self.serializer_class(user)
 
             # user2 = serializer.validated_data
-            login(request, user) # <- This was missing
 
             return response.Response(serializer.data, status.HTTP_200_OK)
 
