@@ -47,6 +47,8 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
+        permission_classes = (permissions.IsAuthenticated,)
+        print(permission_classes)
         print("receiving", text_data)
         data = json.loads(text_data)
         self.commands[data['command']](self, data)
