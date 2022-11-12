@@ -42,6 +42,7 @@ class ChatConsumer(WebsocketConsumer):
         print('new message: ',data )
 
     def fetch_inbox(self, data):
+        print(self.channel_layer)
         # get the id of the user
         used_id = data['id']
         print("checking type of id", type(used_id))
