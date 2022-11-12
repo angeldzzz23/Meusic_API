@@ -77,6 +77,8 @@ class InboxView(GenericAPIView):
         print("here2")
         async_to_sync(channel_layer.send)("338217561529", { "type": "send.alert"})
         print("here3")
+        async_to_sync(channel_layer.send)("chat", { "type": "send.alert"})
+
 
 
         res = {'success' : True, 'data': serializer.data}

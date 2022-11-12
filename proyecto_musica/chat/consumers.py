@@ -104,7 +104,7 @@ class ChatConsumer(WebsocketConsumer):
 
 
     async def send_alert(self, event):
-
+        print("sending alert")
         # Send message to WebSocket
         await self.send(text_data={
             'type': 'alert',
