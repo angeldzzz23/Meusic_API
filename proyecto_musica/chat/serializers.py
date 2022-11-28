@@ -14,7 +14,7 @@ class ChatsSerializer(serializers.ModelSerializer):
         print(Inbox.objects.filter(inbox_user_to_sender=obj))
         print(" After sqsnqjnsqjnsjqnsjqnsjq\n\n\n\n")
         conversation = Chat.objects.filter(inbox_user_to_sender=obj).values('message_id', 'message','sender_id', 'created_at', )
-    
+
 
         return conversation
 
@@ -38,8 +38,8 @@ class InboxesSerializer(serializers.ModelSerializer):
 
         # getting the inbox when the user has been the receiver
         # and also when the user has been the senter
-        inbox_nums = Inbox.objects.filter(user_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender',)
-        inbox_receiver = Inbox.objects.filter(sender_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender', )
+        inbox_nums = Inbox.objects.filter(user_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender','latest_message')
+        inbox_receiver = Inbox.objects.filter(sender_id=user_id).order_by('date_modified').values('inbox_id','user_id', 'sender_id', 'unseen_messages', 'date_modified','inbox_user_to_sender','latest_message' )
         if inbox_nums.count() == 0 and inbox_receiver.count() == 0:
             return inbox_receiver
 

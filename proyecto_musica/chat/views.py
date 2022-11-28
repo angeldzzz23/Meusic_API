@@ -35,7 +35,7 @@ class ChatView(GenericAPIView):
         jd = request.data
         user = request.user
 
-        inbox_hash = jd['inbox_hash']
+        inbox_hash = jd['inbox_user_to_sender']
         message = jd['message']
 
         inbox_count = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).count()
@@ -43,6 +43,8 @@ class ChatView(GenericAPIView):
         if inbox_count == 0:
             res = {'success' : False, 'error' : "current inbox does not exist"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        inbox = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).update(latest_message=message)
 
 
         new_message = Chat(sender_id=user,message=message, inbox_user_to_sender=inbox_hash)
@@ -114,6 +116,7 @@ class InboxView(GenericAPIView):
 
         # crete an inbox as soon as you send a message
 
+    #
     def post(self, request):
         jd = request.data
         user = request.user
