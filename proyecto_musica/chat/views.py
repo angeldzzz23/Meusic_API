@@ -18,6 +18,12 @@ from asgiref.sync import async_to_sync
 
 import hashlib
 
+
+def get_last_10_messages(inbox_hash):
+    messages = Chat.objects.filter(inbox_user_to_sender=inbox_hash)
+    return messages.order_by('-created_at').all()[:10]
+
+
 # chat method
 class ChatView(GenericAPIView):
     # retrieves all of the chats between two users
@@ -27,6 +33,9 @@ class ChatView(GenericAPIView):
         jd = request.data
         inbox_hash = jd['inbox_hash']
         serializer = ChatsSerializer(inbox_hash)
+
+        print("printing what is is next: ")
+        print(get_last_10_messages(inbox_hash))
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)

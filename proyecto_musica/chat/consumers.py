@@ -3,9 +3,13 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from chat.models import Inbox
+from chat.models import Chat
 
 from rest_framework import response, status, permissions
 from django.db.models import Q
+
+from .views import get_last_10_messages
+
 
 
 
@@ -15,12 +19,27 @@ class ChatConsumer(WebsocketConsumer):
 
     def fetch_messages(self, data):
         # get the last ten messages or so
-        messages = 'this is the server replying back to you'
+        messages = get_last_10_messages(data['inbox_hash'])
+
         content = {
             'command': 'messages',
             'messages': messages
         }
         self.send_message(content)
+
+    def messages_to_json(self, messages):
+        result = []
+        for message in messages:
+            result.append(self.message_to_json(message))
+        return
+
+    def message_to_json(self, message):
+        return {
+            'id_hash': str(message.inbox_user_to_sender),
+            'author': str(message.sender_id.id),
+            'content': str(message.message),
+            'timestamp': str(message.created_at)
+        }
 
 
     def connect(self):
@@ -39,10 +58,10 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def new_message(self, data):
+
         print('new message: ',data )
 
     def fetch_inbox(self, data):
-        print(self.channel_layer)
         # get the id of the user
         used_id = data['id']
         print("checking type of id", type(used_id))
@@ -116,6 +135,8 @@ class ChatConsumer(WebsocketConsumer):
     # Receive message from WebSocket
     def receive(self, text_data):
 
+
+
         async_to_sync(self.channel_layer.group_send)( "chat",
         {
             "type": "chat.message",
@@ -123,7 +144,6 @@ class ChatConsumer(WebsocketConsumer):
         },
         )
 
-        # print("receiving", text_data)
         data = json.loads(text_data)
         self.commands[data['command']](self, data)
 
