@@ -59,6 +59,8 @@ class ChatConsumer(WebsocketConsumer):
         # save the message in the database
         # get the user id
         usrId = data["id"]
+        message = data["content"]
+        inbox_hash = data["inbox_hash"]
 
         foundUsr = User.objects.filter(id=usrId)
 
@@ -67,16 +69,18 @@ class ChatConsumer(WebsocketConsumer):
             print("returninn an error message ")
             return
 
-        print("found user",foundUsr[0].id)
-
-
-
         # save message to database
         # get the user given the id
 
-        # new_message = Chat(sender_id=user,message=message, inbox_user_to_sender=inbox_hash)
-        # new_message.save()
-        print('new message: ',data )
+        new_message = Chat(sender_id=foundUsr[0],message=message, inbox_user_to_sender=inbox_hash)
+        new_message.save()
+
+        content = {
+            'command': 'messages',
+            'messages': self.messages_to_json([messages])
+        }
+        self.send_message(content)
+
 
 
     def fetch_inbox(self, data):
