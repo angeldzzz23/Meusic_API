@@ -156,14 +156,7 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-
-
-        async_to_sync(self.channel_layer.group_send)( "chat",
-        {
-            "type": "chat.message",
-            "text": text_data,
-        },
-        )
+        print("You are receiving a message")
 
         data = json.loads(text_data)
         self.commands[data['command']](self, data)
