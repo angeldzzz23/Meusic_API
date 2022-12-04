@@ -7,11 +7,9 @@ from chat.models import Chat
 
 from rest_framework import response, status, permissions
 from django.db.models import Q
+from authentication.models import User
 
 from .views import get_last_10_messages
-
-
-
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -58,8 +56,19 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def new_message(self, data):
+        # save the message in the database
+        # get the user id
+        usrId = data["id"]
 
+        foundUsr = User.objects.filter(id=usrId)
+        print("found user: ", foundUsr)
+        # save message to database
+        # get the user given the id
+
+        # new_message = Chat(sender_id=user,message=message, inbox_user_to_sender=inbox_hash)
+        # new_message.save()
         print('new message: ',data )
+
 
     def fetch_inbox(self, data):
         # get the id of the user
@@ -134,7 +143,6 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-
 
 
         async_to_sync(self.channel_layer.group_send)( "chat",

@@ -13,9 +13,6 @@ from asgiref.sync import async_to_sync
 
 
 
-
-
-
 import hashlib
 
 
@@ -33,9 +30,6 @@ class ChatView(GenericAPIView):
         jd = request.data
         inbox_hash = jd['inbox_hash']
         serializer = ChatsSerializer(inbox_hash)
-
-        print("printing what is is next: ")
-        print(get_last_10_messages(inbox_hash))
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
