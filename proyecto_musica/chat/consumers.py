@@ -61,7 +61,16 @@ class ChatConsumer(WebsocketConsumer):
         usrId = data["id"]
 
         foundUsr = User.objects.filter(id=usrId)
-        print("found user: ", foundUsr)
+
+        if foundUsr.count() == 0:
+            # return an error message
+            print("returninn an error message ")
+            return
+
+        print("found user",foundUsr[0])
+
+
+
         # save message to database
         # get the user given the id
 
