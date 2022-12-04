@@ -15,8 +15,8 @@ class ChatConsumer(WebsocketConsumer):
 
     # permission_classes = (permissions.IsAuthenticated,)
 
-    room_name = None
-    room_group_name = None
+    # room_name = None
+    # room_group_name = None
 
 
     def fetch_messages(self, data):
