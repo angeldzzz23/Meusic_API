@@ -67,7 +67,7 @@ class ChatConsumer(WebsocketConsumer):
             print("returninn an error message ")
             return
 
-        print("found user",foundUsr[0])
+        print("found user",foundUsr[0].id)
 
 
 
