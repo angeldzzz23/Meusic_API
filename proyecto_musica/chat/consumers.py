@@ -13,7 +13,11 @@ from .views import get_last_10_messages
 
 class ChatConsumer(WebsocketConsumer):
 
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    room_name = None
+    room_group_name = None
+
 
     def fetch_messages(self, data):
         # get the last ten messages or so
@@ -41,10 +45,6 @@ class ChatConsumer(WebsocketConsumer):
 
 
     def connect(self):
-        self.user = self.scope["user"]
-        print("self user", self.user)
-        print("self.scope", self.scope)
-
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = "chat_%s" % self.room_name
 
@@ -163,12 +163,9 @@ class ChatConsumer(WebsocketConsumer):
 
         #text_data_json = json.loads(text_data)
 
-        #message = text_data_json["message"]
-
-              # Send message to room group
-        #async_to_sync(self.channel_layer.group_send)(
-        #    self.room_group_name, {"type": "chat_message", "message": message}
-        #)
+        async_to_sync(self.channel_layer.group_send)(
+           self.room_group_name, {"type": "chat_message", "message": "i am drinking coffeee"}
+        )
 
 
     def send_message(self, message):
