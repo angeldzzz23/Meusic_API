@@ -72,6 +72,9 @@ class ChatConsumer(WebsocketConsumer):
         # save message to database
         # get the user given the id
 
+        inbox = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).update(latest_message=message)
+
+
         new_message = Chat(sender_id=foundUsr[0],message=message, inbox_user_to_sender=inbox_hash)
         new_message.save()
 
