@@ -11,6 +11,7 @@ from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.models import Images
 from api.models import Videos
+from rest_framework.response import Response
 import os
 from pathlib import Path
 
@@ -209,7 +210,14 @@ class LoginAPIView(GenericAPIView):
         if user:
             serializer=self.serializer_class(user)
 
-            return response.Response(serializer.data, status.HTTP_200_OK)
+
+            response = Response(serializer.data, status.HTTP_200_OK)
+
+            response.set_cookie(key='jwt', value=user.token, httponly=True)
+
+            return response
+
+            # return response.Response(serializer.data, status.HTTP_200_OK)
 
         return response.Response({'message': "invalid credentials, try again"}, status=status.HTTP_401_UNAUTHORIZED)
 
