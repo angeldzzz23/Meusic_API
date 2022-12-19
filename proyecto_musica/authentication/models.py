@@ -237,9 +237,7 @@ class User_Artists(models.Model):
         on_delete=models.CASCADE,
         verbose_name='user_id'
     )
-    artist = models.IntegerField(
-        verbose_name='artist_id'
-    )
+    artist = models.CharField(unique=True, max_length=200)
 
     class Meta:
         db_table = 'User_Artists'

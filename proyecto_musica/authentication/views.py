@@ -219,9 +219,10 @@ class LoginAPIView(GenericAPIView):
 
             return response
 
+        datos = {'message': "invalid credentials, try again"}
             # return response.Response(serializer.data, status.HTTP_200_OK)
-
-        return response.Response({'message': "invalid credentials, try again"}, status=status.HTTP_401_UNAUTHORIZED)
+        response = Response(datos, status.HTTP_401_UNAUTHORIZED)
+        return response
 
 
 # verifying email when creating an account

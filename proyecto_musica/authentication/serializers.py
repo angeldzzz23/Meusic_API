@@ -137,6 +137,7 @@ class EditSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Genres.objects.create(user_id=id, genre_id=obj)
                 elif field_name == 'artists':
+                    print('hereee')
                     User_Artists.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Artists.objects.create(user_id=id, artist=obj)
