@@ -1,4 +1,4 @@
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube, User_Vimeo
 from rest_framework import response, status
 from enum import Enum
 
@@ -8,6 +8,7 @@ class List_Fields(Enum):
     GENRES = 'genres'
     ARTISTS = 'artists'
     YOUTUBEVIDS = 'youtube_vids'
+    VIMEOVIDS = 'vimeo_vids'
 
 
 class User_Fields(Enum):
@@ -23,6 +24,7 @@ class User_Fields(Enum):
     GENRES = 'genres'
     ARTISTS = 'artists'
     YOUTUBEVIDS = 'youtube_vids'
+    VIMEOVIDS = 'vimeo_vids'
 
 
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
@@ -64,6 +66,15 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 list_field_ids.append({"video_id": obj['videoID']})
             return list_field_ids if list_field_ids else None
+    elif f_name == 'vimeo_vids':
+        if f_ids:
+            return f_ids
+        else:
+            field_ids = User_Vimeo.objects.filter(user_id=user_id).values('videoID')
+            list_field_ids = []
+            for obj in field_ids:
+                list_field_ids.append({"video_id": obj['videoID']})
+            return list_field_ids if list_field_ids else None
 
 def validate_field(field_name, field_list):
     if not isinstance(field_list, list):
@@ -81,6 +92,8 @@ def validate_field(field_name, field_list):
     if field_name == "artists":
         return None
     if field_name == 'youtube_vids':
+        return None
+    if field_name == 'vimeo_vids':
         return None
 
     for obj in field_list:
