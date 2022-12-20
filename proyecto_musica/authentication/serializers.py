@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube
 from api.models import Images
 from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
@@ -14,12 +14,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     artists = serializers.SerializerMethodField()
     pictures = serializers.SerializerMethodField()
     video = serializers.SerializerMethodField()
+    youtub_vids = serializers.SerializerMethodField()
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender',
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists','pictures', 'video')
+                'artists','pictures', 'video', 'youtub_vids')
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -30,6 +31,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_skills(self, obj):
         skills = self.context.get("skills")
         return get_list_field(obj.id, "skill", skills)
+
+    def get_youtub_vids(self, obj):
+        vids = self.context.get("youtube_vids")
+        return get_list_field(obj.id, "youtube_vids", vids)
+
 
     def get_genres(self, obj):
         genres = self.context.get("genres")
@@ -79,12 +85,17 @@ class EditSerializer(serializers.ModelSerializer):
     genres = serializers.SerializerMethodField()
     artists = serializers.SerializerMethodField()
     gender_name = serializers.SerializerMethodField()
+    youtube_vids = serializers.SerializerMethodField()
 
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists')
+                'artists', 'youtube_vids',)
+
+    def get_youtube_vids(self, obj):
+        vids = self.context.get("youtube_vids")
+        return get_list_field(obj.id, "youtube_vids", vids)
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -137,10 +148,15 @@ class EditSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Genres.objects.create(user_id=id, genre_id=obj)
                 elif field_name == 'artists':
-                    print('hereee')
                     User_Artists.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Artists.objects.create(user_id=id, artist=obj)
+                elif field_name == 'youtube_vids':
+                    User_Youtube.objects.filter(user_id=id).delete()
+                    for obj in field_list:
+                        User_Youtube.objects.create(user_id=id, videoID=obj)
+
+
 
         return instance
 

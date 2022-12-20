@@ -1,4 +1,4 @@
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube
 from rest_framework import response, status
 from enum import Enum
 
@@ -7,6 +7,7 @@ class List_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
     ARTISTS = 'artists'
+    YOUTUBEVIDS = 'youtube_vids'
 
 
 class User_Fields(Enum):
@@ -21,6 +22,7 @@ class User_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
     ARTISTS = 'artists'
+    YOUTUBEVIDS = 'youtube_vids'
 
 
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
@@ -34,7 +36,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
-                field_names.append(x[0][field_name])
+                field_names.append({'id': the_id, 'name': x[0][field_name]})
             return field_names
     elif f_name == 'genre':
         field_ids = f_ids if f_ids else User_Genres.objects.filter(user_id=user_id).values(field_id)
@@ -42,18 +44,26 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
-                field_names.append(x[0][field_name])
+                field_names.append({'id': the_id, 'name': x[0][field_name]})
             return field_names
     elif f_name == 'artist':
         if f_ids:
             return f_ids
         else:
-            field_ids = User_Artists.objects.filter(user_id=user_id).values(f_name)
+            field_ids = User_Artists.objects.filter(user_id=user_id).values(f_name, 'user_artist_id')
             list_field_ids = []
             for obj in field_ids:
                 list_field_ids.append(obj[f_name])
             return list_field_ids if list_field_ids else None
-
+    elif f_name == 'youtube_vids':
+        if f_ids:
+            return f_ids
+        else:
+            field_ids = User_Youtube.objects.filter(user_id=user_id).values('videoID')
+            list_field_ids = []
+            for obj in field_ids:
+                list_field_ids.append({"video_id": obj['videoID']})
+            return list_field_ids if list_field_ids else None
 
 def validate_field(field_name, field_list):
     if not isinstance(field_list, list):
@@ -69,6 +79,8 @@ def validate_field(field_name, field_list):
                 'error' : "Cannot submit duplicate " + field_name + "."}
 
     if field_name == "artists":
+        return None
+    if field_name == 'youtube_vids':
         return None
 
     for obj in field_list:

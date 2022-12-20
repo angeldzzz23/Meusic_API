@@ -237,10 +237,33 @@ class User_Artists(models.Model):
         on_delete=models.CASCADE,
         verbose_name='user_id'
     )
-    artist = models.CharField(unique=True, max_length=200)
+    artist = models.CharField(unique=False, max_length=200)
 
     class Meta:
         db_table = 'User_Artists'
+
+
+# adding youtube and vimeo
+class User_Youtube(models.Model):
+    user_youtube_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_artist_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    videoID = models.CharField(unique=False, max_length=200)
+
+    class Meta:
+        db_table = 'User_Youtube'
+
+
+
 
 
 class Verification(models.Model):
