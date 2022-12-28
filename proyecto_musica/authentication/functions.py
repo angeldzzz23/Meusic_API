@@ -38,7 +38,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
-                field_names.append({'id': the_id, 'name': x[0][field_name]})
+                field_names.append({'skill_id': the_id, 'skill_name': x[0][field_name]})
             return field_names
     elif f_name == 'genre':
         field_ids = f_ids if f_ids else User_Genres.objects.filter(user_id=user_id).values(field_id)
@@ -46,7 +46,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
-                field_names.append({'id': the_id, 'name': x[0][field_name]})
+                field_names.append({'genre_id': the_id, 'genre_name': x[0][field_name]})
             return field_names
     elif f_name == 'artist':
         if f_ids:
