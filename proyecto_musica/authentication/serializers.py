@@ -14,14 +14,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     artists = serializers.SerializerMethodField()
     pictures = serializers.SerializerMethodField()
     video = serializers.SerializerMethodField()
-    youtub_vids = serializers.SerializerMethodField()
+    youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender',
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists','pictures', 'video', 'youtub_vids', 'vimeo_vids')
+                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids')
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -33,7 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         skills = self.context.get("skills")
         return get_list_field(obj.id, "skill", skills)
 
-    def get_youtub_vids(self, obj):
+    def get_youtube_vids(self, obj):
         vids = self.context.get("youtube_vids")
         return get_list_field(obj.id, "youtube_vids", vids)
 
