@@ -38,7 +38,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
-                field_names.append({'id': the_id, 'name': x[0][field_name]})
+                field_names.append({'skill_id': the_id, 'skill_name': x[0][field_name]})
             return field_names
     elif f_name == 'genre':
         field_ids = f_ids if f_ids else User_Genres.objects.filter(user_id=user_id).values(field_id)
@@ -46,34 +46,25 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
-                field_names.append({'id': the_id, 'name': x[0][field_name]})
+                field_names.append({'genre_id': the_id, 'genre_name': x[0][field_name]})
             return field_names
     elif f_name == 'artist':
-        if f_ids:
-            return f_ids
-        else:
             field_ids = User_Artists.objects.filter(user_id=user_id).values(f_name, 'user_artist_id')
             list_field_ids = []
             for obj in field_ids:
-                list_field_ids.append(obj[f_name])
+                list_field_ids.append({ 'user_artist_id': obj['user_artist_id'],'artist':obj[f_name]})
             return list_field_ids if list_field_ids else None
     elif f_name == 'youtube_vids':
-        if f_ids:
-            return f_ids
-        else:
-            field_ids = User_Youtube.objects.filter(user_id=user_id).values('videoID')
+            field_ids = User_Youtube.objects.filter(user_id=user_id).values('youtube_id','video_id')
             list_field_ids = []
             for obj in field_ids:
-                list_field_ids.append({"video_id": obj['videoID']})
+                list_field_ids.append({"youtube_id":obj['youtube_id'],"video_id": obj['video_id']})
             return list_field_ids if list_field_ids else None
     elif f_name == 'vimeo_vids':
-        if f_ids:
-            return f_ids
-        else:
-            field_ids = User_Vimeo.objects.filter(user_id=user_id).values('videoID')
+            field_ids = User_Vimeo.objects.filter(user_id=user_id).values('vimeo_id','video_id')
             list_field_ids = []
             for obj in field_ids:
-                list_field_ids.append({"video_id": obj['videoID']})
+                list_field_ids.append({'vimeo_id':obj['vimeo_id'],"video_id": obj['video_id']})
             return list_field_ids if list_field_ids else None
 
 def validate_field(field_name, field_list):
