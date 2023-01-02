@@ -20,4 +20,6 @@ from Cprofile import views
 
 urlpatterns = [
     path('skills', views.CUserSkills.as_view()),
+    path('genres', views.CUserGenres.as_view()),
+
 ]
