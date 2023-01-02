@@ -21,5 +21,9 @@ from Cprofile import views
 urlpatterns = [
     path('skills', views.CUserSkills.as_view()),
     path('genres', views.CUserGenres.as_view()),
+    path('artists', views.CUserArtists.as_view()),
+    path('youtube', views.CUserYoutubeVideos.as_view()),
+
+
 
 ]
