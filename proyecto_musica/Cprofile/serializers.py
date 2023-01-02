@@ -53,3 +53,16 @@ class CYoutubeVids(serializers.ModelSerializer):
     def get_youtube_vids(self, obj):
         vids = self.context.get("youtube_vids")
         return get_list_field(obj.id, "youtube_vids", vids)
+
+
+# this is the serializer to get all of the vimeo viodeos
+class CVimeoVids(serializers.ModelSerializer):
+    vimeo_vids = serializers.SerializerMethodField()
+
+    class Meta():
+        model=User
+        fields=('vimeo_vids',)
+
+    def get_vimeo_vids(self, obj):
+        vids = self.context.get("vimeo_vids")
+        return get_list_field(obj.id, "vimeo_vids", vids)

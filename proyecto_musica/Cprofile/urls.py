@@ -23,7 +23,5 @@ urlpatterns = [
     path('genres', views.CUserGenres.as_view()),
     path('artists', views.CUserArtists.as_view()),
     path('youtube', views.CUserYoutubeVideos.as_view()),
-
-
-
+    path('vimeo', views.CUserVimeoVideos.as_view()),
 ]
