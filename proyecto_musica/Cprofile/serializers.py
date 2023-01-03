@@ -93,6 +93,15 @@ class CPersonalPictures(serializers.ModelSerializer):
                     'url', 'title')
         return list(query) if query else None
 
+# fields=('username','email', 'first_name', 'last_name', 'last_name','DOB', 'about_me', )
+
+class CusernameInfo(serializers.ModelSerializer):
+
+    class Meta():
+        model=User
+        fields=('username', )
+
+
 
 class CPersonalInfo(serializers.ModelSerializer):
 

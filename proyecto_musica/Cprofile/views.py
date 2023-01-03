@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework import response, status, permissions
 from authentication.models import User
-from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo
+from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo
 
 # this contains a bunch of
 
@@ -149,9 +149,25 @@ class CUserPersonalInfo(GenericAPIView):
         res['success'] = True
         res['about_me'] = serializer.data['about_me']
 
-        print(serializer.data)
+
+        return JsonResponse(res)
 
 
+class CUsername(GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CusernameInfo(user)
+
+        res = {}
+        res['success'] = True
+        res['username'] = serializer.data['username']
 
 
         return JsonResponse(res)
