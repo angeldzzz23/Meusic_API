@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework import response, status, permissions
 from authentication.models import User
-from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids
+from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures
 
 # this contains a bunch of
 
@@ -90,5 +90,68 @@ class CUserVimeoVideos(GenericAPIView):
         res = {}
         res['success'] = True
         res['vimeo_vids'] = serializer.data['vimeo_vids']
+
+        return JsonResponse(res)
+
+
+
+class CUserPersonalVideos(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CPersonalVideo(user)
+
+        res = {}
+        res['success'] = True
+        res['video'] = serializer.data['video']
+
+        return JsonResponse(res)
+
+
+#
+
+class CUserPersonalImages(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CPersonalPictures(user)
+
+        res = {}
+        res['success'] = True
+        res['pictures'] = serializer.data['pictures']
+
+        return JsonResponse(res)
+
+    # getting the name of the user
+
+    #     username
+    # email
+    # first_name
+    # last_name
+    # DOB
+    # about_me
+
+class CUserPersonalInfo(GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CPersonalPictures(user)
+
+        res = {}
+        res['success'] = True
+        res['pictures'] = serializer.data['pictures']
 
         return JsonResponse(res)

@@ -3,7 +3,8 @@ from authentication.models import Genres
 from authentication.models import Genders
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo
 from authentication.functions import List_Fields, get_list_field
-
+from api.models import Videos
+from api.models import Images
 from rest_framework import serializers
 
 
@@ -54,7 +55,6 @@ class CYoutubeVids(serializers.ModelSerializer):
         vids = self.context.get("youtube_vids")
         return get_list_field(obj.id, "youtube_vids", vids)
 
-
 # this is the serializer to get all of the vimeo viodeos
 class CVimeoVids(serializers.ModelSerializer):
     vimeo_vids = serializers.SerializerMethodField()
@@ -66,3 +66,29 @@ class CVimeoVids(serializers.ModelSerializer):
     def get_vimeo_vids(self, obj):
         vids = self.context.get("vimeo_vids")
         return get_list_field(obj.id, "vimeo_vids", vids)
+
+
+class CPersonalVideo(serializers.ModelSerializer):
+    video = serializers.SerializerMethodField()
+
+    class Meta():
+        model=User
+        fields=('video',)
+
+    def get_video(self, obj):
+        query = Videos.objects.filter(user_id=obj.id).values('video_id',
+                    'url', 'title')
+        return list(query) if query else None
+
+
+class CPersonalPictures(serializers.ModelSerializer):
+    pictures = serializers.SerializerMethodField()
+
+    class Meta():
+        model=User
+        fields=('pictures',)
+
+    def get_pictures(self, obj):
+        query = Images.objects.filter(user_id=obj.id).values('image_id',
+                    'url', 'title')
+        return list(query) if query else None
