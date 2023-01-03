@@ -92,3 +92,10 @@ class CPersonalPictures(serializers.ModelSerializer):
         query = Images.objects.filter(user_id=obj.id).values('image_id',
                     'url', 'title')
         return list(query) if query else None
+
+
+class CPersonalInfo(serializers.ModelSerializer):
+
+    class Meta():
+        model=User
+        fields=('about_me', )
