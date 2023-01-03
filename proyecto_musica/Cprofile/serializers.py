@@ -95,6 +95,26 @@ class CPersonalPictures(serializers.ModelSerializer):
 
 # fields=('username','email', 'first_name', 'last_name', 'last_name','DOB', 'about_me', )
 
+
+class CDOBOfUser(serializers.ModelSerializer):
+    class Meta():
+        model=User
+        fields=('DOB',)
+
+
+class CTheNameOfUser(serializers.ModelSerializer):
+    class Meta():
+        model=User
+        fields=('first_name','last_name',)
+
+
+class CusernameInfo(serializers.ModelSerializer):
+
+    class Meta():
+        model=User
+        fields=('username', )
+
+
 class CusernameInfo(serializers.ModelSerializer):
 
     class Meta():

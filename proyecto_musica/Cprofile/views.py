@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework import response, status, permissions
 from authentication.models import User
-from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo
+from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo, CTheNameOfUser, CDOBOfUser
 
 # this contains a bunch of
 
@@ -133,7 +133,7 @@ class CUserPersonalImages(GenericAPIView):
     # getting the name of the user
 
 
-class CUserPersonalInfo(GenericAPIView):
+class CUserAboutMe(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -169,5 +169,46 @@ class CUsername(GenericAPIView):
         res['success'] = True
         res['username'] = serializer.data['username']
 
+
+        return JsonResponse(res)
+
+
+# CTheNameOfUser
+
+class Cname(GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CTheNameOfUser(user)
+
+        res = {}
+        res['success'] = True
+        res['first_name'] = serializer.data['first_name']
+        res['last_name'] = serializer.data['last_name']
+
+        return JsonResponse(res)
+
+
+class Cdob(GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CDOBOfUser(user)
+
+        res = {}
+        res['success'] = True
+        res['DOB'] = serializer.data['DOB']
 
         return JsonResponse(res)
