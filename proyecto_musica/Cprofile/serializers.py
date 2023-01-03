@@ -31,6 +31,21 @@ class CGenres(serializers.ModelSerializer):
         genres = self.context.get("genres")
         return get_list_field(obj.id, "genre", genres)
 
+# TODO:
+class CGender(serializers.ModelSerializer):
+    gender_name = serializers.SerializerMethodField()
+
+    class Meta():
+        model=User
+        fields=('gender_name',)
+
+    def get_gender_name(self, obj):
+        gender_id = obj.gender_id
+        if gender_id:
+            res = Genders.objects.get(gender_id=gender_id)
+            return res.gender_name
+
+
 # seeing the favorite artist
 class CArtist(serializers.ModelSerializer):
     artists = serializers.SerializerMethodField()
@@ -94,6 +109,7 @@ class CPersonalPictures(serializers.ModelSerializer):
         return list(query) if query else None
 
 # fields=('username','email', 'first_name', 'last_name', 'last_name','DOB', 'about_me', )
+
 
 
 class CDOBOfUser(serializers.ModelSerializer):
