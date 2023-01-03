@@ -29,7 +29,9 @@ urlpatterns = [
     path('api/misc/', include('misc.urls')),
     path('api/search/', include('search.urls')),
     path('api/chat/', include('chat.urls')),
+    path('api/view/', include('Cprofile.urls')),
     path("chat/", include('chat.urls',namespace='chat')),
+
 ]
 # Serving the media files in development mode
 if settings.DEBUG:
