@@ -115,8 +115,10 @@ class SkillView(GenericAPIView):
         user = request.user
         serializer = AllSkillsSerializer(user)
 
+        jd = {'success' : True}
+        jd.update(serializer.data)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = jd
         return response.Response(res)
 
 
@@ -133,7 +135,7 @@ class SkillView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'skill': {}}
 
         return response.Response(res)
 
@@ -150,10 +152,10 @@ class SkillView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            res = {'success' : False, 'error' : "something wrong with serializer"}
+            res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'skill': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def patch(self, request, id):
@@ -177,7 +179,7 @@ class SkillView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'skill': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
