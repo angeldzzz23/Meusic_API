@@ -26,8 +26,19 @@ import datetime
 from django.contrib.auth import login
 
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
 # TODO: implement delete user functionality
 # Create your views here.
+
+
+# implmenting the refresth token
+class TokenRefrshAPIView(GenericAPIView):
+    def get(self, request):
+        res = {'success' : True, 'user': serialized_data}
+        return response.Response(res)
+
 
 
 class AuthUserAPIView(GenericAPIView):
@@ -212,10 +223,17 @@ class LoginAPIView(GenericAPIView):
         if user:
             serializer=self.serializer_class(user)
 
+            refresh = RefreshToken.for_user(user)
 
-            response = Response(serializer.data, status.HTTP_200_OK)
+            newdict =  {}
+            newdict.update(serializer.data)
+
+            newdict.update({'refresh': str(refresh)})
+
+            response = Response(newdict, status.HTTP_200_OK)
 
             response.set_cookie(key='jwt', value=user.token, httponly=True)
+            response.set_cookie(key='refresh', value=refresh, httponly=True)
 
             return response
 
