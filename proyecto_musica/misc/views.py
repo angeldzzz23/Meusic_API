@@ -325,7 +325,7 @@ class SpotifyPlatforms(GenericAPIView):
 
 class VimeoPlatforms(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    
+
 
     def post(self, request):
         if request.user.is_superuser != True:
@@ -344,7 +344,7 @@ class VimeoPlatforms(GenericAPIView):
             res = {'success' : False, 'error': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def get(self, request):
@@ -358,7 +358,7 @@ class VimeoPlatforms(GenericAPIView):
 
         serializer=VimeoSerializer(spot)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     # this takes the object id
@@ -381,7 +381,7 @@ class VimeoPlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 # this
