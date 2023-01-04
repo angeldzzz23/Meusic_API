@@ -266,7 +266,7 @@ class SpotifyPlatforms(GenericAPIView):
         try:
             spot = Spotify.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'spotify_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=SpotifySerializer(spot)
@@ -353,7 +353,7 @@ class VimeoPlatforms(GenericAPIView):
         try:
             spot = Vimeo.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'vimeo_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=VimeoSerializer(spot)
@@ -408,7 +408,7 @@ class YoutubePlatforms(GenericAPIView):
             res = {'success' : False, 'error': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def get(self, request):
@@ -418,12 +418,12 @@ class YoutubePlatforms(GenericAPIView):
         try:
             youtube = Youtube.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'youtube_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=YoutubeSerializer(youtube)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
         # this takes the object id
@@ -449,5 +449,5 @@ class YoutubePlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
