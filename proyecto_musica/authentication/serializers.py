@@ -5,6 +5,10 @@ from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=128, min_length=6, write_only=True)
@@ -183,3 +187,28 @@ class LoginSerializer(serializers.ModelSerializer):
         fields=('id','email','password', 'username', 'token')
 
         read_only_fields = ['token']
+
+
+# this uses a cookie to get the token for the userr
+class CookieTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+    def validate(self, attrs):
+        attrs['refresh'] = self.context['request'].COOKIES.get('refresh_token')
+        if attrs['refresh']:
+            jd = super().validate(attrs)
+
+            return jd
+        else:
+            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+
+# this refreshes the user's token
+# however, this does not get the refresh token from the user's cookies
+class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+    def validate(self, attrs):
+        if attrs['refresh']:
+            jd = super().validate(attrs)
+
+            return jd
+        else:
+            raise InvalidToken('No valid token found in cookie \'refresh_token\'')

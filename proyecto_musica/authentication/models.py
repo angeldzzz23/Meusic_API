@@ -140,7 +140,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     def token(self):
         token = jwt.encode(
             {'id': str(self.id),
-                'exp': datetime.utcnow() + timedelta(hours=24)},
+                'exp': datetime.utcnow() + timedelta(hours=4)},
             settings.SECRET_KEY, algorithm='HS256')
 
         return token

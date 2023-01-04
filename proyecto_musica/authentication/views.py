@@ -2,13 +2,17 @@ from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
 from authentication.serializers import RegisterSerializer
 from authentication.serializers import EditSerializer
-from authentication.serializers import LoginSerializer
+from authentication.serializers import LoginSerializer, CookieTokenRefreshSerializer, WithNoCookieTokenRefreshSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders, Verification
 from authentication.functions import validate_field, List_Fields, User_Fields
 from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers  import TokenObtainSerializer
+from rest_framework_simplejwt.serializers  import TokenRefreshSerializer
+
+
 from api.models import Images
 from api.models import Videos
 from rest_framework.response import Response
@@ -25,9 +29,49 @@ import datetime
 
 from django.contrib.auth import login
 
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
 
-# TODO: implement delete user functionality
-# Create your views here.
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+
+
+
+# this uses a cookie
+# this is in charge of refreshing the user's token
+class CookieTokenRefreshView(TokenRefreshView):
+    def finalize_response(self, request, response, *args, **kwargs):
+        if response.data.get('refresh'):
+            cookie_max_age = 3600 * 24 * 14 # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+
+        return super().finalize_response(request, response, *args, **kwargs)
+
+    serializer_class = CookieTokenRefreshSerializer
+
+
+# documentation
+#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment 
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
+class CookieTokenRefreshView2(TokenRefreshView):
+    def finalize_response(self, request, response, *args, **kwargs):
+        serializer_class = WithNoCookieTokenRefreshSerializer
+        if 'refresh' not in request.data:
+            request.data['refresh'] = None
+
+        pp =  serializer_class(data=request.data['refresh'])
+
+        if pp.is_valid():
+            cookie_max_age = 3600 * 24 * 14 # 14 days
+            response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+
+
+        return super().finalize_response(request, response, *args, **kwargs)
 
 
 class AuthUserAPIView(GenericAPIView):
@@ -196,9 +240,11 @@ class RegisterAPIView(GenericAPIView):
         res = {'success' : False, 'user': serializer.errors}
         return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
 # this used to log in the user
 # response gives us the token if it is a valid login
+import jwt
+from django.conf import settings
+
 class LoginAPIView(GenericAPIView):
     authentication_classes = []
     serializer_class= LoginSerializer
@@ -212,10 +258,17 @@ class LoginAPIView(GenericAPIView):
         if user:
             serializer=self.serializer_class(user)
 
+            refresh = RefreshToken.for_user(user)
 
-            response = Response(serializer.data, status.HTTP_200_OK)
+            newdict =  {}
+            newdict.update(serializer.data)
+
+            newdict.update({'refresh': str(refresh)})
+
+            response = Response(newdict, status.HTTP_200_OK)
 
             response.set_cookie(key='jwt', value=user.token, httponly=True)
+            response.set_cookie(key='refresh_token', value=refresh, httponly=True)
 
             return response
 

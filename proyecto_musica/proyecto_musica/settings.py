@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -49,7 +51,8 @@ INSTALLED_APPS = [
     'misc',
     'search',
     'chat',
-    'Cprofile'
+    'Cprofile',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -75,6 +78,8 @@ PASSWORD_HASHERS = [
   'django.contrib.auth.hashers.UnsaltedMD5PasswordHasher',
   'django.contrib.auth.hashers.CryptPasswordHasher',
 ]
+
+
 
 ROOT_URLCONF = 'proyecto_musica.urls'
 
@@ -184,6 +189,21 @@ EMAIL_HOST_USER='angeldzambrano99@gmail.com'
 EMAIL_HOST_PASSWORD='pzqecvwfmxtbvjfx'
 
 AUTH_USER_MODEL = 'authentication.User' # setting the auth user
+
+
+# implementing the simple_JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=18),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'ROTATE_REFRESH_TOKENS': True,
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
