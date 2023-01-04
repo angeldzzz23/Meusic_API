@@ -193,8 +193,8 @@ AUTH_USER_MODEL = 'authentication.User' # setting the auth user
 
 # implementing the simple_JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=18),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
     'ROTATE_REFRESH_TOKENS': True,
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
