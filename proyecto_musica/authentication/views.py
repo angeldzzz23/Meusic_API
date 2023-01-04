@@ -47,7 +47,7 @@ class CookieTokenRefreshView(TokenRefreshView):
         if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14 # 14 days
             response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True )
 
         return super().finalize_response(request, response, *args, **kwargs)
 
@@ -58,17 +58,14 @@ class CookieTokenRefreshView(TokenRefreshView):
 #https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
+    serializer_class = WithNoCookieTokenRefreshSerializer
+    
     def finalize_response(self, request, response, *args, **kwargs):
-        serializer_class = WithNoCookieTokenRefreshSerializer
-        if 'refresh' not in request.data:
-            request.data['refresh'] = None
 
-        pp =  serializer_class(data=request.data['refresh'])
-
-        if pp.is_valid():
+        if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14 # 14 days
             response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True )
 
 
         return super().finalize_response(request, response, *args, **kwargs)
