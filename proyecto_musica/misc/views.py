@@ -271,7 +271,7 @@ class SpotifyPlatforms(GenericAPIView):
 
         serializer=SpotifySerializer(spot)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
@@ -295,7 +295,7 @@ class SpotifyPlatforms(GenericAPIView):
             res = {'success' : False, 'message': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     # TODO: create patch to edit
@@ -319,7 +319,7 @@ class SpotifyPlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
