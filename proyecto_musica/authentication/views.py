@@ -261,20 +261,21 @@ class LoginAPIView(GenericAPIView):
             refresh = RefreshToken.for_user(user)
 
             newdict =  {}
+            newdict['success'] = True
             newdict['access'] = serializer.data['token']
-            # newdict.update(serializer.data)
-
 
             newdict.update({'refresh': str(refresh)})
 
+            # creating the type of response
             response = Response(newdict, status.HTTP_200_OK)
-
+            # setting the cookies here
             response.set_cookie(key='access', value=user.token, httponly=True)
             response.set_cookie(key='refresh_token', value=refresh, httponly=True)
 
             return response
 
-        datos = {'message': "invalid credentials, try again"}
+
+        datos = {'success': False,'message': "invalid credentials, try again"}
             # return response.Response(serializer.data, status.HTTP_200_OK)
         response = Response(datos, status.HTTP_401_UNAUTHORIZED)
         return response
