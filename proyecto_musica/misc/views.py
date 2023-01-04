@@ -324,6 +324,9 @@ class SpotifyPlatforms(GenericAPIView):
 
 
 class VimeoPlatforms(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+
     def post(self, request):
         if request.user.is_superuser != True:
             res = {'success' : False, 'error' : "You do not have access to create objs"}
