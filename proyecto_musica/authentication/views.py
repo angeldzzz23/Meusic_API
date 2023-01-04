@@ -54,8 +54,9 @@ class CookieTokenRefreshView(TokenRefreshView):
     serializer_class = CookieTokenRefreshSerializer
 
 
-
-
+# documentation
+#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment 
+# https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
         serializer_class = WithNoCookieTokenRefreshSerializer
