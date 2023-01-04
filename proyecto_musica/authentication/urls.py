@@ -7,5 +7,8 @@ urlpatterns = [
     path('verifyemail/', views.VerifyEmail.as_view(), name="verifyemail"),
     path('forgotpassword/', views.ForgotPassword.as_view(), name='forgotpassword'),
     path('forgotpassword/verify', views.VerifyForgotPassword.as_view(), name='verify'),
-    path('user/<str:id>', views.AuthUserAPIView.as_view(), name='user_by_id')
+    path('user/<str:id>', views.AuthUserAPIView.as_view(), name='user_by_id'),
+    path('refresh2', views.CookieTokenRefreshView.as_view(), name="token_refresh"),
+    path('refresh3', views.CookieTokenRefreshView2.as_view(), name="token_refresh3")
+
 ]
