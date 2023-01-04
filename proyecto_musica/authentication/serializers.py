@@ -206,9 +206,10 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
 class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
     refresh = None
     def validate(self, attrs):
+        ll = self.context['request']
+        attrs['refresh'] = ll.data.get('refresh')
         if attrs['refresh']:
             jd = super().validate(attrs)
-
             return jd
         else:
-            raise InvalidToken('No valid token found in cookie \'refresh_token\'')
+            raise InvalidToken('No valid token found in body \'refresh\'')

@@ -27,8 +27,6 @@ from authentication.models import Genders
 # TODO: clean up code  -  Angel
     # add helper method
 
-# TODO: add sex View (I think you barely created this rashel, so once we can add)
-
 
 
 
@@ -36,13 +34,15 @@ class GenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        # TODO: Add super user code
 
         # for testing pusposes I have it distabled
         user = request.user
         serializer = AllGendersSerializer(user)
 
-        res = {'success' : True, 'data': serializer.data}
+        jd = {'success' : True}
+        jd.update(serializer.data)
+
+        res = jd
         return response.Response(res)
 
     def delete(self, request, id):
@@ -58,7 +58,7 @@ class GenderView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'skill': {}}
 
         return response.Response(res)
 
@@ -77,7 +77,7 @@ class GenderView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'gender': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def patch(self, request, id):
@@ -101,7 +101,7 @@ class GenderView(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'gender': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
@@ -115,8 +115,10 @@ class SkillView(GenericAPIView):
         user = request.user
         serializer = AllSkillsSerializer(user)
 
+        jd = {'success' : True}
+        jd.update(serializer.data)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = jd
         return response.Response(res)
 
 
@@ -133,7 +135,7 @@ class SkillView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'skill': {}}
 
         return response.Response(res)
 
@@ -150,10 +152,10 @@ class SkillView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            res = {'success' : False, 'error' : "something wrong with serializer"}
+            res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'skill': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def patch(self, request, id):
@@ -177,7 +179,7 @@ class SkillView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'skill': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
@@ -190,8 +192,9 @@ class GenreView(GenericAPIView):
         # TODO: Add super user code
         user = request.user
         serializer = AllGenresSerializer(user)
-
-        res = {'success' : True, 'data': serializer.data}
+        jd = {'success' : True}
+        jd.update(serializer.data)
+        res = jd
         return response.Response(res)
 
     def post(self, request):
@@ -204,11 +207,10 @@ class GenreView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            res = {'success' : False, 'error' : "something wrong with serializer"}
+            res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'genre': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def delete(self, request, id):
@@ -224,7 +226,7 @@ class GenreView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'genre': {}}
 
         return response.Response(res)
 
@@ -249,7 +251,7 @@ class GenreView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'genre': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
@@ -264,12 +266,12 @@ class SpotifyPlatforms(GenericAPIView):
         try:
             spot = Spotify.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'spotify_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=SpotifySerializer(spot)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
@@ -293,7 +295,7 @@ class SpotifyPlatforms(GenericAPIView):
             res = {'success' : False, 'message': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     # TODO: create patch to edit
@@ -317,11 +319,14 @@ class SpotifyPlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'spotify_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
 class VimeoPlatforms(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+
     def post(self, request):
         if request.user.is_superuser != True:
             res = {'success' : False, 'error' : "You do not have access to create objs"}
@@ -339,7 +344,7 @@ class VimeoPlatforms(GenericAPIView):
             res = {'success' : False, 'error': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def get(self, request):
@@ -348,12 +353,12 @@ class VimeoPlatforms(GenericAPIView):
         try:
             spot = Vimeo.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'vimeo_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=VimeoSerializer(spot)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     # this takes the object id
@@ -376,7 +381,7 @@ class VimeoPlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'vimeo_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 # this
@@ -403,7 +408,7 @@ class YoutubePlatforms(GenericAPIView):
             res = {'success' : False, 'error': serializer.errors}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def get(self, request):
@@ -413,12 +418,12 @@ class YoutubePlatforms(GenericAPIView):
         try:
             youtube = Youtube.objects.all()[0]
         except:
-            res = {'success' : True, 'data': {}}
+            res = {'success' : True, 'youtube_credentials': {}}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
         serializer=YoutubeSerializer(youtube)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
         # this takes the object id
@@ -444,5 +449,5 @@ class YoutubePlatforms(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)

@@ -47,7 +47,7 @@ class CookieTokenRefreshView(TokenRefreshView):
         if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14 # 14 days
             response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True )
 
         return super().finalize_response(request, response, *args, **kwargs)
 
@@ -55,20 +55,17 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 
 # documentation
-#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment 
+#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
+    serializer_class = WithNoCookieTokenRefreshSerializer
+    
     def finalize_response(self, request, response, *args, **kwargs):
-        serializer_class = WithNoCookieTokenRefreshSerializer
-        if 'refresh' not in request.data:
-            request.data['refresh'] = None
 
-        pp =  serializer_class(data=request.data['refresh'])
-
-        if pp.is_valid():
+        if response.data.get('refresh'):
             cookie_max_age = 3600 * 24 * 14 # 14 days
             response.set_cookie('refresh_token', response.data['refresh'], max_age=cookie_max_age, httponly=True )
-            response.set_cookie('jwt', response.data['access'], max_age=cookie_max_age, httponly=True )
+            response.set_cookie('access', response.data['access'], max_age=cookie_max_age, httponly=True )
 
 
         return super().finalize_response(request, response, *args, **kwargs)
@@ -261,18 +258,21 @@ class LoginAPIView(GenericAPIView):
             refresh = RefreshToken.for_user(user)
 
             newdict =  {}
-            newdict.update(serializer.data)
+            newdict['success'] = True
+            newdict['access'] = serializer.data['token']
 
             newdict.update({'refresh': str(refresh)})
 
+            # creating the type of response
             response = Response(newdict, status.HTTP_200_OK)
-
-            response.set_cookie(key='jwt', value=user.token, httponly=True)
+            # setting the cookies here
+            response.set_cookie(key='access', value=user.token, httponly=True)
             response.set_cookie(key='refresh_token', value=refresh, httponly=True)
 
             return response
 
-        datos = {'message': "invalid credentials, try again"}
+
+        datos = {'success': False,'message': "invalid credentials, try again"}
             # return response.Response(serializer.data, status.HTTP_200_OK)
         response = Response(datos, status.HTTP_401_UNAUTHORIZED)
         return response
