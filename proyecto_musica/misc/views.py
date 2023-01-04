@@ -192,8 +192,9 @@ class GenreView(GenericAPIView):
         # TODO: Add super user code
         user = request.user
         serializer = AllGenresSerializer(user)
-
-        res = {'success' : True, 'data': serializer.data}
+        jd = {'success' : True}
+        jd.update(serializer.data)
+        res = jd
         return response.Response(res)
 
     def post(self, request):
@@ -206,11 +207,10 @@ class GenreView(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
         else:
-            res = {'success' : False, 'error' : "something wrong with serializer"}
+            res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'genre': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def delete(self, request, id):
@@ -226,7 +226,7 @@ class GenreView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'genre': {}}
 
         return response.Response(res)
 
@@ -251,7 +251,7 @@ class GenreView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'genre': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
