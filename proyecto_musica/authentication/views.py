@@ -55,7 +55,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 
 # documentation
-#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment 
+#https://github.com/jazzband/djangorestframework-simplejwt/issues/71  -  LoranKloeze comment
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
     def finalize_response(self, request, response, *args, **kwargs):
@@ -261,13 +261,15 @@ class LoginAPIView(GenericAPIView):
             refresh = RefreshToken.for_user(user)
 
             newdict =  {}
-            newdict.update(serializer.data)
+            newdict['access'] = serializer.data['token']
+            # newdict.update(serializer.data)
+
 
             newdict.update({'refresh': str(refresh)})
 
             response = Response(newdict, status.HTTP_200_OK)
 
-            response.set_cookie(key='jwt', value=user.token, httponly=True)
+            response.set_cookie(key='access', value=user.token, httponly=True)
             response.set_cookie(key='refresh_token', value=refresh, httponly=True)
 
             return response
