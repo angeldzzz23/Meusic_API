@@ -27,8 +27,6 @@ from authentication.models import Genders
 # TODO: clean up code  -  Angel
     # add helper method
 
-# TODO: add sex View (I think you barely created this rashel, so once we can add)
-
 
 
 
@@ -36,13 +34,15 @@ class GenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        # TODO: Add super user code
 
         # for testing pusposes I have it distabled
         user = request.user
         serializer = AllGendersSerializer(user)
 
-        res = {'success' : True, 'data': serializer.data}
+        jd = {'success' : True}
+        jd.update(serializer.data)
+
+        res = jd
         return response.Response(res)
 
     def delete(self, request, id):
@@ -58,7 +58,7 @@ class GenderView(GenericAPIView):
             return response.Response(res)
 
         item.delete()
-        res = {'success' : True, 'data': {}}
+        res = {'success' : True, 'skill': {}}
 
         return response.Response(res)
 
@@ -77,7 +77,7 @@ class GenderView(GenericAPIView):
             res = {'success' : False, 'error' : serializer.errors}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'gender': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
     def patch(self, request, id):
@@ -101,7 +101,7 @@ class GenderView(GenericAPIView):
             res = {'success' : False, 'error' : "invalid body requirements"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
-        res = {'success' : True, 'data': serializer.data}
+        res = {'success' : True, 'gender': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
