@@ -8,7 +8,7 @@ class List_Fields(Enum):
     GENRES = 'genres'
     ARTISTS = 'artists'
     YOUTUBEVIDS = 'youtube_vids'
-    VIMEOVIDS = 'vimeo_vids',
+    VIMEOVIDS = 'vimeo_vids'
     NATIONALITIES = 'nationalities'
 
 
