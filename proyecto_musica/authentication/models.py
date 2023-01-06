@@ -293,3 +293,41 @@ class Verification(models.Model):
   code = models.IntegerField(null=True)
   email = models.EmailField(max_length = 254,blank=False, unique=True, default='SOME STRING')
   created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Nationality(models.Model):
+    nationality_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='nationality_id',
+    )
+    nationality_name = models.CharField(unique=True, max_length=200)
+
+    def __str__(self):
+        return self.nationality_id
+    class Meta:
+        db_table = 'Nationalities'
+
+class User_Nationality(models.Model):
+    user_nationality_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_nationality_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    nationality = models.ForeignKey(
+        Nationality,
+        on_delete=models.CASCADE,
+        verbose_name='nationality_id'
+    )
+
+    class Meta:
+        db_table = 'User_Nationalities'

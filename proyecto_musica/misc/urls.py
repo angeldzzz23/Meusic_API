@@ -15,7 +15,6 @@ urlpatterns = [
     path('vimeo', views.VimeoPlatforms.as_view(), name='vimeo'),
     path('youtube', views.YoutubePlatforms.as_view(), name='youtube'),
     path('youtube/<str:id>', views.YoutubePlatforms.as_view(), name='youtube'),
-
-
-
+    path('nationalities', views.NationalityView.as_view(), name="nationalities"),
+    path('nationalities/<str:id>', views.NationalityView.as_view(), name='nationalities_by_id'),
 ]

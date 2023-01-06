@@ -1,6 +1,7 @@
 from authentication.models import Skills
 from authentication.models import Genres
 from authentication.models import Genders
+from authentication.models import Nationality
 
 from rest_framework import serializers
 from misc.models import Vimeo,Spotify,Youtube
@@ -124,3 +125,35 @@ class YoutubeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Youtube
         fields = ('youtube_id','key')
+
+
+
+class NationalitiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nationality
+        fields = ('nationality_id','nationality_name',)
+
+    def get_nationalities(self, obj):
+        return Nationality.objects.all().order_by('nationality_name').values('nationality_id','nationality_name')
+
+    def create(self, validated_data):
+        nationality =  Nationality.objects.create(**validated_data)
+        return nationality
+
+    def destroy(self,request):
+        print("here")
+        return {}
+
+
+class AllNationalitiesSerializer(serializers.ModelSerializer):
+    nationalities = serializers.SerializerMethodField()
+    class Meta:
+        model = Nationality
+        fields = ('nationalities',)
+
+    def get_nationalities(self, obj):
+
+        nums = Nationality.objects.all().order_by('nationality_name').values('nationality_id','nationality_name')
+
+        return  nums
+
