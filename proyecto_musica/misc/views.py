@@ -518,7 +518,7 @@ class NationalityView(GenericAPIView):
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            you = Nationality.objects.get(skill_id=id)
+            you = Nationality.objects.get(nationality_id=id)
 
         except:
             res = {'success' : False, 'error' : "id does not exist"}
