@@ -122,7 +122,7 @@ DATABASES = {
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'Sheep787',
+        'PASSWORD': 'USPirat2001',
         'NAME': 'music7',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"

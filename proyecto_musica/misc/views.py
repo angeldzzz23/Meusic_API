@@ -11,6 +11,8 @@ from misc.serializers import SkillsSerializer
 from misc.serializers import AllSkillsSerializer
 from misc.serializers import AllGendersSerializer
 from misc.serializers import GendersSerializer
+from misc.serializers import AllNationalitiesSerializer
+from misc.serializers import NationalitiesSerializer
 
 from misc.serializers import  SpotifySerializer, VimeoSerializer, YoutubeSerializer
 
@@ -19,6 +21,8 @@ from misc.models import Vimeo,Spotify,Youtube
 from authentication.models import Skills
 from authentication.models import Genres
 from authentication.models import Genders
+from authentication.models import Nationality
+
 
 # from misc.serializers import AllGenresSerializer
 
@@ -451,3 +455,83 @@ class YoutubePlatforms(GenericAPIView):
 
         res = {'success' : True, 'youtube_credentials': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
+
+
+
+class NationalityView(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        # TODO: Add super user code
+
+        # for testing pusposes I have it distabled
+        user = request.user
+        serializer = AllNationalitiesSerializer(user)
+
+        jd = {'success' : True}
+        jd.update(serializer.data)
+
+        res = jd
+        return response.Response(res)
+
+
+    def delete(self, request, id):
+        user = request.user
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        item = Nationality.objects.filter(nationality_id=id)
+
+        if len(item) is 0:
+            res = {'success' : False, 'error': "there is no object with that id"}
+            return response.Response(res)
+
+        item.delete()
+        res = {'success' : True, 'nationality': {}}
+
+        return response.Response(res)
+
+
+
+
+    def post(self, request):
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to create objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        jd = request.data
+        serializer = NationalitiesSerializer(data=jd)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : serializer.errors}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'nationality': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+
+    def patch(self, request, id):
+        jd = request.data
+        if request.user.is_superuser != True:
+            res = {'success' : False, 'error' : "You do not have access to edit objs"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            you = Nationality.objects.get(skill_id=id)
+
+        except:
+            res = {'success' : False, 'error' : "id does not exist"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer=NationalitiesSerializer(you,data=jd,partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            res = {'success' : False, 'error' : serializer.errors}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        res = {'success' : True, 'nationality': serializer.data}
+        return response.Response(res, status=status.HTTP_201_CREATED)
+

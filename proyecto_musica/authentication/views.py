@@ -5,7 +5,7 @@ from authentication.serializers import EditSerializer
 from authentication.serializers import LoginSerializer, CookieTokenRefreshSerializer, WithNoCookieTokenRefreshSerializer
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
-from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders, Verification
+from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders, Verification, Nationality, User_Nationality
 from authentication.functions import validate_field, List_Fields, User_Fields
 from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -148,6 +148,7 @@ class AuthUserAPIView(GenericAPIView):
         User_Genres.objects.filter(user_id=id).delete()
         User_Skills.objects.filter(user_id=id).delete()
         User_Artists.objects.filter(user_id=id).delete()
+        User_Nationality.objects.filter(user_id=id).delete()
 
         # deleting the pics
         pics = Images.objects.filter(user_id=id)
