@@ -1,4 +1,4 @@
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube, User_Vimeo
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube, User_Vimeo, Nationality, User_Nationality
 from rest_framework import response, status
 from enum import Enum
 
@@ -8,7 +8,8 @@ class List_Fields(Enum):
     GENRES = 'genres'
     ARTISTS = 'artists'
     YOUTUBEVIDS = 'youtube_vids'
-    VIMEOVIDS = 'vimeo_vids'
+    VIMEOVIDS = 'vimeo_vids',
+    NATIONALITIES = 'nationalities'
 
 
 class User_Fields(Enum):
@@ -25,6 +26,7 @@ class User_Fields(Enum):
     ARTISTS = 'artists'
     YOUTUBEVIDS = 'youtube_vids'
     VIMEOVIDS = 'vimeo_vids'
+    NATIONALITIES = 'nationalities'
 
 
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
@@ -66,6 +68,14 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             for obj in field_ids:
                 list_field_ids.append({'vimeo_id':obj['vimeo_id'],"video_id": obj['video_id']})
             return list_field_ids if list_field_ids else None
+    elif f_name == 'nationality':
+        field_ids = f_ids if f_ids else User_Nationality.objects.filter(user_id=user_id).values(field_id)
+        if field_ids:
+            for obj in field_ids:
+                the_id = obj if f_ids else obj[field_id]
+                x = Nationality.objects.filter(nationality_id=the_id).values(field_name)
+                field_names.append({'nationality_id': the_id, 'nationality_name': x[0][field_name]})
+            return field_names
 
 def validate_field(field_name, field_list):
     if not isinstance(field_list, list):
@@ -98,6 +108,9 @@ def validate_field(field_name, field_list):
             field_from_db = Skills.objects.filter(skill_id=obj)
         elif field_name == "genres":
             field_from_db = Genres.objects.filter(genre_id=obj)
+        elif field_name == "nationalities":
+            field_from_db = Nationality.objects.filter(nationality_id=obj)
+
 
         if not field_from_db:
             return {'success' : False,

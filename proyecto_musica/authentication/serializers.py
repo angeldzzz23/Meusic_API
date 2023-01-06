@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality, User_Nationality
 from api.models import Images
 from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
@@ -110,7 +110,7 @@ class EditSerializer(serializers.ModelSerializer):
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists', 'youtube_vids','vimeo_vids', 'nationality')
+                'artists', 'youtube_vids','vimeo_vids', 'nationalities')
 
     def get_youtube_vids(self, obj):
 

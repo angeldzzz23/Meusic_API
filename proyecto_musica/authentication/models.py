@@ -321,7 +321,7 @@ class User_Nationality(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='nationality_id'
+        verbose_name='user_id'
     )
     nationality = models.ForeignKey(
         Nationality,
