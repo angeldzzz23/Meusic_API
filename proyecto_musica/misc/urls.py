@@ -17,4 +17,5 @@ urlpatterns = [
     path('youtube/<str:id>', views.YoutubePlatforms.as_view(), name='youtube'),
     path('nationalities', views.NationalityView.as_view(), name="nationalities"),
     path('nationalities/<str:id>', views.NationalityView.as_view(), name='nationalities_by_id'),
+    
 ]

@@ -19,6 +19,13 @@ from preferences import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('gender', admin.site.urls),
-    path('gender', views.Gender.as_view(), name="gender"),
+    path('gender', views.PreferenceGenderView.as_view(), name="gender"),
+    #path('genders/<str:id>', views.PreferenceGenderView.as_view(), name="genders_by_id"),
+    path('skill', views.PreferenceSkillView.as_view(), name="skill"),
+    #path('skills/<str:id>', views.PreferenceSkillView.as_view(), name='skills_by_id'),
+    path('genre', views.PreferenceGenreView.as_view(), name="genre"),
+    #path('genres/<str:id>', views.PreferenceGenreView.as_view(), name="genres_by_id"),
+    path('age', views.PreferenceAgeView.as_view(), name="age"),
+    # path('distance', views.Distance.as_view(), name="distance"),
+    # path('globally', views.Globally.as_view(), name="globally"),
 ]
