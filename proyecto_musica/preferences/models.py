@@ -124,7 +124,7 @@ class User_Preferences_Age(models.Model):
         primary_key=True,
         unique=True,
         null=False,
-        verbose_name='user_age_id'
+        verbose_name='preference_age_id'
     )
     user = models.ForeignKey(
         User,

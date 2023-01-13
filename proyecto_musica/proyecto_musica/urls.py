@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenRefreshView.as_view(), name='token_verify'),
     path('api/preferences/', include('preferences.urls')),
+    path('api/user/preferences/', include('preferences.urls')),
 
 ]
 # Serving the media files in development mode
