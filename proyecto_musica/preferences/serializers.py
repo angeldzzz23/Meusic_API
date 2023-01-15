@@ -1,70 +1,66 @@
-from preferences.models import Preference_Genders, Preference_Skills, Preference_Genres, User_Preference_Genders, User_Preference_Skills, User_Preference_Genres, User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
-from authentication.models import User
+from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres, User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
+from authentication.models import User, Genders, Skills, Genres, Genders
 from rest_framework import serializers
+from preferences.functions import List_Fields, get_list_field
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 
 class PreferenceGendersSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Preference_Genders
-        fields = ('preference_gender_id','preference_gender_name',)
+        model = Genders
+        fields = ('gender_id','gender_name',)
     def get_genders(self, obj):
-        return Preference_Genders.objects.all().order_by('preference_gender_name').values('preference_gender_id','preference_gender_name')
+        return Genders.objects.all().order_by('gender_name').values('gender_id','gender_name')
     def create(self, validated_data):
-        gender =  Preference_Genders.objects.create(**validated_data)
+        gender =  Genders.objects.create(**validated_data)
         return gender
-
 
 class AllPreferenceGendersSerializer(serializers.ModelSerializer):
     genders = serializers.SerializerMethodField()
     class Meta:
-        model = Preference_Genders
+        model = Genders
         fields = ('genders',)
     def get_genders(self, obj):
-        nums = Preference_Genders.objects.all().order_by('preference_gender_name').values('preference_gender_id','preference_gender_name')
+        nums = Genders.objects.all().order_by('gender_name').values('gender_id','gender_name')
         return  nums
-
-
 
 class PreferenceSkillsSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Preference_Skills
-        fields = ('preference_skill_id','preference_skill_name',)
+        model = Skills
+        fields = ('skill_id','skill_name',)
     def get_skills(self, obj):
-        return Preference_Skills.objects.all().order_by('preference_skill_name').values('preference_skill_id','preference_skill_name')
+        return Skills.objects.all().order_by('skill_name').values('skill_id','skill_name')
     def create(self, validated_data):
-        skill =  Preference_Skills.objects.create(**validated_data)
+        skill =  Skills.objects.create(**validated_data)
         return skill
     def destroy(self,request):
         print("here")
         return {}
 
+
 class AllPreferenceSkillsSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
-
     class Meta:
-        model = Preference_Skills
+        model = Skills
         fields = ('skills',)
-
     def get_skills(self, obj):
-
-        nums = Preference_Skills.objects.all().order_by('preference_skill_name').values('preference_skill_id','preference_skill_name')
-
+        nums = Skills.objects.all().order_by('skill_name').values('skill_id','skill_name')
         return  nums
-
 
 
 class PreferenceGenresSerializer(serializers.ModelSerializer):
     # skills = serializers.SerializerMethodField()
 
     class Meta:
-        model = Preference_Genres
-        fields = ('preference_genre_id','preference_genre_name',)
-
+        model = Genres
+        fields = ('genre_id','genre_name',)
 
     def create(self, validated_data):
-        genres =  Preference_Genres.objects.create(**validated_data)
-
+        genres =  Genres.objects.create(**validated_data)
         return genres
 
 
@@ -72,11 +68,11 @@ class AllPreferenceGenresSerializer(serializers.ModelSerializer):
     genres = serializers.SerializerMethodField()
 
     class Meta:
-        model = Preference_Genres
+        model = Genres
         fields = ('genres',)
 
     def get_genres(self, obj):
-        nums = Preference_Genres.objects.all().order_by('preference_genre_name').values('preference_genre_id','preference_genre_name')
+        nums = Genres.objects.all().order_by('genre_name').values('genre_id','genre_name')
         return  nums
 
 
@@ -122,67 +118,55 @@ class PreferenceGloballySerializer(serializers.ModelSerializer):
         return global_search
 
 
-
-class EditPreferenceSerializer(serializers.ModelSerializer):
-    gender = serializers.SerializerMethodField()
+class PreferenceEditSerializer(serializers.ModelSerializer):
+    
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
-    age = serializers.SerializerMethodField()
-    distance = serializers.SerializerMethodField()
-    search_globally = serializers.SerializerMethodField()
+    genders = serializers.SerializerMethodField()
+    #gender_name = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('gender', 'skills', 'genres', 'age', 'distance', 'search_globally')
-
-    def get_gender(self, obj):
-        preference_gender_id = obj.preference_gender_id
-        if preference_gender_id:
-            res = Preference_Genders.objects.get(preference_gender_id=preference_gender_id)
-            return res.preference_gender_name
+        fields=('skills', 'genres', 'genders')
 
     def get_skills(self, obj):
-        preference_skills = self.context.get("preference_skill_name")
-        return get_list_field(obj.id, "skill", preference_skills)
+        skills = self.context.get("skills")
+        return get_list_field(obj.id, "skill", skills)
 
     def get_genres(self, obj):
-        genres = self.context.get("preference_genre")
-        return get_list_field(obj.id, "genre", preference_genre_name)
+        genres = self.context.get("genres")
+        return get_list_field(obj.id, "genre", genres)
 
-    def get_age(self, obj):
-        preference_age = self.context.get("preference_age")
-        return get_list_field(obj.id, "age", preference_age)
-
-
-    def get_distance(self, obj):
-        artists = self.context.get("preference_distance")
-        return get_list_field(obj.id, "artist", artists)
-
+    def get_genders(self, obj):
+        genders = self.context.get("genders")
+        return get_list_field(obj.id, "gender", genders)
+    
     def update(self, instance, validated_data):
-        instance.preference_gender = validated_data.get('gender', instance.preference_gender)
+        
+        #instance.gender = validated_data.get('gender', instance.gender)
 
-        instance.save()
-
-        # update other fields in corresponding tables
+    
         id = instance.id
         for field in List_Fields:
             field_name = field.value
             field_list = self.context.get(field_name)
             if field_list is not None:
-                if field_name == 'preference_skills':
+                if field_name == 'skills':
                     User_Preference_Skills.objects.filter(user_id=id).delete()
                     for obj in field_list:
-                        User_Skills.objects.create(user_id=id, skill_id=obj)
+                        User_Preference_Skills.objects.create(user_id=id, skill_id=obj)
                 elif field_name == 'genres':
                     User_Preference_Genres.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Preference_Genres.objects.create(user_id=id, genre_id=obj)
+                elif field_name == 'genders':
+                    User_Preference_Genders.objects.filter(user_id=id).delete()
+                    for obj in field_list:
+                        User_Preference_Genders.objects.create(user_id=id, gender_id=obj)
+
+
+
 
         return instance
-
-
-
-
-
 
 

@@ -12,13 +12,14 @@ from preferences.serializers import PreferenceGenresSerializer
 from preferences.serializers import AllPreferenceGenresSerializer
 from preferences.serializers import PreferenceAgeSerializer
 from preferences.serializers import PreferenceDistanceSerializer
-from preferences.serializers import EditPreferenceSerializer
+from preferences.serializers import PreferenceEditSerializer
 
-
-from preferences.models import Preference_Genders, User_Preference_Genders
-from preferences.models import Preference_Skills, User_Preference_Skills
-from preferences.models import Preference_Genres, User_Preference_Genres
+from authentication.models import Genders, Genres, Skills, User
+from preferences.models import User_Preference_Genders
+from preferences.models import User_Preference_Skills
+from preferences.models import User_Preference_Genres
 from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
+from preferences.functions import User_Fields, get_list_field, List_Fields, validate_field
 
 class PreferenceGenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -226,57 +227,75 @@ class PreferenceGloballyView(GenericAPIView):
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
+
+
 class PreferenceUserAPIView(GenericAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = EditPreferenceSerializer
+    serializer_class = PreferenceEditSerializer
 
     def get(self, request):
+        print("get request")
         user = request.user
-        res = {'success' : True, 'user': {}}
+        serializer = PreferenceEditSerializer(user)
+        serialized_data = (serializer.data).copy()
+        # if 'gender' in serializer.data:
+        #     serialized_data.pop('gender')
+
+        res = {'success' : True, 'preferences': serialized_data}
         return response.Response(res)
 
     def patch(self, request):
         jd = request.data
-        #id = request.user.id
+        id = request.user.id
         context = {}
-        # try:
-        #     user_obj = User.objects.get(id=id)
-        # except User.DoesNotExist:
-        #     res = {'success' : False, 'error' : "User id does not exist."}
-        #     return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            user_obj = User.objects.get(id=id)
+        except User.DoesNotExist:
+            res = {'success' : False, 'error' : "User id does not exist."}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+        # check body fields
         request_keys = list(jd.keys())
         allowed_keys = [e.value for e in User_Fields]
+
+        #Checks if parameters are allowed
         for key in request_keys:
             if key not in allowed_keys:
                 res = {'success' : False,
                         'error' : "Wrong parameter(s) passed in request."}
                 return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
+
         for field in List_Fields:
             field_name = field.value
+            #print(field_name) prints skills, genres as field name
 
             if field_name in jd:
                 field_list = jd[field_name]
+                print(field_list)
                 res = validate_field(field_name, field_list)
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
 
-        serializer = EditPreferenceSerializer(user_obj, data=jd, context=context, partial=True)
+        serializer = PreferenceEditSerializer(user_obj, data=jd,
+                                           context=context, partial=True)
 
         if serializer.is_valid():
             serializer.save()
+            # only return fields that were modified
             serialized_data = (serializer.data).copy()
             for field in serializer.data:
-                if field not in jd and field != 'preference_gender_name':
+                if field not in jd:
                     serialized_data.pop(field)
-            if 'preference_gender' in jd:
-                serialized_data.pop('gender')
-            if 'preference_gender' not in jd:
-                serialized_data.pop('preference_gender_name')
-            res = {'success' : True, 'user': serialized_data}
+
+            # if 'gender' in jd:
+            #     serialized_data.pop('gender')
+            # if 'gender' not in jd:
+            #     serialized_data.pop('gender_name')
+
+            res = {'success' : True, 'preferences': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
-        res = {'success' : False, 'user': serializer.errors}
+
+        res = {'success' : False, 'preferences': serializer.errors}
         return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
