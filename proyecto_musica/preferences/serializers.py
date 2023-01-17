@@ -1,7 +1,7 @@
 from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres, User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
 from authentication.models import User, Genders, Skills, Genres, Genders
 from rest_framework import serializers
-from preferences.functions import List_Fields, get_list_field
+from preferences.functions import List_Fields, get_list_field, Dict_Fields
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
@@ -123,11 +123,13 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     genders = serializers.SerializerMethodField()
-    #gender_name = serializers.SerializerMethodField()
+
+    age = serializers.SerializerMethodField()
+
 
     class Meta:
         model=User
-        fields=('skills', 'genres', 'genders')
+        fields=('skills', 'genres', 'genders', 'age')
 
     def get_skills(self, obj):
         skills = self.context.get("skills")
@@ -140,16 +142,23 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
     def get_genders(self, obj):
         genders = self.context.get("genders")
         return get_list_field(obj.id, "gender", genders)
+
+    def get_age(self, obj):
+        age = self.context.get("age")   # [25, 35] - ages that represent high and low
+        print("This is age 147", age)
+        return get_list_field(obj.id, "age", age)[0]
+        # try:
+        #     return get_list_field(obj.id, "age", age)[0]
+        # except IndexError:
+        #     print("except is in play")
+        #     return list({'age_low': 5, 'age_high': 1})
     
     def update(self, instance, validated_data):
-        
-        #instance.gender = validated_data.get('gender', instance.gender)
-
-    
         id = instance.id
         for field in List_Fields:
             field_name = field.value
             field_list = self.context.get(field_name)
+
             if field_list is not None:
                 if field_name == 'skills':
                     User_Preference_Skills.objects.filter(user_id=id).delete()
@@ -165,7 +174,17 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
                         User_Preference_Genders.objects.create(user_id=id, gender_id=obj)
 
 
-
+        for field in Dict_Fields:
+            field_name = field.value
+            field_list = self.context.get(field_name)
+            print("Field list:", field_list)
+            if field_list is not None:
+                if field_name == 'age':
+                    User_Preferences_Age.objects.filter(user_id=id).delete()
+                    User_Preferences_Age.objects.create(user_id=id, age_low=field_list[0], age_high=field_list[1])
+                    print("User_Preferences_Age.objects.filter(user_id=id)", User_Preferences_Age.objects.filter(user_id=id))
+                    # for obj in field_list:
+                    #     User_Preferences_Age.objects.create(user_id=id, age_low=obj[0], age_high=obj[1])
 
         return instance
 

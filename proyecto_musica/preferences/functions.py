@@ -9,17 +9,21 @@ class List_Fields(Enum):
     GENRES = 'genres'
     GENDERS = 'genders'
 
+class Dict_Fields(Enum):
+    AGES = 'age'
+    #DISTANCES = 'distance'
+
 class User_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
     GENDERS = 'genders'
-    AGES = 'ages'
+    AGES = 'age'
     DISTANCES = 'distances'
-    ISGLOBAL = 'is_global'
+    search_globally = 'search_globally'
 
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
-    field_id = f_name + "_id"
-    field_name = f_name + "_name"
+    field_id = f_name + "_id"       #age_id
+    field_name = f_name + "_name"   #age_name
     field_names = []
 
     if f_name == 'skill':
@@ -41,6 +45,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
 
     elif f_name == 'gender':
         field_ids = f_ids if f_ids else User_Preference_Genders.objects.filter(user_id=user_id).values(field_id)
+        print("gender field_id is", field_ids)
         if field_ids:
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
@@ -49,6 +54,28 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
                 field_names.append(x[0][field_name])
             return field_names
 
+    elif f_name == 'age':
+        age_pair_as_list = f_ids if f_ids else User_Preferences_Age.objects.filter(user_id=user_id).values('age_low','age_high')
+        print("age get aaaaaaaaaaaaaa", age_pair_as_list)
+        #print("age pair as list 1: ", age_pair_as_list)
+        #var = User_Preferences_Age.objects.filter(user_id=user_id).values('age_low','age_high')
+        #print("This is the current dict", var['age_low'])
+
+        age_low = age_pair_as_list[0]
+        print("age_low = age_pair_as_list[0]['age_low']:" , age_low)
+        age_high = age_pair_as_list[0]
+        print("314343245234wrfrewdf", age_pair_as_list)
+        print(age_high)
+        print("age_pair_as_list ", age_pair_as_list)
+        # if age_low_and_high:
+        #     for obj in age_low_and_high:
+        #         the_id = obj if f_ids else obj[field_id]
+        #         x = User_Preferences_Age.objects.filter(age_id=the_id).values(field_name)
+        #         field_names.append({'low': x[0]['age_low'], 'high': x[0]['age_high']})
+        #    return field_names
+        field_names.append({'age_low': age_low, 'age_high': age_high})
+        print("These are the field names: ", field_names)
+        return field_names
 
    
 

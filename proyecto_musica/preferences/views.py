@@ -19,7 +19,7 @@ from preferences.models import User_Preference_Genders
 from preferences.models import User_Preference_Skills
 from preferences.models import User_Preference_Genres
 from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
-from preferences.functions import User_Fields, get_list_field, List_Fields, validate_field
+from preferences.functions import User_Fields, get_list_field, List_Fields, validate_field, Dict_Fields
 
 class PreferenceGenderView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -266,17 +266,35 @@ class PreferenceUserAPIView(GenericAPIView):
                 return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
 
 
+        #Validation of list field
         for field in List_Fields:
             field_name = field.value
             #print(field_name) prints skills, genres as field name
-
             if field_name in jd:
                 field_list = jd[field_name]
-                print(field_list)
+                print("field_list", field_list)
                 res = validate_field(field_name, field_list)
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
+                print("context[field_name]: ", context[field_name])
+                print("current context: ", context)
+
+        for field in Dict_Fields:
+            field_name = field.value  # current names: age, distance
+            if field_name in jd:
+                #print("field_name test: ", field_name)
+                field_dictionary = jd[field_name] # field_dictionary is what is passed in the body for age or distance
+                #res = validate_field(field_name, field_dictionary)  VALIDATION OF THE DICT FOR AGE AND DISTANCE
+                # if res:
+                #     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
+                field_dictionary_values_list = list(field_dictionary.values())
+                context[field_name] = field_dictionary_values_list
+                print("context[field_name]: sfgnjsfnijsfnifefgoiefgiodsjfodiasjfoaidsjfiodjf:   ", context[field_name])
+
+
+
+
 
         serializer = PreferenceEditSerializer(user_obj, data=jd,
                                            context=context, partial=True)
