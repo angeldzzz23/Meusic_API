@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path
 from newsfeed import views
 
-
+#SeeUserView
 urlpatterns = [
     # path('profile', views.SeeProfileOfUserView.as_view(), name="profile"),
-    path('profile/<str:id>', views.SeeProfileOfUserView.as_view(), name="profile"),
 
+    path('profile/<str:id>', views.SeeProfileOfUserView.as_view(), name="profile"),
+    path('user/<str:id>', views.SeeUserView.as_view(), name="profile"),
 ]
