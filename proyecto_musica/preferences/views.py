@@ -238,10 +238,8 @@ class PreferenceUserAPIView(GenericAPIView):
         print("get request")
         user = request.user
         serializer = PreferenceEditSerializer(user)
-        serialized_data = (serializer.data).copy()
-        # if 'gender' in serializer.data:
-        #     serialized_data.pop('gender')
-
+        serialized_data = serializer.data
+        
         res = {'success' : True, 'preferences': serialized_data}
         return response.Response(res)
 
@@ -272,29 +270,26 @@ class PreferenceUserAPIView(GenericAPIView):
             #print(field_name) prints skills, genres as field name
             if field_name in jd:
                 field_list = jd[field_name]
-                print("field_list", field_list)
                 res = validate_field(field_name, field_list)
                 if res:
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
-                print("context[field_name]: ", context[field_name])
-                print("current context: ", context)
+
+
 
         for field in Dict_Fields:
             field_name = field.value  # current names: age, distance
             if field_name in jd:
-                #print("field_name test: ", field_name)
+                
                 field_dictionary = jd[field_name] # field_dictionary is what is passed in the body for age or distance
                 #res = validate_field(field_name, field_dictionary)  VALIDATION OF THE DICT FOR AGE AND DISTANCE
                 # if res:
                 #     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 field_dictionary_values_list = list(field_dictionary.values())
                 context[field_name] = field_dictionary_values_list
-                print("context[field_name]: sfgnjsfnijsfnifefgoiefgiodsjfodiasjfoaidsjfiodjf:   ", context[field_name])
 
-
-
-
+        print("Content: ", context) # Works
+                
 
         serializer = PreferenceEditSerializer(user_obj, data=jd,
                                            context=context, partial=True)

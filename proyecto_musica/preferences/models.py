@@ -124,11 +124,11 @@ class User_Preferences_Globally(models.Model):
         on_delete=models.CASCADE,
         verbose_name='user_id'
     )
-    isGlobal = models.BooleanField(verbose_name='is_global')
+    search_globally = models.BooleanField(
+        verbose_name='search_globally',
+        default=True)
 
     class Meta:
         db_table = 'User_Preferences_Globally'
-
-
 
 

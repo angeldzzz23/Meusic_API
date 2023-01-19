@@ -123,13 +123,13 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
     skills = serializers.SerializerMethodField()
     genres = serializers.SerializerMethodField()
     genders = serializers.SerializerMethodField()
-
     age = serializers.SerializerMethodField()
-
+    distance = serializers.SerializerMethodField()
+    search_globally = serializers.SerializerMethodField()
 
     class Meta:
         model=User
-        fields=('skills', 'genres', 'genders', 'age')
+        fields=('skills', 'genres', 'genders', 'age', 'distance', 'search_globally')
 
     def get_skills(self, obj):
         skills = self.context.get("skills")
@@ -144,17 +144,25 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
         return get_list_field(obj.id, "gender", genders)
 
     def get_age(self, obj):
-        age = self.context.get("age")   # [25, 35] - ages that represent high and low
-        print("This is age 147", age)
-        return get_list_field(obj.id, "age", age)[0]
+        age = self.context.get("age")   
+        return get_list_field(obj.id, "age", None)[0]
         # try:
         #     return get_list_field(obj.id, "age", age)[0]
         # except IndexError:
         #     print("except is in play")
         #     return list({'age_low': 5, 'age_high': 1})
+
+    def get_distance(self, obj):
+        distance = self.context.get("distance")
+        return get_list_field(obj.id, "distance", None)[0]
+
+    def get_search_globally(self, obj):
+        search_globally = self.context.get("search_globally")
+        return get_list_field(obj.id, "search_globally", None)[0]['search_globally']
     
     def update(self, instance, validated_data):
         id = instance.id
+
         for field in List_Fields:
             field_name = field.value
             field_list = self.context.get(field_name)
@@ -172,6 +180,9 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
                     User_Preference_Genders.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Preference_Genders.objects.create(user_id=id, gender_id=obj)
+                elif field_name == 'search_globally':
+                    User_Preferences_Globally.objects.filter(user_id=id).delete()
+                    User_Preferences_Globally.objects.create(user_id=id, search_globally=field_list)
 
 
         for field in Dict_Fields:
@@ -182,9 +193,10 @@ class PreferenceEditSerializer(serializers.ModelSerializer):
                 if field_name == 'age':
                     User_Preferences_Age.objects.filter(user_id=id).delete()
                     User_Preferences_Age.objects.create(user_id=id, age_low=field_list[0], age_high=field_list[1])
-                    print("User_Preferences_Age.objects.filter(user_id=id)", User_Preferences_Age.objects.filter(user_id=id))
-                    # for obj in field_list:
-                    #     User_Preferences_Age.objects.create(user_id=id, age_low=obj[0], age_high=obj[1])
+                if field_name == 'distance':
+                    User_Preferences_Distance.objects.filter(user_id=id).delete()
+                    User_Preferences_Distance.objects.create(user_id=id, distance_low=field_list[0], distance_high=field_list[1])
+                    
 
         return instance
 
