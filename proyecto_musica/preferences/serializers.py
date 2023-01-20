@@ -29,17 +29,27 @@ class AllPreferenceGendersSerializer(serializers.ModelSerializer):
 
 class PreferenceSkillsSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Skills
-        fields = ('skill_id','skill_name',)
+    # class Meta:
+    #     model = Skills
+    #     fields = ('skill_id','skill_name',)
+    # def get_skills(self, obj):
+    #     return Skills.objects.all().order_by('skill_name').values('skill_id','skill_name')
+    # def create(self, validated_data):
+    #     skill =  Skills.objects.create(**validated_data)
+    #     return skill
+    # def destroy(self,request):
+    #     print("here")
+    #     return {}
+
+    skills = serializers.SerializerMethodField()
+
+    class Meta():
+        model = User
+        fields=('skills',)
+
     def get_skills(self, obj):
-        return Skills.objects.all().order_by('skill_name').values('skill_id','skill_name')
-    def create(self, validated_data):
-        skill =  Skills.objects.create(**validated_data)
-        return skill
-    def destroy(self,request):
-        print("here")
-        return {}
+        skills = self.context.get("skills")
+        return get_list_field(obj.id, "skill", skills)
 
 
 class AllPreferenceSkillsSerializer(serializers.ModelSerializer):

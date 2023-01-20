@@ -65,12 +65,25 @@ class PreferenceGenderView(GenericAPIView):
 
 class PreferenceSkillView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    # def get(self, request):
+    #     user = request.user
+    #     serializer = AllPreferenceSkillsSerializer(user)
+    #     jd = {'success' : True}
+    #     jd.update(serializer.data)
+    #     res = jd
+    #     return response.Response(res)
+
     def get(self, request):
+        jd = request.data
         user = request.user
-        serializer = AllPreferenceSkillsSerializer(user)
-        jd = {'success' : True}
-        jd.update(serializer.data)
-        res = jd
+        context = {}
+
+        serializer = PreferenceSkillsSerializer(user)
+
+        res = {}
+        res['success'] = True
+        res['skills'] = serializer.data['skills']
+
         return response.Response(res)
 
     def patch(self, request):
