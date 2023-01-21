@@ -137,7 +137,11 @@ class UpdateVideo(GenericAPIView):
         def get(self,request):
             user = request.user
             serializer = VideosSerializer(user)
-            res = {'success' : True, 'data': serializer.data}
+            res = {}
+            res['success'] = True
+            res['videos'] = serializer.data['videos']
+
+            res = res
             return response.Response(res)
 
 
@@ -163,9 +167,10 @@ class UpdateVideo(GenericAPIView):
         def post(self,request,id=None):
             jd = request.data
 
-            if 'title' not in jd:
-                res = {'success' : False, 'data': "invalid"}
-                return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+            caption = None
+
+            if 'caption' in jd:
+                caption = jd['caption']
 
             try:
                 user_obj = request.user
@@ -186,13 +191,21 @@ class UpdateVideo(GenericAPIView):
                     return response.Response(datos, status=status.HTTP_201_CREATED)
 
 
-            video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request})
+            video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request, 'caption': caption})
 
             if video_serializer.is_valid():
                 video_serializer.save()
-                datos = {'success':True,'data':video_serializer.data}
+
+                res = {}
+                res['success'] = True
+                res['video'] = video_serializer.data
+
+
+
+                datos = res
                 return response.Response(datos, status=status.HTTP_201_CREATED)
             else:
+                datos = {'success':True,'data':video_serializer.errors}
                 return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
             res = {'success' : True, 'data': "serializer.data"}

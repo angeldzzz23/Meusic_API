@@ -76,6 +76,7 @@ class Videos(models.Model):
 
     url = models.URLField(max_length = 200, null=True)
     title = models.CharField(max_length=50)
+    caption = models.CharField(max_length=300, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     video = models.FileField(upload_to=get_uplaod_video_name)
 
