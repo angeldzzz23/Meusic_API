@@ -163,6 +163,10 @@ class UpdateVideo(GenericAPIView):
         def post(self,request,id=None):
             jd = request.data
 
+            if 'title' not in jd:
+                res = {'success' : False, 'data': "invalid"}
+                return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
             try:
                 user_obj = request.user
             except User.DoesNotExist:
@@ -171,6 +175,8 @@ class UpdateVideo(GenericAPIView):
 
             video = request.FILES["video"]
 
+
+
             # here we should check if the image is a video
             if video:
                 filename = video.name
@@ -178,6 +184,7 @@ class UpdateVideo(GenericAPIView):
                 if  (filename.endswith('.MP4') or filename.endswith('.mp4')) == False :
                     datos = {'success':False,'data':"file is not of type .mp4"}
                     return response.Response(datos, status=status.HTTP_201_CREATED)
+
 
             video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request})
 

@@ -84,18 +84,19 @@ class Videoerialiser(serializers.ModelSerializer):
     #title = serializers.SerializerMethodField()
     class Meta:
         model = Videos
-        fields = ('video_id', 'url', 'created_at')
+        fields = ('video_id', 'title','url', 'created_at')
 
     # question:
         # is there any way to pass all of the that information as validated data
     def create(self, validated_data):
         # get the user, passed in the user
+        print(self.context)
         user_obj = self.context.get("user")
         videooo = self.context.get("vid")
         request = self.context.get("request")
 
-        #title2 = validated_data['title']
-        title2 = "pitch_vid"
+        title2 = validated_data['title']
+        # title2 = "pitch_vid"
 
         # check if the user has other images
         # maybe there is a more pythonic way of doing this
