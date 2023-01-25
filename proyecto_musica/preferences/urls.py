@@ -27,6 +27,6 @@ urlpatterns = [
     #path('genres/<str:id>', views.PreferenceGenreView.as_view(), name="genres_by_id"),
     path('age', views.PreferenceAgeView.as_view(), name="age"),
     path('distance', views.PreferenceDistanceView.as_view(), name="distance"),
-    path('globally', views.PreferenceGloballyView.as_view(), name="globally"),
+    path('search_globally', views.PreferenceGloballyView.as_view(), name="search_globally"),
     path('all', views.PreferenceUserAPIView.as_view(), name="user"),
 ]

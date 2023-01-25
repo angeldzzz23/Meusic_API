@@ -1,5 +1,5 @@
 from authentication.models import User, Skills, Genres, Genders
-from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres, User_Preferences_Globally, User_Preferences_Age, User_Preferences_Distance
+from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres, User_Preferences_Globally, User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
 from enum import Enum
 
 
@@ -8,11 +8,9 @@ class List_Fields(Enum):
     SKILLS = 'skills'
     GENRES = 'genres'
     GENDERS = 'genders'
-    SEARCH_GLOBALLY = 'search_globally'
-
-class Dict_Fields(Enum):
     AGES = 'age'
     DISTANCES = 'distance'
+    SEARCH_GLOBALLY = 'search_globally'
 
 class User_Fields(Enum):
     SKILLS = 'skills'
@@ -22,26 +20,29 @@ class User_Fields(Enum):
     DISTANCES = 'distance'
     SEARCH_GLOBALLY = 'search_globally'
 
-def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
+def get_list_field(user_id, f_name, f_ids): # f_ids = [1,2,3](value of a field) if field exists in body, 'None' if doesnt exist   f_name = name of a key, i.e. skills, genres...
     field_id = f_name + "_id"       #age_id
     field_name = f_name + "_name"   #age_name
     field_names = []
 
     if f_name == 'skill':
-        field_ids = f_ids if f_ids else User_Preference_Skills.objects.filter(user_id=user_id).values(field_id)
+        field_ids = f_ids if f_ids else User_Preference_Skills.objects.filter(user_id=user_id).values(field_id) # <QuerySet [{'skill_id': 1}, {'skill_id': 2}]>
         if field_ids:
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
                 field_names.append({'skill_id': the_id, 'skill_name': x[0][field_name]})
+            print("FIELD NAMES skill: ", field_names)
             return field_names
     elif f_name == 'genre':
         field_ids = f_ids if f_ids else User_Preference_Genres.objects.filter(user_id=user_id).values(field_id)
+        
         if field_ids:
             for obj in field_ids:
                 the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
                 field_names.append({'genre_id': the_id, 'genre_name': x[0][field_name]})
+            print("FIELD NAMES genre: ", field_names)
             return field_names
 
     elif f_name == 'gender':
@@ -52,39 +53,63 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
                 x = Genders.objects.filter(gender_id=the_id).values(field_name)
                 #field_names.append({'gender_id': the_id, 'gender_name': x[0][field_name]})
                 field_names.append(x[0][field_name])
+            print("FIELD NAMES GENDER: ", field_names)
             return field_names
 
     elif f_name == 'age':
-        age_pair_as_list = f_ids if f_ids else User_Preferences_Age.objects.filter(user_id=user_id).values('age_low','age_high')
-        age_low = age_pair_as_list[0]
-        age_high = age_pair_as_list[0]
-        # if age_low_and_high:
-        #     for obj in age_low_and_high:
-        #         the_id = obj if f_ids else obj[field_id]
-        #         x = User_Preferences_Age.objects.filter(age_id=the_id).values(field_name)
-        #         field_names.append({'low': x[0]['age_low'], 'high': x[0]['age_high']})
-        #    return field_names
-        field_names.append({'low': age_low['age_low'], 'high': age_high['age_high']})
-        return field_names
+        if f_ids:
+            field_ids = []
+            field_ids.append(f_ids['low'])
+            field_ids.append(f_ids['high'])
+        else:
+            field_ids = list(User_Preferences_Age.objects.filter(user_id=user_id).values_list('age_low','age_high'))
+            temp = field_ids.copy()
+            field_ids = []
+            if len(temp) == 0:
+                return 
+            for element in temp[0]:
+                field_ids.append(element)
+
+        if field_ids:
+            field_names.append({'low': field_ids[0], 'high': field_ids[1]})
+            return field_names[0]
 
     elif f_name == 'distance':
-        distance_pair_as_list = f_ids if f_ids else User_Preferences_Distance.objects.filter(user_id=user_id).values('distance_low','distance_high')
-        distance_dict = distance_pair_as_list[0]
-        # if age_low_and_high:
-        #     for obj in age_low_and_high:
-        #         the_id = obj if f_ids else obj[field_id]
-        #         x = User_Preferences_Age.objects.filter(age_id=the_id).values(field_name)
-        #         field_names.append({'low': x[0]['age_low'], 'high': x[0]['age_high']})
-        #    return field_names
-        field_names.append({'low': distance_dict['distance_low'], 'high': distance_dict['distance_high']})
-        return field_names
+        if f_ids:
+            field_ids = []
+            field_ids.append(f_ids['low'])
+            field_ids.append(f_ids['high'])
+        else:
+            field_ids = list(User_Preferences_Distance.objects.filter(user_id=user_id).values_list('distance_low','distance_high'))
+            temp = field_ids.copy()
+            field_ids = []
+            if len(temp) == 0:
+                return 
+            for element in temp[0]:
+                field_ids.append(element)
+
+        if field_ids:
+            field_names.append({'low': field_ids[0], 'high': field_ids[1]})
+            return field_names[0]
 
     elif f_name == 'search_globally':
-        my_value = f_ids if f_ids else User_Preferences_Globally.objects.filter(user_id=user_id).values('search_globally')
-        field_names.append(my_value)
-        print("this is my_value: ", my_value)
-        print("this is my_value field_names: ", field_names[0])
-        return my_value
+        print("f_ids is ", f_ids)
+        if f_ids:
+            field_ids = []
+            field_ids.append(f_ids) 
+        else:
+            field_ids = list(User_Preferences_Globally.objects.filter(user_id=user_id).values_list('search_globally'))
+            temp = field_ids.copy()
+            field_ids = []
+            if len(temp) == 0:
+                return 
+            for element in temp[0]:
+                field_ids.append(element)
+
+        if field_ids:
+            field_names.append(field_ids[0])
+            return field_names[0]
+
    
 
 def validate_field(field_name, field_list):
