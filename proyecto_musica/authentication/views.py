@@ -121,9 +121,9 @@ class AuthUserAPIView(GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
-
             # only return fields that were modified
             serialized_data = (serializer.data).copy()
+            print("this is the auth serializer serialized_data:  ", serialized_data)
             for field in serializer.data:
                 if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)

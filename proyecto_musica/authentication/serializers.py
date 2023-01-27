@@ -233,3 +233,4 @@ class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
             return jd
         else:
             raise InvalidToken('No valid token found in body \'refresh\'')
+            
