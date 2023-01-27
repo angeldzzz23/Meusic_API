@@ -2,6 +2,7 @@
 from authentication.models import Skills
 from authentication.models import Genres
 from authentication.models import Genders
+from authentication.models import Nationality
 
 from rest_framework import serializers
 
@@ -20,4 +21,9 @@ class SkillsSerializer(serializers.ModelSerializer):
 class GenresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genres
+        fields = '__all__'
+
+class NationalitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nationality
         fields = '__all__'
