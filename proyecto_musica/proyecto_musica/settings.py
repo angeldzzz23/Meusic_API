@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-8a!9*2i&_st@z_wi7h83)q3c3*g7u-_weby6pwrn8bu%!ve8#u
 DEBUG = True
 
 #''
-ALLOWED_HOSTS = ['143.198.178.220']
+ALLOWED_HOSTS = ['143.198.178.220', '127.0.0.1']
 
 
 # Application definition
@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'search',
     'chat',
     'Cprofile',
-    'rest_framework_simplejwt'
+    'newsfeed',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [

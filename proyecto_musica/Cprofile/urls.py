@@ -30,5 +30,6 @@ urlpatterns = [
     path('username', views.CUsername.as_view()),
     path('name', views.Cname.as_view()),
     path('dob', views.Cdob.as_view()),
-    path('gender', views.CUserGender.as_view())
+    path('gender', views.CUserGender.as_view()),
+    path('nationality', views.Cnationality.as_view())
 ]

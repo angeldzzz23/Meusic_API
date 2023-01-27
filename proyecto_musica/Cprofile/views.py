@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework import response, status, permissions
 from authentication.models import User
-from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo, CTheNameOfUser, CDOBOfUser, CGender
+from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo, CTheNameOfUser, CDOBOfUser, CGender, Cnationalities
 
 # this contains a bunch of
 
@@ -232,5 +232,25 @@ class Cdob(GenericAPIView):
         res = {}
         res['success'] = True
         res['DOB'] = serializer.data['DOB']
+
+        return JsonResponse(res)
+
+# getting the nationalities of the user
+#
+
+class Cnationality(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def get(self, request):
+        # Cnationalities
+        jd = request.data
+        user = request.user
+        context = {}
+        serializer = Cnationalities(user)
+
+        res = {}
+        res['Success'] = True
+        res['nationality'] = serializer.data['nationality']
 
         return JsonResponse(res)

@@ -2,10 +2,12 @@ from authentication.models import Skills
 from authentication.models import Genres
 from authentication.models import Genders
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo
+from authentication.models import User_Nationality
 from authentication.functions import List_Fields, get_list_field
 from api.models import Videos
 from api.models import Images
 from rest_framework import serializers
+
 
 
 class CSkills(serializers.ModelSerializer):
@@ -144,3 +146,15 @@ class CPersonalInfo(serializers.ModelSerializer):
     class Meta():
         model=User
         fields=('about_me', )
+
+# this is the
+class Cnationalities(serializers.ModelSerializer):
+    nationality = serializers.SerializerMethodField()
+
+    class Meta():
+        model=User
+        fields=('nationality',)
+
+    def get_nationality(self, obj):
+        nationalities = self.context.get("nationalities")
+        return get_list_field(obj.id, "nationality", nationalities)

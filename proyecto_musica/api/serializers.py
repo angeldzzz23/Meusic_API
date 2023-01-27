@@ -75,7 +75,7 @@ class VideosSerializer(serializers.ModelSerializer):
     def get_videos(self, obj):
 
         user_id = (User.objects.filter(email=obj.email).values('id'))[0]['id']
-        video_nums = Videos.objects.filter(user_id=user_id).order_by('title').values('title','url', 'video_id', 'created_at')
+        video_nums = Videos.objects.filter(user_id=user_id).order_by('title').values('title','url', 'video_id', 'created_at', 'caption')
         return video_nums
 
 
@@ -84,17 +84,20 @@ class Videoerialiser(serializers.ModelSerializer):
     #title = serializers.SerializerMethodField()
     class Meta:
         model = Videos
-        fields = ('video_id', 'url', 'created_at')
+        fields = ('video_id','url','caption', 'created_at')
 
     # question:
         # is there any way to pass all of the that information as validated data
     def create(self, validated_data):
         # get the user, passed in the user
+        print(self.context)
         user_obj = self.context.get("user")
         videooo = self.context.get("vid")
         request = self.context.get("request")
+        caption = self.context.get("caption")
+        print('a caption', caption)
 
-        #title2 = validated_data['title']
+
         title2 = "pitch_vid"
 
         # check if the user has other images
@@ -110,10 +113,11 @@ class Videoerialiser(serializers.ModelSerializer):
             url = request.build_absolute_uri(editedVideo.video.url)
             newurl = str(url)
             editedVideo.url = newurl
+            editedVideo.caption = caption
             editedVideo.save()
             return editedVideo
 
-        newVid = Videos(user=user_obj, title=title2, video = videooo)
+        newVid = Videos(user=user_obj, title=title2, video = videooo, caption=caption)
         newVid.save()
 
         url = request.build_absolute_uri(newVid.video.url)

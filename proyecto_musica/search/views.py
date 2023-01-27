@@ -3,13 +3,13 @@ from django.shortcuts import render
 import json
 from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
-from search.serializers import GenderSerializer, SkillsSerializer, GenresSerializer
+from search.serializers import GenderSerializer, SkillsSerializer, GenresSerializer, NationalitySerializer
 from rest_framework import filters
 from rest_framework import generics
 
 
 from rest_framework import response, status, permissions
-from authentication.models import Genders,Skills,Genres
+from authentication.models import Genders,Skills,Genres, Nationality
 
 
 # Create your views here.
@@ -34,5 +34,8 @@ class searchGenres(generics.ListCreateAPIView):
     queryset = Genres.objects.all()
     serializer_class = GenresSerializer
 
-
-# searching the skills
+class searchNationality(generics.ListCreateAPIView):
+    search_fields = ['nationality_name']
+    filter_backends = (filters.SearchFilter,)
+    queryset = Nationality.objects.all()
+    serializer_class = NationalitySerializer

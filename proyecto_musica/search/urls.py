@@ -7,7 +7,6 @@ urlpatterns = [
 path('gender', views.SearchGender.as_view(), name="gender"),
 path('skills', views.searchSkills.as_view(), name="skills"),
 path('genres', views.searchGenres.as_view(), name="genres"),
-
-
+path('nationality', views.searchNationality.as_view(), name="nationality"),
 
 ]
