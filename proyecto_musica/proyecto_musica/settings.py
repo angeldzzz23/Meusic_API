@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'misc',
     'search',
     'chat',
+    'newsfeed',
     'Cprofile',
     'rest_framework_simplejwt',
     'preferences'
@@ -123,7 +124,7 @@ DATABASES = {
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'USPirat2001',
+        'PASSWORD': 'Sheep787',
         'NAME': 'music7',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"

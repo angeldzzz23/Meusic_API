@@ -251,6 +251,6 @@ class Cnationality(GenericAPIView):
 
         res = {}
         res['Success'] = True
-        res['nationality'] = serializer.data['nationality']
+        res['nationalities'] = serializer.data['nationality']
 
         return JsonResponse(res)
