@@ -12,7 +12,7 @@ import uuid
 
 from django.conf import settings
 
- 
+
 # Create your models here.
 class MyUserManager(UserManager):
 
@@ -120,6 +120,9 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
             'Unselect this instead of deleting accounts.'
         ),
     )
+
+    is_setup = models.BooleanField(default=False)
+
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     email_verified = models.BooleanField(
         _('email_verified'),

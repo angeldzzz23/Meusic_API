@@ -10,7 +10,7 @@ from authentication.functions import List_Fields, get_list_field
 # the video with caption
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     # the profile pictures fo the user
     pictures = serializers.SerializerMethodField()
     # the video has the caption etc
@@ -29,7 +29,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def get_video(self, obj):
         query = Videos.objects.filter(user_id=obj.id).values('video_id',
-                    'url', 'title')
+                    'url', 'caption')
         return list(query) if query else None
 
     def get_nationalities(self, obj):
