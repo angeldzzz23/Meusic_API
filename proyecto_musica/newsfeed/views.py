@@ -80,21 +80,24 @@ class Feed(GenericAPIView):
 
     def get(self, request):
 
-         print(request.user)
-         res = {'ahaha': "hello world"}
-
-
          all_users = User.objects.all().exclude(id=request.user.id).exclude(is_staff=True)
 
          user_objects = []
 
+         url = request.build_absolute_uri()
+
+         newurl = str(url)
+         newurl = newurl[:-5] + ''
+
+
          for user in all_users:
+
+
             serializer = ProfileSerializer(user)
             serialized_data = serializer.data
+            serialized_data['personal_link'] = newurl + 'profile/'+ user.username
+
             user_objects.append(serialized_data)
-
-         print('user objs', user_objects)
-
 
          theFeedJson = {'feed': user_objects}
 
