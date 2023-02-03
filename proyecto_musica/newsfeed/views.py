@@ -60,6 +60,8 @@ class SeeUserView(GenericAPIView):
         # make sure there is a profile image and a a video at least
         serialized_data = serializer.data
 
+        print('data: ', serialized_data)
+
 
         if serialized_data['pictures'] == None or serialized_data['video'] == None:
             res = {'success' : True, 'user': None}
@@ -74,8 +76,26 @@ class SeeUserView(GenericAPIView):
 # this will get the feed view
 class Feed(GenericAPIView):
 
+    permission_classes = (permissions.IsAuthenticated,)
+
     def get(self, request):
+
+         print(request.user)
          res = {'ahaha': "hello world"}
 
 
-         return response.Response(res, status=status.HTTP_200_OK)
+         all_users = User.objects.all().exclude(id=request.user.id).exclude(is_staff=True)
+
+         user_objects = []
+
+         for user in all_users:
+            serializer = ProfileSerializer(user)
+            serialized_data = serializer.data
+            user_objects.append(serialized_data)
+
+         print('user objs', user_objects)
+
+
+         theFeedJson = {'feed': user_objects}
+
+         return response.Response(theFeedJson, status=status.HTTP_200_OK)

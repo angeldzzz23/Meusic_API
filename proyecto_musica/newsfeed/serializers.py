@@ -35,3 +35,16 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
+
+
+
+
+class NewsfeedSerializer(serializers.ModelSerializer):
+    feed = serializers.SerializerMethodField()
+
+    class meta():
+        model = User
+        fields = ('feed',)
+
+        def get_feed(self, obj):
+            return None
