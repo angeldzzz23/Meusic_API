@@ -18,9 +18,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     # the array of natinoality of the user
     nationalities = serializers.SerializerMethodField()
 
+    profile_url = serializers.SerializerMethodField()
+
+
     class Meta():
         model=User
-        fields=('username','first_name','last_name', 'pictures', 'video', 'nationalities')
+        fields=('username','first_name','last_name', 'profile_url', 'pictures', 'video', 'nationalities')
 
     def get_pictures(self, obj):
         query = Images.objects.filter(user_id=obj.id).values('image_id',
@@ -35,6 +38,13 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
+
+    def get_profile_url(self, obj):
+         request = self.context.get("request")
+         base_url = self.context.get("base_url")
+         return  base_url + 'profile/' + obj.username
+
+
 
 
 

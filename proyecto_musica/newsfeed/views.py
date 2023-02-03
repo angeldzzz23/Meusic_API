@@ -55,7 +55,14 @@ class SeeUserView(GenericAPIView):
             res = {'success' : True, 'user': None}
             return response.Response(res, status=status.HTTP_200_OK)
 
-        serializer = ProfileSerializer(user)
+        url = request.build_absolute_uri()
+        newurl = str(url)
+        base_url = newurl[:-(len(user.username) +5)] + ''
+        print('new base url', base_url)
+
+
+
+        serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
 
         # make sure there is a profile image and a a video at least
         serialized_data = serializer.data
@@ -85,18 +92,13 @@ class Feed(GenericAPIView):
          user_objects = []
 
          url = request.build_absolute_uri()
-
          newurl = str(url)
-         newurl = newurl[:-5] + ''
-
+         base_url = newurl[:-5] + ''
 
          for user in all_users:
 
-
-            serializer = ProfileSerializer(user)
+            serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
             serialized_data = serializer.data
-            serialized_data['personal_link'] = newurl + 'profile/'+ user.username
-
             user_objects.append(serialized_data)
 
          theFeedJson = {'feed': user_objects}
