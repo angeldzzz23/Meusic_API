@@ -7,6 +7,7 @@ from rest_framework import response
 from authentication.models import User
 from authentication.serializers import RegisterSerializer
 
+from newsfeed.models import User_Matches,User_Likes
 # importing the serialziers
 from newsfeed.serializers import ProfileSerializer
 
@@ -104,3 +105,33 @@ class Feed(GenericAPIView):
          theFeedJson = {'feed': user_objects}
 
          return response.Response(theFeedJson, status=status.HTTP_200_OK)
+
+
+class LikingView(GenericAPIView):
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, id):
+
+        # you want to check if the user with that username has liked you before.
+
+            # check if the passed user exists
+                # throw error if it doesnt exist.
+        try:
+            user = User.objects.get(username=id)
+
+        except User.DoesNotExist:
+            res = {'success' : False, 'error': 'invalid user'}
+            return response.Response(res, status=status.HTTP_200_OK)
+
+        # see if the
+
+
+
+            # query the likes table to see if the the user passed in the request has liked the current user
+
+
+
+        theFeedJson = {'hello': "world"}
+
+        return response.Response(theFeedJson, status=status.HTTP_200_OK)
