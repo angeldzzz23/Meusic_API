@@ -113,25 +113,73 @@ class LikingView(GenericAPIView):
 
     def post(self, request, id):
 
-        # you want to check if the user with that username has liked you before.
+        CurrentUser = request.user
+        jd = request.data
 
-            # check if the passed user exists
-                # throw error if it doesnt exist.
+        # you want to check if the user with that username has liked you before.
         try:
-            user = User.objects.get(username=id)
+            userBeingLiked = User.objects.get(username=id)
+            if userBeingLiked == CurrentUser:
+                 raise User.DoesNotExist
 
         except User.DoesNotExist:
             res = {'success' : False, 'error': 'invalid user'}
             return response.Response(res, status=status.HTTP_200_OK)
 
-        # see if the
+        # query the likes table to see if the the user passed in the request has liked the current user before
+        likesWithCurrentUserSecond = User_Likes.objects.filter(userLiking=userBeingLiked, userTwo=CurrentUser)
+
+        # check if you have liked the user in the past
+        likesWithcurrentUserFirst = User_Likes.objects.filter(userLiking=CurrentUser, userTwo=userBeingLiked)
+
+        # # verifies if you have liked the user in the past
+        if likesWithcurrentUserFirst:
+            theFeedJson = {'success': False,
+                            'message': 'this user has has been liked before'
+                          }
+            return response.Response(theFeedJson, status=status.HTTP_200_OK)
+
+
+        # the user hasnt liked you before
+        if not likesWithCurrentUserSecond:
+            message = None
+
+            if 'message' in jd:
+                message = jd['message']
+
+            # you create the record with the like
+            like = User_Likes(userLiking=CurrentUser, userTwo=userBeingLiked, message=message)
+            like.save()
+
+            theFeedJson = {'success': True,
+                            'isMatch': False
+                          }
+
+            return response.Response(theFeedJson, status=status.HTTP_201_CREATED)
+
+        else: # the user has liked you before.
 
 
 
-            # query the likes table to see if the the user passed in the request has liked the current user
+            userBeingLikedLike = likesWithCurrentUserSecond[0]
+            message = userBeingLikedLike.message
+
+            # TODO: create an inbox here with the messages
+
+            # creating the user like and user matches record
+            like = User_Likes(userLiking=CurrentUser, userTwo=userBeingLiked, message=message)
+            like.save()
+
+            match = User_Matches(current_user=CurrentUser,other_user=userBeingLiked)
+            match.save()
 
 
-
-        theFeedJson = {'hello': "world"}
+            theFeedJson = {'success': True,
+                            'isMatch': True,
+                            'user' : {
+                                'username': userBeingLiked.username,
+                                'message': message
+                            }
+                          }
 
         return response.Response(theFeedJson, status=status.HTTP_200_OK)

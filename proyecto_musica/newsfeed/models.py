@@ -13,12 +13,13 @@ class User_Likes(models.Model):
         verbose_name='like_id'
     )
 
-    userOne = models.ForeignKey(
+    # this is the user liking
+    userLiking = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='userOne',
+        verbose_name='userLiking',
         null=True,
-        related_name='userOne'
+        related_name='userLiking'
     )
 
     userTwo = models.ForeignKey(
