@@ -18,14 +18,12 @@ class MatchesView(GenericAPIView):
     def get(self, request):
 
         CurrentUser = request.user
-
-
         # will get all of the matches that the user has
           # this matches have to be where is_active is true
 
-        userMatchWithUserBeingMatched = User_Matches.objects.filter( other_user=CurrentUser)
+        userMatchWithUserBeingMatched = User_Matches.objects.filter( other_user=CurrentUser, is_active=True)
 
-        userMatchWithUserMatching = User_Matches.objects.filter(current_user=CurrentUser)
+        userMatchWithUserMatching = User_Matches.objects.filter(current_user=CurrentUser, is_active=True)
 
 
         combinedMatches = (userMatchWithUserBeingMatched | userMatchWithUserMatching).order_by('-created_at')
@@ -57,10 +55,11 @@ class MatchesView(GenericAPIView):
             # getting the matches
             theLike = User_Likes.objects.filter(userLiking=matchedUser, userTwo=CurrentUser)[0]
 
-
             # refactor this
             serialized_data = serializer.data
             serialized_data['message'] = theLike.message
+            serialized_data['id'] = match.like_id
+
 
             user_objects.append(serialized_data)
 
@@ -74,6 +73,38 @@ class UnMatchView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, id):
+
+        CurrentUser = request.user
+
+        # look for the user
+        try:
+            unmatchedUser = User.objects.get(username=id)
+            # makes sure tha t
+            if CurrentUser == unmatchedUser:
+                raise User.DoesNotExist
+
+        except User.DoesNotExist:
+            res = {'success' : True, 'user': None}
+            return response.Response(res, status=status.HTTP_200_OK)
+
+
+        # look for the matches that are currently active
+        userMatchWithUserBeingMatched = User_Matches.objects.filter(current_user=CurrentUser, other_user=unmatchedUser, is_active=True)
+
+        userMatchWithUserMatching = User_Matches.objects.filter(current_user=unmatchedUser, other_user=CurrentUser, is_active=True)
+
+
+
+        if userMatchWithUserBeingMatched:
+            match = userMatchWithUserBeingMatched[0]
+            match.is_active = False
+            match.save()
+        elif userMatchWithUserBeingMatched:
+            match = userMatchWithUserMatching[0]
+            match.is_active = False
+            match.save()
+
+
 
         res = {'success' : True, 'isMatch ': False, 'user': {}}
 
