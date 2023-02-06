@@ -40,6 +40,8 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 
 
 
+
+
 # this uses a cookie
 # this is in charge of refreshing the user's token
 class CookieTokenRefreshView(TokenRefreshView):
@@ -59,7 +61,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
     serializer_class = WithNoCookieTokenRefreshSerializer
-    
+
     def finalize_response(self, request, response, *args, **kwargs):
 
         if response.data.get('refresh'):
@@ -123,10 +125,27 @@ class AuthUserAPIView(GenericAPIView):
             serializer.save()
             # only return fields that were modified
             serialized_data = (serializer.data).copy()
-            print("this is the auth serializer serialized_data:  ", serialized_data)
             for field in serializer.data:
                 if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)
+
+            # implementing set up
+            if user_obj.DOB and user_obj.username:
+                if not user_obj.is_setup:
+                    user_obj.is_setup = True
+                    user_obj.save()
+            else:
+                if  user_obj.is_setup:
+                    user_obj.is_setup = True
+                    user_obj.save()
+
+            if user_obj.username:
+                print('there is a username')
+            else:
+                print('no username')
+
+            print('username', user_obj.username)
+            print('birthday', user_obj.DOB)
 
             if 'gender' in jd:
                 serialized_data.pop('gender')
@@ -430,3 +449,21 @@ class VerifyForgotPassword(GenericAPIView):
         datos = {'success':False,'token': str(token)}
 
         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+
+class verifyIsSetUp(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+
+        user = request.user
+
+        json = {}
+
+        if user.is_setup:
+            json['is_setup'] = True
+        else:
+            json['is_setup'] = False
+
+        datos = {'success':True,'user': json}
+        return response.Response(datos, status=status.HTTP_201_CREATED)
