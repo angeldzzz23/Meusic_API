@@ -245,11 +245,38 @@ class RegisterAPIView(GenericAPIView):
         serializer = self.serializer_class(data=jd,
                                            context=context)
 
+
         if serializer.is_valid():
             serializer.save()
 
+
             serialized_data = (serializer.data).copy()
             serialized_data.pop('gender')
+
+
+
+            print('type of', type(serialized_data))
+            print('serialized data',serialized_data)
+
+            email = serialized_data['email']
+
+            # try:
+                # get the email
+
+            try:
+                user = User.objects.get(email=email)
+
+            except User.DoesNotExist:
+                print('user does not exist')
+
+
+            if serialized_data['username'] and serialized_data['DOB']:
+                user.is_setup = True
+                user.save()
+
+            else:
+                print('we do not have a username and we do not have a DOB')
+
 
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
