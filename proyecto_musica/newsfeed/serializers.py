@@ -42,7 +42,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_profile_url(self, obj):
          request = self.context.get("request")
          base_url = self.context.get("base_url")
-         return  base_url + 'profile/' + obj.username
+         print(obj.username)
+         return  base_url + 'profile/' + str(obj.username)
 
 
 

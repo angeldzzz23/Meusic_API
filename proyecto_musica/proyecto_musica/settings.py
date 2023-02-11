@@ -58,6 +58,9 @@ INSTALLED_APPS = [
     'Matches',
 ]
 
+# GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+# GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,10 +120,13 @@ CHANNEL_LAYERS = {
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# GDAL_LIBRARY_PATH = "/opt/homebrew/Cellar/gdal/3.3.2_3/lib/libgdal.dylib"
+# GEOS_LIBRARY_PATH = "/opt/homebrew/Cellar/geos/3.9.1/lib/libgeos_c.dylib"
+
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'HOST': 'localhost',
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',

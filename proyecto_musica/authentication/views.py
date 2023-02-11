@@ -260,9 +260,6 @@ class RegisterAPIView(GenericAPIView):
 
             email = serialized_data['email']
 
-            # try:
-                # get the email
-
             try:
                 user = User.objects.get(email=email)
 
@@ -493,4 +490,80 @@ class verifyIsSetUp(GenericAPIView):
             json['is_setup'] = False
 
         datos = {'success':True,'user': json}
+        return response.Response(datos, status=status.HTTP_201_CREATED)
+
+class CreatingFakeData(GenericAPIView):
+
+    def post(self, request):
+
+        # create admin user
+        # User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
+
+
+        # Skills.objects.all().delete()
+        # Genres.objects.all().delete()
+        # Nationality.objects.all().delete()
+        # Genders.objects.all().delete()
+        #
+        # nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
+        # skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
+        #             "Public Relations", "Social Media", "Film Composer", "Music Director"]
+        # genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+        #
+        # genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
+        #
+        # #  creating the Skills
+        # for skill in skills:
+        #     p = Skills(skill_name=skill)
+        #     p.save()
+        #
+        # # creating the Genres
+        # for genre in genres:
+        #     p = Genres(genre_name=genre)
+        #     p.save()
+        #
+        # # creating nationalities
+        # for nationality in  nationalities:
+        #     p = Nationality(nationality_name=nationality)
+        #     p.save()
+        #
+        # # creating Genders
+        # for gender in genders:
+        #     p = Genders(gender_name=gender)
+        #     p.save()
+
+        # everything but the videos get added
+
+        mark = { "email":"marklovestheworld@gmail.com", "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "genres": [36,21], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [38,44,36], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,22]
+        }
+
+        steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [36,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [33,34], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[15]}
+
+        bill = {
+        "email": "billgates@gmail.com", "password" : "123456", "username": "billgates", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [32,22,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [42,39], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[15,22]}
+
+        sam = {
+        "email": "samaltman@gmail.com", "password" : "123456", "username": "samaltman", "first_name": "Sam", "last_name":"Altman", "DOB": "1999-06-22", "genres": [32,27,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [46,42,33], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,24]}
+
+        david = {"email": "davidzambrano@gmail.com", "password" : "123456", "username": "davidzzz23", "first_name": "David", "last_name":"Zambrano", "DOB": "1999-06-22", "genres": [26], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [38,44,36], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,23]}
+
+
+        total_users = [mark, steve, bill, sam, david]
+
+        # loop through all of the users and create them
+
+        for user in total_users:
+            context = {}
+
+            serializer = RegisterSerializer(data=user,context=context)
+
+            if serializer.is_valid():
+                serializer.save()
+                print("success",user['username'] )
+
+            else:
+                datos = {'success':False}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
