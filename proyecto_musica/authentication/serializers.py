@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality, User_Nationality
+from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality, User_Nationality,Locations
 from api.models import Images
 from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
@@ -7,7 +7,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
-
+from django.contrib.gis.geos import Point
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -72,7 +72,17 @@ class RegisterSerializer(serializers.ModelSerializer):
         return get_list_field(obj.id, "nationality", nationalities)
 
     def get_location(self, obj):
-        return None
+        location_objects = Locations.objects.filter(user=obj).last()
+        if location_objects:
+            # get the lat and long
+            long = location_objects.point.x
+            lat = location_objects.point.y
+            json = {'lat': lat, 'long':long, }
+            return json
+
+        else:
+            return None
+
 
         # TODO: Add the youtube and vimeo videos
     def create(self, validated_data):
@@ -110,14 +120,14 @@ class EditSerializer(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
-    # location = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
 
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists', 'youtube_vids','vimeo_vids', 'nationalities', )
+                'artists', 'youtube_vids','vimeo_vids', 'nationalities', 'location', )
 
     def get_youtube_vids(self, obj):
         vids = self.context.get("youtube_vids")
@@ -150,10 +160,20 @@ class EditSerializer(serializers.ModelSerializer):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
 
-    # def get_location(self, obj):
-    #     # nationalities = self.context.get("nationalities")
-    #     print('here')
-    #     return {'location': None}
+    def get_location(self, obj):
+
+        location_objects = Locations.objects.filter(user=obj).last()
+        if location_objects:
+            # get the lat and long
+            long = location_objects.point.x
+            lat = location_objects.point.y
+            json = {'lat': lat, 'long':long, }
+            return json
+
+        else:
+            return None
+
+        return None
 
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
@@ -204,9 +224,12 @@ class EditSerializer(serializers.ModelSerializer):
                     User_Nationality.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Nationality.objects.create(user_id=id, nationality_id=obj)
-
-
-
+                elif field_name == 'location':
+                    long = field_list['long']
+                    lat = field_list['lat']
+                    point = Point(float(long), float(lat), srid=4326)
+                    p = Locations(point=point, user=instance)
+                    p.save()
         return instance
 
 

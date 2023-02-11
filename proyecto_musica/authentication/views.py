@@ -495,11 +495,10 @@ class verifyIsSetUp(GenericAPIView):
 class CreatingFakeData(GenericAPIView):
 
     def post(self, request):
-
-        point = Locations.objects.all()[0]
-
-        print(point.point.x)
-        print(point.point.y)
+        # point = Locations.objects.all()[0]
+        #
+        # print(point.point.x)
+        # print(point.point.y)
 
 
         # user = User.objects.all()[2]
@@ -543,38 +542,38 @@ class CreatingFakeData(GenericAPIView):
         # for gender in genders:
         #     p = Genders(gender_name=gender)
         #     p.save()
-        #
-        # # everything but the videos get added
-        #
-        # mark = { "email":"marklovestheworld@gmail.com", "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "genres": [36,21], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [38,44,36], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,22]
+
+        # everything but the videos get added
+
+        # mark = { "email":"marklovestheworld@gmail.com", '' "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "genres": [1,2], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [1,2,3], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1,2]
         # }
-        #
-        # steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [36,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [33,34], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[15]}
-        #
-        # bill = {
-        # "email": "billgates@gmail.com", "password" : "123456", "username": "billgates", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [32,22,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [42,39], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[15,22]}
-        #
-        # sam = {
-        # "email": "samaltman@gmail.com", "password" : "123456", "username": "samaltman", "first_name": "Sam", "last_name":"Altman", "DOB": "1999-06-22", "genres": [32,27,19], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [46,42,33], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,24]}
-        #
-        # david = {"email": "davidzambrano@gmail.com", "password" : "123456", "username": "davidzzz23", "first_name": "David", "last_name":"Zambrano", "DOB": "1999-06-22", "genres": [26], "gender": 17, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [38,44,36], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[16,23]}
-        #
-        #
-        # total_users = [mark, steve, bill, sam, david]
-        #
-        # # loop through all of the users and create them
-        # for user in total_users:
-        #     context = {}
-        #
-        #     serializer = RegisterSerializer(data=user,context=context)
-        #
-        #     if serializer.is_valid():
-        #         serializer.save()
-        #         print("success",user['username'] )
-        #
-        #     else:
-        #         datos = {'success':False}
-        #         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+        steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [3,4], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [4,5], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
+
+        bill = {
+        "email": "billgates@gmail.com", "password" : "123456", "username": "billgates", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [1,2,4], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [1,2], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
+
+        sam = {
+        "email": "samaltman@gmail.com", "password" : "123456", "username": "samaltman", "first_name": "Sam", "last_name":"Altman", "DOB": "1999-06-22", "genres": [1,2], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [3,4], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
+
+        david = {"email": "davidzambrano@gmail.com", "password" : "123456", "username": "davidzzz23", "first_name": "David", "last_name":"Zambrano", "DOB": "1999-06-22", "genres": [4], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [3,6,7], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
+
+
+        total_users = [steve, bill, sam, david]
+
+        # loop through all of the users and create them
+        for user in total_users:
+            context = {}
+
+            serializer = RegisterSerializer(data=user,context=context)
+
+            if serializer.is_valid():
+                serializer.save()
+                print("success",user['username'] )
+
+            else:
+                datos = {'success':False}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
         datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
