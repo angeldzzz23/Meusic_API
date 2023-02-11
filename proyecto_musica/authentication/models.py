@@ -353,5 +353,8 @@ class Locations(models.Model):
         on_delete=models.CASCADE,
         verbose_name='user_id'
     )
+    created_at = models.DateTimeField(_('date joined'), default=timezone.now)
+
+
 
     point = models.PointField()

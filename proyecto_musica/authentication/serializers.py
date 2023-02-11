@@ -21,12 +21,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender',
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities')
+                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities', 'location')
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -69,6 +71,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
 
+    def get_location(self, obj):
+        return None
+
         # TODO: Add the youtube and vimeo videos
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -105,15 +110,16 @@ class EditSerializer(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
+    # location = serializers.SerializerMethodField()
+
 
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists', 'youtube_vids','vimeo_vids', 'nationalities')
+                'artists', 'youtube_vids','vimeo_vids', 'nationalities', )
 
     def get_youtube_vids(self, obj):
-
         vids = self.context.get("youtube_vids")
         print('dude', vids)
         return get_list_field(obj.id, "youtube_vids", vids)
@@ -143,6 +149,11 @@ class EditSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
+
+    # def get_location(self, obj):
+    #     # nationalities = self.context.get("nationalities")
+    #     print('here')
+    #     return {'location': None}
 
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
@@ -233,4 +244,3 @@ class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
             return jd
         else:
             raise InvalidToken('No valid token found in body \'refresh\'')
-            
