@@ -497,40 +497,40 @@ class CreatingFakeData(GenericAPIView):
     def post(self, request):
 
         # create admin user
-        # User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
+        User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
 
 
-        # Skills.objects.all().delete()
-        # Genres.objects.all().delete()
-        # Nationality.objects.all().delete()
-        # Genders.objects.all().delete()
-        #
-        # nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
-        # skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
-        #             "Public Relations", "Social Media", "Film Composer", "Music Director"]
-        # genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
-        #
-        # genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
-        #
-        # #  creating the Skills
-        # for skill in skills:
-        #     p = Skills(skill_name=skill)
-        #     p.save()
-        #
-        # # creating the Genres
-        # for genre in genres:
-        #     p = Genres(genre_name=genre)
-        #     p.save()
-        #
-        # # creating nationalities
-        # for nationality in  nationalities:
-        #     p = Nationality(nationality_name=nationality)
-        #     p.save()
-        #
-        # # creating Genders
-        # for gender in genders:
-        #     p = Genders(gender_name=gender)
-        #     p.save()
+        Skills.objects.all().delete()
+        Genres.objects.all().delete()
+        Nationality.objects.all().delete()
+        Genders.objects.all().delete()
+
+        nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
+        skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
+                    "Public Relations", "Social Media", "Film Composer", "Music Director"]
+        genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+
+        genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
+
+        #  creating the Skills
+        for skill in skills:
+            p = Skills(skill_name=skill)
+            p.save()
+
+        # creating the Genres
+        for genre in genres:
+            p = Genres(genre_name=genre)
+            p.save()
+
+        # creating nationalities
+        for nationality in  nationalities:
+            p = Nationality(nationality_name=nationality)
+            p.save()
+
+        # creating Genders
+        for gender in genders:
+            p = Genders(gender_name=gender)
+            p.save()
 
         # everything but the videos get added
 
@@ -551,7 +551,6 @@ class CreatingFakeData(GenericAPIView):
         total_users = [mark, steve, bill, sam, david]
 
         # loop through all of the users and create them
-
         for user in total_users:
             context = {}
 
