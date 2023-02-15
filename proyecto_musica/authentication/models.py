@@ -339,6 +339,9 @@ class User_Nationality(models.Model):
     class Meta:
         db_table = 'User_Nationalities'
 
+
+from django.contrib.gis.db import models as giomodels
+
 class Locations(models.Model):
     location_id = models.BigAutoField(
         auto_created=True,
@@ -356,5 +359,5 @@ class Locations(models.Model):
     created_at = models.DateTimeField(_('date joined'), default=timezone.now)
 
 
-
-    point = models.PointField()
+    point = giomodels.PointField(srid=4326)
+    # point = models.PointField(srid=32140)

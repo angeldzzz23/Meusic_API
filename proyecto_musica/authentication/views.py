@@ -242,6 +242,9 @@ class RegisterAPIView(GenericAPIView):
                     return response.Response(res, status=status.HTTP_401_UNAUTHORIZED)
                 context[field_name] = field_list
 
+
+        print('jd', jd)
+        print('context', context)
         serializer = self.serializer_class(data=jd,
                                            context=context)
 
@@ -499,8 +502,8 @@ class CreatingFakeData(GenericAPIView):
         #
         # print(point.point.x)
         # print(point.point.y)
-
-
+        #
+        #
         # user = User.objects.all()[2]
         # point = Point(float(30.5), float(32.5), srid=4326)
         # p = Locations(point=point, user=user)
@@ -508,45 +511,45 @@ class CreatingFakeData(GenericAPIView):
 
 
 
-        # # create admin user
-        # User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
-        #
-        # Skills.objects.all().delete()
-        # Genres.objects.all().delete()
-        # Nationality.objects.all().delete()
-        # Genders.objects.all().delete()
-        #
-        # nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
-        # skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
-        #             "Public Relations", "Social Media", "Film Composer", "Music Director"]
-        # genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
-        #
-        # genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
-        #
-        # #  creating the Skills
-        # for skill in skills:
-        #     p = Skills(skill_name=skill)
-        #     p.save()
-        #
-        # # creating the Genres
-        # for genre in genres:
-        #     p = Genres(genre_name=genre)
-        #     p.save()
-        #
-        # # creating nationalities
-        # for nationality in  nationalities:
-        #     p = Nationality(nationality_name=nationality)
-        #     p.save()
-        #
-        # # creating Genders
-        # for gender in genders:
-        #     p = Genders(gender_name=gender)
-        #     p.save()
+        # create admin user
+        User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
+
+        Skills.objects.all().delete()
+        Genres.objects.all().delete()
+        Nationality.objects.all().delete()
+        Genders.objects.all().delete()
+
+        nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
+        skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
+                    "Public Relations", "Social Media", "Film Composer", "Music Director"]
+        genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+
+        genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
+
+        #  creating the Skills
+        for skill in skills:
+            p = Skills(skill_name=skill)
+            p.save()
+
+        # creating the Genres
+        for genre in genres:
+            p = Genres(genre_name=genre)
+            p.save()
+
+        # creating nationalities
+        for nationality in  nationalities:
+            p = Nationality(nationality_name=nationality)
+            p.save()
+
+        # creating Genders
+        for gender in genders:
+            p = Genders(gender_name=gender)
+            p.save()
 
         # everything but the videos get added
 
-        # mark = { "email":"marklovestheworld@gmail.com", '' "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "genres": [1,2], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [1,2,3], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1,2]
-        # }
+        mark = { "email":"marklovestheworld@gmail.com", 'username': 'heyitsmark', "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "genres": [1,2], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [1,2,3], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1,2]
+        }
 
         steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "genres": [3,4], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [4,5], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
 
@@ -559,7 +562,7 @@ class CreatingFakeData(GenericAPIView):
         david = {"email": "davidzambrano@gmail.com", "password" : "123456", "username": "davidzzz23", "first_name": "David", "last_name":"Zambrano", "DOB": "1999-06-22", "genres": [4], "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],"skills": [3,6,7], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "nationalities":[1]}
 
 
-        total_users = [steve, bill, sam, david]
+        total_users = [mark, steve, bill, sam, david]
 
         # loop through all of the users and create them
         for user in total_users:

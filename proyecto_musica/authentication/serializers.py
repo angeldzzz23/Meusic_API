@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality, User_Nationality,Locations
+# from authentication.models import User_Nationalities
 from api.models import Images
 from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
@@ -103,8 +104,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Artists.objects.create(user_id=user_id, artist=obj)
                 elif field_name == 'nationalities':
+                    print('here')
                     for obj in field_list:
-                        User_Nationalities.objects.create(user_id=user_id, nationality_id=obj)
+                        User_Nationality.objects.create(user_id=user_id, nationality_id=obj)
 
         return user
 
@@ -225,6 +227,8 @@ class EditSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Nationality.objects.create(user_id=id, nationality_id=obj)
                 elif field_name == 'location':
+                    print('here')
+                    # return None
                     long = field_list['long']
                     lat = field_list['lat']
                     point = Point(float(long), float(lat), srid=4326)
