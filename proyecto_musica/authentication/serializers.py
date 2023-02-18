@@ -8,7 +8,6 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
-from django.contrib.gis.geos import Point
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -76,8 +75,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         location_objects = Locations.objects.filter(user=obj).last()
         if location_objects:
             # get the lat and long
-            long = location_objects.point.x
-            lat = location_objects.point.y
+            long = location_objects.long
+            lat = location_objects.lat
             json = {'lat': lat, 'long':long, }
             return json
 
@@ -165,10 +164,11 @@ class EditSerializer(serializers.ModelSerializer):
     def get_location(self, obj):
 
         location_objects = Locations.objects.filter(user=obj).last()
+
         if location_objects:
             # get the lat and long
-            long = location_objects.point.x
-            lat = location_objects.point.y
+            long = location_objects.long
+            lat = location_objects.lat
             json = {'lat': lat, 'long':long, }
             return json
 
@@ -227,12 +227,13 @@ class EditSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Nationality.objects.create(user_id=id, nationality_id=obj)
                 elif field_name == 'location':
-                    print('here')
                     # return None
                     long = field_list['long']
                     lat = field_list['lat']
-                    point = Point(float(long), float(lat), srid=4326)
-                    p = Locations(point=point, user=instance)
+                    # point = Point(float(long), float(lat), srid=4326)
+
+
+                    p = Locations(lat=lat, long=long, user=instance)
                     p.save()
         return instance
 

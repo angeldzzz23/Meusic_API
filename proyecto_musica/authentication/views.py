@@ -39,7 +39,6 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
-from django.contrib.gis.geos import Point
 
 from preferences.serializers import PreferenceEditSerializer
 
@@ -514,40 +513,40 @@ class CreatingFakeData(GenericAPIView):
 
 
 
-        # # create admin user
-        # User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
-        #
-        # Skills.objects.all().delete()
-        # Genres.objects.all().delete()
-        # Nationality.objects.all().delete()
-        # Genders.objects.all().delete()
-        #
-        # nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
-        # skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
-        #             "Public Relations", "Social Media", "Film Composer", "Music Director"]
-        # genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
-        #
-        # genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
-        #
-        # #  creating the Skills
-        # for skill in skills:
-        #     p = Skills(skill_name=skill)
-        #     p.save()
-        #
-        # # creating the Genres
-        # for genre in genres:
-        #     p = Genres(genre_name=genre)
-        #     p.save()
-        #
-        # # creating nationalities
-        # for nationality in  nationalities:
-        #     p = Nationality(nationality_name=nationality)
-        #     p.save()
-        #
-        # # creating Genders
-        # for gender in genders:
-        #     p = Genders(gender_name=gender)
-        #     p.save()
+        # create admin user
+        User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
+
+        Skills.objects.all().delete()
+        Genres.objects.all().delete()
+        Nationality.objects.all().delete()
+        Genders.objects.all().delete()
+
+        nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
+        skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
+                    "Public Relations", "Social Media", "Film Composer", "Music Director"]
+        genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+
+        genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
+
+        #  creating the Skills
+        for skill in skills:
+            p = Skills(skill_name=skill)
+            p.save()
+
+        # creating the Genres
+        for genre in genres:
+            p = Genres(genre_name=genre)
+            p.save()
+
+        # creating nationalities
+        for nationality in  nationalities:
+            p = Nationality(nationality_name=nationality)
+            p.save()
+
+        # creating Genders
+        for gender in genders:
+            p = Genders(gender_name=gender)
+            p.save()
 
         # everything but the videos get added
 
@@ -681,20 +680,19 @@ class CreatingFakeData(GenericAPIView):
             }
         }
 
-        # loop through all of the users and create them
-        # for user in total_users:
-        #     context = {}
-        #
-        #     serializer = RegisterSerializer(data=user,context=user['context'])
-        #
-        #     if serializer.is_valid():
-        #         serializer.save()
-        #         print("success",user['username'] )
-        #
-        #     else:
-        #         datos = {'success':False}
-        #         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+         # loop through all of the users and create them
+        for user in total_users:
+            context = {}
 
+            serializer = RegisterSerializer(data=user,context=context)
+
+            if serializer.is_valid():
+                serializer.save()
+                print("success",user['username'] )
+
+            else:
+                datos = {'success':False}
+                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
         # initialize the preferences of the user
         # Refactor this later on
@@ -751,27 +749,6 @@ class CreatingFakeData(GenericAPIView):
                 else:
                     print("there is an error with the serializer for", user_obj)
 
-
-
-
-
-
-
-        # serializer = PreferenceEditSerializer(user_obj, data=jd,
-        #                                    context=jd, partial=True)
-        #
-        #
-        #
-        # if serializer.is_valid():
-        #     serializer.save()
-        #
-        # else:
-        #     print("there is an error with the serializer")
-        # for user in total_users:
-            # user_obj = User.objects.get(email=user['email'])
-
-
-            # print(user_obj)
 
 
 

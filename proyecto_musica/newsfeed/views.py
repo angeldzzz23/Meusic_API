@@ -12,12 +12,12 @@ from newsfeed.models import User_Matches,User_Likes
 from newsfeed.serializers import ProfileSerializer
 
 # from django.contrib.gis.db.models import Distance
-from django.contrib.gis.geos import Point
-from django.contrib.gis.db.models.functions import Distance
+# from django.contrib.gis.geos import Point
+# from django.contrib.gis.db.models.functions import Distance
 
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.measure import D
-from django.contrib.gis.geos import Point
+# from django.contrib.gis.db.models.functions import Distance
+# from django.contrib.gis.measure import D
+# from django.contrib.gis.geos import Point
 
 
 
@@ -121,18 +121,19 @@ class Feed(GenericAPIView):
 
     def get(self, request):
 
+        # return None
         # the location of the user
-        newport_ri = (34.068207555435585, -118.16539005397912)
-        cleveland_oh = (34.586079138685875, -117.41845574395259)
+        # newport_ri = (34.068207555435585, -118.16539005397912)
+        # cleveland_oh = (34.586079138685875, -117.41845574395259)
 
-        print(calc_dist_fixed(34.068207555435585, -118.16539005397912, 34.586079138685875, -117.41845574395259))
-
-
-        print(great_circle(newport_ri, cleveland_oh).miles)
+        # print(calc_dist_fixed(34.068207555435585, -118.16539005397912, 34.586079138685875, -117.41845574395259))
 
 
+        # print(great_circle(newport_ri, cleveland_oh).miles)
 
-        # Priority 
+
+
+        # Priority
 
 
 
@@ -231,6 +232,7 @@ class Feed(GenericAPIView):
          # theFeedJson = {'feed': user_objects}
 
         theFeedJson = {'feed': 'there is not hahasha'}
+
         return response.Response(theFeedJson, status=status.HTTP_200_OK)
 
 

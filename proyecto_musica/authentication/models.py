@@ -357,7 +357,11 @@ class Locations(models.Model):
         verbose_name='user_id'
     )
     created_at = models.DateTimeField(_('date joined'), default=timezone.now)
+    # these two numbers hold the location of the user
+    lat = models.FloatField()
+    long = models.FloatField()
 
 
-    point = giomodels.PointField(srid=4326)
+
+    # point = giomodels.PointField(srid=4326)
     # point = models.PointField(srid=32140)
