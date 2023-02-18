@@ -54,8 +54,12 @@ INSTALLED_APPS = [
     'newsfeed',
     'Cprofile',
     'rest_framework_simplejwt',
-    'preferences'
+    'preferences',
+    'Matches',
 ]
+
+# GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+# GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -116,10 +120,13 @@ CHANNEL_LAYERS = {
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# GDAL_LIBRARY_PATH = "/opt/homebrew/Cellar/gdal/3.3.2_3/lib/libgdal.dylib"
+# GEOS_LIBRARY_PATH = "/opt/homebrew/Cellar/geos/3.9.1/lib/libgeos_c.dylib"
+
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'HOST': 'localhost',
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
@@ -157,6 +164,8 @@ REST_FRAMEWORK={
         'authentication.jwt.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
+     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 
