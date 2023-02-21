@@ -188,7 +188,6 @@ class EditSerializer(serializers.ModelSerializer):
                     User_Vimeo.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Vimeo.objects.create(user_id=id, video_id=obj)
-
                 elif field_name == 'nationalities':
                     User_Nationality.objects.filter(user_id=id).delete()
                     for obj in field_list:

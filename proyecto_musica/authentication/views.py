@@ -38,7 +38,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 
-
+from authentication.functions import validate_email
 
 # this uses a cookie
 # this is in charge of refreshing the user's token
@@ -123,7 +123,7 @@ class AuthUserAPIView(GenericAPIView):
             serializer.save()
             # only return fields that were modified
             serialized_data = (serializer.data).copy()
-            print("this is the auth serializer serialized_data:  ", serialized_data)
+            
             for field in serializer.data:
                 if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)
@@ -288,8 +288,19 @@ class VerifyEmail(GenericAPIView):
     # this post is in charge of sending an email
     def post(self, request):
         jd = request.data
-        if 'email' in jd and 'code' not in jd:
+
+        if 'email' not in jd:
+            datos = {
+                        "Success": False,
+                        "Message": "Please include a verification email"
+                    }
+            return response.Response(datos, status.HTTP_400_BAD_REQUEST)
+
+        elif 'email' in jd and 'code' not in jd:
             email = jd['email']
+
+            if (validate_email(email) == False):
+                return response.Response({"Success": False, "Message": "Please enter a valid email address."}, status=status.HTTP_400_BAD_REQUEST)
 
             if User.objects.filter(email=email).count() > 0:
                 datos = {'success':False,'message': "an account with that email already exists"}
@@ -311,6 +322,9 @@ class VerifyEmail(GenericAPIView):
         elif 'code' in jd and 'email' in jd:
             email = jd['email']
             code = jd['code']
+            
+            if (validate_email(email) == False):
+                return response.Response({"Success": False, "Message": "Please enter a valid email address."}, status=status.HTTP_400_BAD_REQUEST)
 
             # just in case that email is already verified
             if User.objects.filter(email=email).count() > 0:

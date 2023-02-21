@@ -1,7 +1,7 @@
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube, User_Vimeo, Nationality, User_Nationality
 from rest_framework import response, status
 from enum import Enum
-
+import re
 
 class List_Fields(Enum):
     SKILLS = 'skills'
@@ -116,3 +116,12 @@ def validate_field(field_name, field_list):
             return {'success' : False,
                     'error' : "Could not find one or several " +
                     field_name + " in database."}
+
+
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+def validate_email(email):
+    if(re.fullmatch(regex, email)):
+        return True
+    else:
+        return False
