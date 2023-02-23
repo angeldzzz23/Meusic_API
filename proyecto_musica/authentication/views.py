@@ -404,6 +404,9 @@ class VerifyForgotPassword(GenericAPIView):
     def post(self,request):
         jd = request.data
 
+        if ('code' not in jd) or ('email' not in jd):
+            return response.Response({"Success": False, "Message": "Please verify presence of email and code"}, status=status.HTTP_400_BAD_REQUEST)
+
         if 'code' in jd and 'email' in jd:
             email = jd['email']
             code = jd['code']
