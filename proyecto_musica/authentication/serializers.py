@@ -7,6 +7,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
+from authentication.models import Locations
 
 
 
@@ -21,12 +22,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender',
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities')
+                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities', 'location')
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -69,6 +72,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
 
+    def get_location(self, obj):
+        location_objects = Locations.objects.filter(user=obj).last()
+        if location_objects:
+            # get the lat and long
+            long = location_objects.long
+            lat = location_objects.lat
+            json = {'lat': lat, 'long':long, }
+            return json
+
+        else:
+            return None
+
         # TODO: Add the youtube and vimeo videos
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -90,6 +105,9 @@ class RegisterSerializer(serializers.ModelSerializer):
                 elif field_name == 'nationalities':
                     for obj in field_list:
                         User_Nationalities.objects.create(user_id=user_id, nationality_id=obj)
+                elif field_name == 'nationalities':
+                    for obj in field_list:
+                        User_Nationality.objects.create(user_id=user_id, nationality_id=obj)
 
         return user
 
@@ -105,12 +123,13 @@ class EditSerializer(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists', 'youtube_vids','vimeo_vids', 'nationalities')
+                'artists', 'youtube_vids','vimeo_vids', 'nationalities', 'location',)
 
     def get_youtube_vids(self, obj):
 
@@ -143,6 +162,20 @@ class EditSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
+
+    def get_location(self, obj):
+        location_objects = Locations.objects.filter(user=obj).last()
+        if location_objects:
+            # get the lat and long
+            long = location_objects.long
+            lat = location_objects.lat
+            json = {'lat': lat, 'long':long, }
+            return json
+
+        else:
+            return None
+
+        return None
 
     def update(self, instance, validated_data):
         original_email = validated_data.get('email', instance.email)
@@ -188,11 +221,20 @@ class EditSerializer(serializers.ModelSerializer):
                     User_Vimeo.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Vimeo.objects.create(user_id=id, video_id=obj)
+
                 elif field_name == 'nationalities':
                     User_Nationality.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Nationality.objects.create(user_id=id, nationality_id=obj)
+                elif field_name == 'location':
+                    # return None
+                    long = field_list['long']
+                    lat = field_list['lat']
+                    # point = Point(float(long), float(lat), srid=4326)
 
+
+                    p = Locations(lat=lat, long=long, user=instance)
+                    p.save()
 
 
         return instance
@@ -232,4 +274,3 @@ class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
             return jd
         else:
             raise InvalidToken('No valid token found in body \'refresh\'')
-            
