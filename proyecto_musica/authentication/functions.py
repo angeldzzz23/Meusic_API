@@ -10,6 +10,7 @@ class List_Fields(Enum):
     YOUTUBEVIDS = 'youtube_vids'
     VIMEOVIDS = 'vimeo_vids'
     NATIONALITIES = 'nationalities'
+    location = "location"
 
 
 class User_Fields(Enum):
@@ -27,6 +28,7 @@ class User_Fields(Enum):
     YOUTUBEVIDS = 'youtube_vids'
     VIMEOVIDS = 'vimeo_vids'
     NATIONALITIES = 'nationalities'
+    location = "location"
 
 
 def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
@@ -78,6 +80,9 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
             return field_names
 
 def validate_field(field_name, field_list):
+    if field_name == 'location':
+        return None
+    
     if not isinstance(field_list, list):
         return {'success' : False,
                 'error' : "Field for " + field_name + " should be in a list."}

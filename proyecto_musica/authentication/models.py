@@ -12,7 +12,7 @@ import uuid
 
 from django.conf import settings
 
- 
+
 # Create your models here.
 class MyUserManager(UserManager):
 
@@ -331,3 +331,23 @@ class User_Nationality(models.Model):
 
     class Meta:
         db_table = 'User_Nationalities'
+
+    # new changes
+class Locations(models.Model):
+    location_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_location_id'
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    created_at = models.DateTimeField(_('date joined'), default=timezone.now)
+    # these two numbers hold the location of the user
+    lat = models.FloatField()
+    long = models.FloatField()
