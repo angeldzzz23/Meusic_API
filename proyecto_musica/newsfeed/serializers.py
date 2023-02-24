@@ -10,7 +10,7 @@ from authentication.functions import List_Fields, get_list_field
 # the video with caption
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     # the profile pictures fo the user
     pictures = serializers.SerializerMethodField()
     # the video has the caption etc
@@ -18,9 +18,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     # the array of natinoality of the user
     nationalities = serializers.SerializerMethodField()
 
+    profile_url = serializers.SerializerMethodField()
+
+
     class Meta():
         model=User
-        fields=('username','first_name','last_name', 'pictures', 'video', 'nationalities')
+        fields=('username','first_name','last_name', 'profile_url', 'pictures', 'video', 'nationalities')
 
     def get_pictures(self, obj):
         query = Images.objects.filter(user_id=obj.id).values('image_id',
@@ -29,9 +32,30 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def get_video(self, obj):
         query = Videos.objects.filter(user_id=obj.id).values('video_id',
-                    'url', 'title')
+                    'url', 'caption')
         return list(query) if query else None
 
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
+
+    def get_profile_url(self, obj):
+         request = self.context.get("request")
+         base_url = self.context.get("base_url")
+         print(obj.username)
+         return  base_url + 'profile/' + str(obj.username)
+
+
+
+
+
+
+class NewsfeedSerializer(serializers.ModelSerializer):
+    feed = serializers.SerializerMethodField()
+
+    class meta():
+        model = User
+        fields = ('feed',)
+
+        def get_feed(self, obj):
+            return None

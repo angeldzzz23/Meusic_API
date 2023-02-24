@@ -12,7 +12,10 @@ import uuid
 
 from django.conf import settings
 
- 
+# from django.contrib.gis.db import models
+
+from django.contrib.gis.db import models
+
 # Create your models here.
 class MyUserManager(UserManager):
 
@@ -120,6 +123,9 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
             'Unselect this instead of deleting accounts.'
         ),
     )
+
+    is_setup = models.BooleanField(default=False)
+
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     email_verified = models.BooleanField(
         _('email_verified'),
@@ -130,6 +136,7 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
         ),
     )
     objects = MyUserManager()
+
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
@@ -331,3 +338,30 @@ class User_Nationality(models.Model):
 
     class Meta:
         db_table = 'User_Nationalities'
+
+
+from django.contrib.gis.db import models as giomodels
+
+class Locations(models.Model):
+    location_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='user_location_id'
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    created_at = models.DateTimeField(_('date joined'), default=timezone.now)
+    # these two numbers hold the location of the user
+    lat = models.FloatField()
+    long = models.FloatField()
+
+
+
+    # point = giomodels.PointField(srid=4326)
+    # point = models.PointField(srid=32140)
