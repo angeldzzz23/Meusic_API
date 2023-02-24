@@ -71,7 +71,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
-    
+
     def get_location(self, obj):
         location_objects = Locations.objects.filter(user=obj).last()
         if location_objects:
@@ -124,7 +124,7 @@ class EditSerializer(serializers.ModelSerializer):
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
-    
+
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
@@ -162,7 +162,7 @@ class EditSerializer(serializers.ModelSerializer):
     def get_nationalities(self, obj):
         nationalities = self.context.get("nationalities")
         return get_list_field(obj.id, "nationality", nationalities)
-   
+
     def get_location(self, obj):
         location_objects = Locations.objects.filter(user=obj).last()
         if location_objects:
@@ -274,4 +274,3 @@ class WithNoCookieTokenRefreshSerializer(TokenRefreshSerializer):
             return jd
         else:
             raise InvalidToken('No valid token found in body \'refresh\'')
-            

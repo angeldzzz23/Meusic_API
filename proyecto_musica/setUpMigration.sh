@@ -12,4 +12,4 @@ python manage.py migrate newsfeed
 python manage.py makemigrations preferences
 python manage.py migrate preferences
 python manage.py makemigrations
-python manage.py migrate 
+python manage.py migrate
