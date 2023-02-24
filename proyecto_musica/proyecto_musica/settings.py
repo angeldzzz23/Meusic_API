@@ -124,7 +124,7 @@ DATABASES = {
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'USPirat2001',
+        'PASSWORD': 'Sheep787',
         'NAME': 'music7',
         'TEST': {
             'NAME': 'testing_music7',
