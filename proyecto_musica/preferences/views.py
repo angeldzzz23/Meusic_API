@@ -212,7 +212,7 @@ class PreferenceUserAPIView(GenericAPIView):
         user = request.user
         serializer = PreferenceEditSerializer(user)
         serialized_data = serializer.data
-
+        
         res = {'success' : True, 'preferences': serialized_data}
         return response.Response(res)
 
@@ -247,9 +247,6 @@ class PreferenceUserAPIView(GenericAPIView):
                 context[field_name] = field_list
 
 
-        print('jd', jd)
-        print('context', context)
-        print('user object', user_obj)
 
         serializer = PreferenceEditSerializer(user_obj, data=jd,
                                            context=context, partial=True)
