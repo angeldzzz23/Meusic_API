@@ -9,6 +9,8 @@ from authentication.serializers import RegisterSerializer
 
 from newsfeed.models import User_Matches,User_Likes
 from newsfeed.serializers import ProfileSerializer
+from math import sin, cos, radians, acos
+
 
 
 # this prints out the poblic details of a user
