@@ -8,7 +8,6 @@ from authentication.models import User
 
 from newsfeed.models import User_Matches, User_Likes
 
-
 from Matches.serializers import MatchesSerializer
 
 class MatchesView(GenericAPIView):
