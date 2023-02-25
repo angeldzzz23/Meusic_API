@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'newsfeed',
     'Cprofile',
     'rest_framework_simplejwt',
-    'preferences'
+    'preferences',
+    'Matches'
 ]
 
 MIDDLEWARE = [
