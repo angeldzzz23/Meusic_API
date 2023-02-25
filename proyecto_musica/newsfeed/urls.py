@@ -23,4 +23,6 @@ urlpatterns = [
 
     path('profile/<str:id>', views.SeeProfileOfUserView.as_view(), name="profile"),
     path('user/<str:id>', views.SeeUserView.as_view(), name="profile"),
+    path('feed/', views.Feed.as_view(), name='feed'),
+    path('like/<str:id>', views.LikingView.as_view(), name="like"),
 ]
