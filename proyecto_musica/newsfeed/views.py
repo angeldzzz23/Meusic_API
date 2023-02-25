@@ -7,8 +7,9 @@ from rest_framework import response
 from authentication.models import User
 from authentication.serializers import RegisterSerializer
 
-# importing the serialziers
-from newsfeed.serializers import RegisterSerializer
+from newsfeed.models import User_Matches,User_Likes
+from newsfeed.serializers import ProfileSerializer
+
 
 # this prints out the poblic details of a user
 class SeeProfileOfUserView(GenericAPIView):
@@ -31,15 +32,15 @@ class SeeProfileOfUserView(GenericAPIView):
         if 'gender' in serializer.data:
             serialized_data.pop('gender')
 
+        del serialized_data['email']
+
         res = {'success' : True, 'user': serialized_data}
 
         return response.Response(res, status=status.HTTP_201_CREATED)
 
 
-# this will get the user, profile
+# this will get the profile of the user.
 class SeeUserView(GenericAPIView):
-
-
     # where id is the username
     # if the user does not have a valid username, then
     def get(self, request,id):
@@ -51,11 +52,20 @@ class SeeUserView(GenericAPIView):
             res = {'success' : True, 'user': None}
             return response.Response(res, status=status.HTTP_200_OK)
 
-        serializer = RegisterSerializer(user)
+        url  = request.build_absolute_uri()
+        newurl = str(url)
+        base_url = newurl[:-(len(user.username) +5)] + ''
+        print('new base url', base_url)
+
+
+
+        serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
 
         # make sure there is a profile image and a a video at least
-
         serialized_data = serializer.data
+
+        print('data: ', serialized_data)
+
 
         if serialized_data['pictures'] == None or serialized_data['video'] == None:
             res = {'success' : True, 'user': None}
@@ -76,7 +86,7 @@ def calc_dist_fixed(lat_a, long_a, lat_b, long_b):
         cos(lat_a) * cos(lat_b) * cos(delta_long)
         )
     return acos(cos_x) * EARTH_RADIUS_IN_MILES
-    
+
 
 class Feed(GenericAPIView):
 
