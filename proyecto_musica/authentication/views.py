@@ -59,7 +59,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/rest_framework_simplejwt.html
 class CookieTokenRefreshView2(TokenRefreshView):
     serializer_class = WithNoCookieTokenRefreshSerializer
-    
+
     def finalize_response(self, request, response, *args, **kwargs):
 
         if response.data.get('refresh'):
@@ -123,10 +123,20 @@ class AuthUserAPIView(GenericAPIView):
             serializer.save()
             # only return fields that were modified
             serialized_data = (serializer.data).copy()
-            
+
             for field in serializer.data:
                 if field not in jd and field != 'gender_name':
                     serialized_data.pop(field)
+
+            # implementing the is set up
+            if user_obj.DOB and user_obj.username:
+                if not user_obj.is_setup:
+                    user_obj.is_setup = True
+                    user_obj.save()
+            else:
+                if  user_obj.is_setup:
+                    user_obj.is_setup = True
+                    user_obj.save()
 
             if 'gender' in jd:
                 serialized_data.pop('gender')
@@ -232,6 +242,23 @@ class RegisterAPIView(GenericAPIView):
             serialized_data = (serializer.data).copy()
             serialized_data.pop('gender')
 
+            email = serialized_data['email']
+
+            try:
+                user = User.objects.get(email=email)
+
+            except User.DoesNotExist:
+                print('user does not exist')
+
+            if serialized_data['username'] and serialized_data['DOB']:
+                user.is_setup = True
+                user.save()
+
+            else:
+                print('we do not have a username and we do not have a DOB')
+
+
+
             res = {'success' : True, 'user': serialized_data}
             return response.Response(res, status=status.HTTP_201_CREATED)
 
@@ -322,7 +349,7 @@ class VerifyEmail(GenericAPIView):
         elif 'code' in jd and 'email' in jd:
             email = jd['email']
             code = jd['code']
-            
+
             if (validate_email(email) == False):
                 return response.Response({"Success": False, "Message": "Please enter a valid email address."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -447,3 +474,21 @@ class VerifyForgotPassword(GenericAPIView):
         datos = {'success':False,'token': str(token)}
 
         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
+
+
+class verifyIsSetUp(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+
+        user = request.user
+
+        json = {}
+
+        if user.is_setup:
+            json['is_setup'] = True
+        else:
+            json['is_setup'] = False
+
+        datos = {'success':True,'user': json}
+        return response.Response(datos, status=status.HTTP_201_CREATED)
