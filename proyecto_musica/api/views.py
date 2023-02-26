@@ -12,9 +12,6 @@ import pathlib
 from PIL import Image
 from django.core import serializers
 
-
-
-
 from api.models import Images, Videos
 #pathlib.Path('save_path').mkdir(parents=True, exist_ok=True)
 from proyecto_musica.settings import MEDIA_URL
@@ -27,7 +24,6 @@ from api.serializers import Videoerialiser
 from api.serializers import VideosSerializer
 
 from rest_framework import response, status, permissions
-
 
 
 #import mimetypes
