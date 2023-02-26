@@ -76,7 +76,8 @@ class UserTest(TestCase):
        		"video": None,
         	"youtube_vids": None,
         	"vimeo_vids": None,
-        	"nationalities": None
+        	"nationalities": None,
+        	"location": None
    			}
 		}
 
@@ -256,7 +257,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 
@@ -277,7 +279,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 		expected_response_username = {
@@ -310,7 +313,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 		expected_response_first_name = {
@@ -343,7 +347,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 		expected_response_last_name = {
@@ -376,7 +381,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 		expected_response_gender = {
@@ -409,7 +415,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 
@@ -443,7 +450,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 
@@ -490,7 +498,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 
@@ -559,7 +568,8 @@ class UserTest(TestCase):
         							"video": None,
         							"youtube_vids": None,
         							"vimeo_vids": None,
-        							"nationalities": None
+        							"nationalities": None,
+        							"location": None
     								}
 								}
 
@@ -633,7 +643,8 @@ class UserTest(TestCase):
                 									"nationality_id": 2,
                 									"nationality_name": "american"
             										}
-        												]
+        												],
+        							"location": None
     								}
 								}
 
@@ -716,7 +727,8 @@ class UserTest(TestCase):
                 									"nationality_id": 2,
                 									"nationality_name": "american"
             										}
-        												]
+        												],
+        							"location": None
     								}
 								}
 
@@ -833,7 +845,8 @@ class RegistrationTest(TestCase):
         	"video": None,
         	"youtube_vids": None,
         	"vimeo_vids": None,
-        	"nationalities": None
+        	"nationalities": None,
+        	"location": None
     		}
 		}
 		self.assertEqual(expected_response, login_response_body)
@@ -860,7 +873,8 @@ class RegistrationTest(TestCase):
         	"video": None,
         	"youtube_vids": None,
         	"vimeo_vids": None,
-        	"nationalities": None
+        	"nationalities": None,
+        	"location": None
     		}
 		}
 		self.assertEqual(expected_response, login_response_body)
