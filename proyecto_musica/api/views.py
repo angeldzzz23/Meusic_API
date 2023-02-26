@@ -188,7 +188,7 @@ class UpdateVideo(GenericAPIView):
 
                 if  (filename.endswith('.MP4') or filename.endswith('.mp4')) == False :
                     datos = {'success':False,'data':"file is not of type .mp4"}
-                    return response.Response(datos, status=status.HTTP_201_CREATED)
+                    return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
 
             video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request, 'caption': caption})
