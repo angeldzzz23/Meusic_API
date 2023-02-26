@@ -1,15 +1,15 @@
 #!/bin/bash
-python manage.py makemigrations authentication
-python manage.py migrate authentication
-python manage.py makemigrations api
-python manage.py migrate api
-python manage.py makemigrations chat
-python manage.py migrate chat
-python manage.py makemigrations misc
-python manage.py migrate misc
-python manage.py makemigrations newsfeed
-python manage.py migrate newsfeed
-python manage.py makemigrations preferences
-python manage.py migrate preferences
-python manage.py makemigrations
-python manage.py migrate
+python3 manage.py makemigrations authentication
+python3 manage.py migrate authentication
+python3 manage.py makemigrations api
+python3 manage.py migrate api
+python3 manage.py makemigrations chat
+python3 manage.py migrate chat
+python3 manage.py makemigrations misc
+python3 manage.py migrate misc
+python3 manage.py makemigrations newsfeed
+python3 manage.py migrate newsfeed
+python3 manage.py makemigrations preferences
+python3 manage.py migrate preferences
+python3 manage.py makemigrations
+python3 manage.py migrate
