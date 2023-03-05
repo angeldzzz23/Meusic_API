@@ -749,10 +749,87 @@ class UserTest(TestCase):
     										}
 									}
 
+		# PATCH location
+		resp = self.client.patch('/api/auth/user', data=json.dumps({"location" : {"lat": 11.2220, "long": 12.000}}), content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'} )
+		resp_location= json.loads(resp.content)
+		user_after_request_location = self.client.get('/api/auth/user', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'} )
+		user_after_request_content_location = json.loads(user_after_request_location.content)
 
+		expected_after_request_location = {
+    						"success": True,
+    						"user": {
+        							"username": "test_username",
+        							"email": "testuser@gmail.com",
+        							"first_name": "Danil",
+        							"last_name": "Merinov",
+        							"gender_name": "male",
+        							"DOB": "2001-11-22",
+        							"about_me": "I love hockey, soccer, and currently live in Philadelphia",
+        							"skills": [
+            									{
+                								"skill_id": 1,
+               				 					"skill_name": "singing"
+            									},
+            									{
+                								"skill_id": 3,
+                								"skill_name": "cooking"
+            									},
+           			 							{
+                								"skill_id": 5,
+                								"skill_name": "drawing"
+            									}
+        									],
+        							"genres": [
+            									{
+                								"genre_id": 1,
+                								"genre_name": "rap"
+            									},
+            									{
+                								"genre_id": 2,
+                								"genre_name": "R&B"
+            									}
+        									],
+        							"artists": [
+            											{
+                										"user_artist_id": 1,
+                										"artist": "drake"
+            											},
+            											{
+                										"user_artist_id": 2,
+                										"artist": "kanye"
+            											}
+        												],
+        							"pictures": None,
+        							"video": None,
+        							"youtube_vids": None,
+        							"vimeo_vids": None,
+        							"nationalities": [
+            										{
+                									"nationality_id": 1,
+                									"nationality_name": "russian"
+            										},
+            										{
+                									"nationality_id": 2,
+                									"nationality_name": "american"
+            										}
+        												],
+        							"location": {
+            									"lat": 11.222,
+            									"long": 12.0
+        										}
+    								}
+								}
 
+		expected_response_location = {
+    								"success": True,
+    								"user": {
+        									"location": {
+            											"lat": 11.222,
+            											"long": 12.0
+        												}
+    										}
 
-
+									}
 
 
 
@@ -789,6 +866,10 @@ class UserTest(TestCase):
 
 		self.assertEqual(expected_after_request_artists, user_after_request_content_artists)
 		self.assertEqual(expected_response_artists, resp_artists)
+
+		self.assertEqual(expected_after_request_location, user_after_request_content_location)
+		self.assertEqual(expected_response_location, resp_location)
+
 
 
 
@@ -1154,6 +1235,29 @@ class refreshWCTest(TestCase):
 		assert "access" in response.client.cookies
 		assert "refresh_token" in response.client.cookies
 
+class VerifyEmailTest(TestCase):
+	def setUp(self):
+		self.user = User.objects.create_user(email='testuser@gmail.com', password='password')
+		self.client = Client()
 
+	def test_get_verify_email(self):
+		#login_response = self.client.post('/api/auth/login', {'email': 'testuser@gmail.com', 'password' : 'password'}, HTTP_ACCEPT='application/json')
+		#login_response_body = json.loads(login_response.content)
+		#refresh_token = login_response_body['refresh']  # Gets the token
+
+		response = self.client.get('/api/auth/verifyemail/', HTTP_ACCEPT='application/json')
+		content = json.loads(response.content)
+
+		data = {
+    		"codigo": "400",
+    		"message": "a message"
+			}
+		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+		self.assertEqual(content, data)
+
+
+	# TODO: verify email
+	def test_post_verify_email(self):
+		pass
 
 
