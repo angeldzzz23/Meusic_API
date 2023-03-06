@@ -11,6 +11,8 @@ from rest_framework.test import force_authenticate
 from authentication.views import AuthUserAPIView
 from authentication.views import VerifyEmail
 from authentication.models import Genders, Skills, Genres, Nationality
+from django.core import mail
+
 
 
 class LoginTest(TestCase):
@@ -1255,9 +1257,30 @@ class VerifyEmailTest(TestCase):
 		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 		self.assertEqual(content, data)
 
+	def test_existing_email_is_invalid(self):
+		response = self.client.post('/api/auth/verifyemail/', {'email': 'testuser@gmail.com'}, HTTP_ACCEPT='application/json')
+		content = json.loads(response.content)
 
-	# TODO: verify email
-	def test_post_verify_email(self):
-		pass
+		data = {
+    			"success": False,
+    			"message": "an account with that email already exists"
+				}
+		self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+		self.assertEqual(content, data)
+
+
+
+	def test_send_email(self):
+		response = self.client.post('/api/auth/verifyemail/', {'email': 'example@gmail.com'})
+		response_body = json.loads(response.content)
+
+		self.assertEqual(len(mail.outbox), 1)
+
+		email = mail.outbox[0]
+		verification_code = email.body.split('\n')[-1]
+		self.assertEqual(email.subject, 'Verify your email')
+		self.assertTrue('Hi, this is your confirmation code. It expires in 5 minutes' in email.body)
+		self.assertEqual(len(verification_code), 6)
+
 
 
