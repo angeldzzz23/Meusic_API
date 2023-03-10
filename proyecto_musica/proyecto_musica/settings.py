@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'newsfeed',
     'Cprofile',
     'rest_framework_simplejwt',
-    'preferences'
+    'preferences',
+    'Matches'
 ]
 
 MIDDLEWARE = [
@@ -126,11 +127,13 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': 'Sheep787',
         'NAME': 'music7',
+        'TEST': {
+            'NAME': 'testing_music7',
+        },
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         }
     }
-
 
 }
 

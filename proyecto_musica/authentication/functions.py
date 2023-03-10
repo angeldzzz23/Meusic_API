@@ -1,6 +1,7 @@
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, User_Youtube, User_Vimeo, Nationality, User_Nationality
 from rest_framework import response, status
 from enum import Enum
+import re
 
 
 class List_Fields(Enum):
@@ -82,7 +83,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
 def validate_field(field_name, field_list):
     if field_name == 'location':
         return None
-    
+
     if not isinstance(field_list, list):
         return {'success' : False,
                 'error' : "Field for " + field_name + " should be in a list."}
@@ -121,3 +122,11 @@ def validate_field(field_name, field_list):
             return {'success' : False,
                     'error' : "Could not find one or several " +
                     field_name + " in database."}
+
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+
+def validate_email(email):
+    if(re.fullmatch(regex, email)):
+        return True
+    else:
+        return False
