@@ -80,7 +80,7 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
 
             list_field_ids = []
             for obj in field_ids:
-                list_field_ids.append({'vimeo_id':obj['vid_id'],"video_id": obj['video_id']})
+                list_field_ids.append({'vid_id':obj['vid_id'],"video_id": obj['video_id']})
             return list_field_ids if list_field_ids else None
 
     elif f_name == 'nationality':

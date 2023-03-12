@@ -22,8 +22,8 @@ urlpatterns = [
     path('skills', views.CUserSkills.as_view()),
     path('genres', views.CUserGenres.as_view()),
     path('artists', views.CUserArtists.as_view()),
-    path('youtube', views.CUserYoutubeVideos.as_view()),
-    path('vimeo', views.CUserVimeoVideos.as_view()),
+    # path('youtube', views.CUserYoutubeVideos.as_view()),
+    # path('vimeo', views.CUserVimeoVideos.as_view()),
     path('video', views.CUserPersonalVideos.as_view()),
     path('images', views.CUserPersonalImages.as_view()),
     path('about_me', views.CUserAboutMe.as_view()),
@@ -31,5 +31,6 @@ urlpatterns = [
     path('name', views.Cname.as_view()),
     path('dob', views.Cdob.as_view()),
     path('gender', views.CUserGender.as_view()),
-    path('nationality', views.Cnationality.as_view())
+    path('nationality', views.Cnationality.as_view()),
+    path('videoss', views.CUser_Videos.as_view()),
 ]
