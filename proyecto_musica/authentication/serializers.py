@@ -23,13 +23,14 @@ class RegisterSerializer(serializers.ModelSerializer):
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
 
 
     class Meta():
         model=User
         fields=('username','email','first_name','last_name', 'gender',
                 'gender_name','DOB','about_me', 'password','skills','genres',
-                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities', 'location')
+                'artists','pictures', 'video', 'youtube_vids', 'vimeo_vids', 'nationalities', 'location', 'videos')
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -84,6 +85,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         else:
             return None
 
+    # this will be for the vimeo/youtube videos 
+    def get_videos(self, obj): 
+        vids = self.context.get("videos")
+        return get_list_field(obj.id, "videos", vids)
+
         # TODO: Add the youtube and vimeo videos
     def create(self, validated_data):
         user =  User.objects.create_user(**validated_data)
@@ -124,22 +130,29 @@ class EditSerializer(serializers.ModelSerializer):
     vimeo_vids = serializers.SerializerMethodField()
     nationalities = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
+
+
 
     class Meta:
         model=User
         fields=('username','email','first_name','last_name','gender',
                 'gender_name','DOB','about_me','password','skills','genres',
-                'artists', 'youtube_vids','vimeo_vids', 'nationalities', 'location',)
+                'artists', 'youtube_vids','vimeo_vids', 'nationalities', 'location','videos', )
 
     def get_youtube_vids(self, obj):
 
         vids = self.context.get("youtube_vids")
-        print('dude', vids)
         return get_list_field(obj.id, "youtube_vids", vids)
 
     def get_vimeo_vids(self, obj):
         vids = self.context.get("vimeo_vids")
         return get_list_field(obj.id, "vimeo_vids", vids)
+    
+    def get_videos(self, obj): 
+        vids = self.context.get("videos")
+        return get_list_field(obj.id, "videos", vids)
+
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -221,7 +234,8 @@ class EditSerializer(serializers.ModelSerializer):
                     User_Vimeo.objects.filter(user_id=id).delete()
                     for obj in field_list:
                         User_Vimeo.objects.create(user_id=id, video_id=obj)
-
+                elif field_name == 'videos': 
+                    print('hello')
                 elif field_name == 'nationalities':
                     User_Nationality.objects.filter(user_id=id).delete()
                     for obj in field_list:
