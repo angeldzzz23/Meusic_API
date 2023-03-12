@@ -60,6 +60,18 @@ class CArtist(serializers.ModelSerializer):
         artists = self.context.get("artists")
         return get_list_field(obj.id, "artist", artists)
 
+# this serializer gets all of the videos 
+class CUserVideos(serializers.ModelSerializer):
+      videos = serializers.SerializerMethodField()
+      
+      class Meta():
+        model=User
+        fields=('videos',)
+
+      def get_videos(self, obj):
+        vids = self.context.get("videos")
+        return get_list_field(obj.id, "videos", vids)
+
 # serializer for getting the youtube videos
 class CYoutubeVids(serializers.ModelSerializer):
     youtube_vids = serializers.SerializerMethodField()

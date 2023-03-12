@@ -284,6 +284,25 @@ class User_Vimeo(models.Model):
     class Meta:
         db_table = 'User_Vimeo'
 
+class User_Videos(models.Model):
+    vid_id = models.BigAutoField(
+        auto_created=True,
+        primary_key=True,
+        unique=True,
+        null=False,
+        verbose_name='vimeo_id'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='user_id'
+    )
+    video_id = models.CharField(unique=False, max_length=200)
+
+    class Meta:
+        db_table = 'User_Videos'
+
+
 
 class Verification(models.Model):
   verification_id = models.BigAutoField(

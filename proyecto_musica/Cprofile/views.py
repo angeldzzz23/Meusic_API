@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework import response, status, permissions
 from authentication.models import User
-from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo, CTheNameOfUser, CDOBOfUser, CGender, Cnationalities
+from Cprofile.serializers import CSkills, CGenres, CArtist, CYoutubeVids, CVimeoVids, CPersonalVideo, CPersonalPictures, CPersonalInfo, CusernameInfo, CTheNameOfUser, CDOBOfUser, CGender, Cnationalities, CUserVideos
 
 # this contains a bunch of
 
@@ -58,6 +58,25 @@ class CUserArtists(GenericAPIView):
         res['artists'] = serializer.data['artists']
 
         return JsonResponse(res)
+
+
+# this view returns both the youtube and vimeo videos 
+class CUser_Videos(GenericAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def get(self, request):
+        jd = request.data
+        user = request.user
+        context = {}
+
+        serializer = CUserVideos(user)
+        print(serializer)
+        res = {}
+        res['success'] = True
+        res['videos'] = serializer.data['videos']
+
+        return JsonResponse(res)
+
 
 
 class CUserYoutubeVideos(GenericAPIView):
