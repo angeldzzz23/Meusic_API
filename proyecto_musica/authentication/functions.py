@@ -75,11 +75,13 @@ def get_list_field(user_id, f_name, f_ids): # pass in singular of field_name!!
                 list_field_ids.append({'vimeo_id':obj['vimeo_id'],"video_id": obj['video_id']})
             return list_field_ids if list_field_ids else None
     elif f_name == 'videos': 
-            print('here I am') 
+             
             field_ids = User_Videos.objects.filter(user_id=user_id).values('vid_id','video_id')
+
             list_field_ids = []
             for obj in field_ids:
                 list_field_ids.append({'vimeo_id':obj['vid_id'],"video_id": obj['video_id']})
+            return list_field_ids if list_field_ids else None
 
     elif f_name == 'nationality':
         field_ids = f_ids if f_ids else User_Nationality.objects.filter(user_id=user_id).values(field_id)

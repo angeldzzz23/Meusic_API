@@ -2,6 +2,7 @@ from rest_framework import serializers
 from authentication.models import User, Skills, User_Skills, Genres, User_Genres, User_Artists, Genders, User_Youtube, User_Vimeo, Nationality, User_Nationality
 from api.models import Images
 from api.models import Videos
+from authentication.models import User_Videos
 from authentication.functions import List_Fields, get_list_field
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
@@ -151,8 +152,8 @@ class EditSerializer(serializers.ModelSerializer):
     
     def get_videos(self, obj): 
         vids = self.context.get("videos")
+        print('videos', get_list_field(obj.id, "videos", vids))
         return get_list_field(obj.id, "videos", vids)
-
 
     def get_gender_name(self, obj):
         gender_id = obj.gender_id
@@ -235,7 +236,9 @@ class EditSerializer(serializers.ModelSerializer):
                     for obj in field_list:
                         User_Vimeo.objects.create(user_id=id, video_id=obj)
                 elif field_name == 'videos': 
-                    print('hello')
+                    User_Videos.objects.filter(user_id=id).delete()
+                    for obj in field_list:
+                        User_Videos.objects.create(user_id=id, video_id=obj)
                 elif field_name == 'nationalities':
                     User_Nationality.objects.filter(user_id=id).delete()
                     for obj in field_list:
