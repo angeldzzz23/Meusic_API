@@ -67,7 +67,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def get_video(self, obj):
         query = Videos.objects.filter(user_id=obj.id).values('video_id',
-                    'url', 'title')
+                    'url', 'caption')
         return list(query) if query else None
 
     def get_nationalities(self, obj):
@@ -150,7 +150,6 @@ class EditSerializer(serializers.ModelSerializer):
     
     def get_videos(self, obj): 
         vids = self.context.get("videos")
-        print('videos', get_list_field(obj.id, "videos", vids))
         return get_list_field(obj.id, "videos", vids)
 
     def get_gender_name(self, obj):

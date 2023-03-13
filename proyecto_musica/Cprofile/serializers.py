@@ -106,7 +106,7 @@ class CPersonalVideo(serializers.ModelSerializer):
 
     def get_video(self, obj):
         query = Videos.objects.filter(user_id=obj.id).values('video_id',
-                    'url', 'title')
+                    'url', 'caption')
         return list(query) if query else None
 
 
