@@ -76,8 +76,7 @@ class UserTest(TestCase):
         	"artists": None,
         	"pictures": None,
        		"video": None,
-        	"youtube_vids": None,
-        	"vimeo_vids": None,
+       		"videos": None,
         	"nationalities": None,
         	"location": None
    			}
@@ -257,8 +256,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -279,8 +277,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -313,8 +310,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -347,8 +343,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -381,8 +376,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -415,8 +409,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -450,8 +443,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -498,8 +490,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -568,8 +559,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": None,
         							"location": None
     								}
@@ -634,8 +624,7 @@ class UserTest(TestCase):
         							"artists": None,
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": [
             										{
                 									"nationality_id": 1,
@@ -718,8 +707,7 @@ class UserTest(TestCase):
         												],
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": [
             										{
                 									"nationality_id": 1,
@@ -803,8 +791,7 @@ class UserTest(TestCase):
         												],
         							"pictures": None,
         							"video": None,
-        							"youtube_vids": None,
-        							"vimeo_vids": None,
+        							"videos": None,
         							"nationalities": [
             										{
                 									"nationality_id": 1,
@@ -926,8 +913,7 @@ class RegistrationTest(TestCase):
         	"artists": None,
         	"pictures": None,
         	"video": None,
-        	"youtube_vids": None,
-        	"vimeo_vids": None,
+        	"videos": None,
         	"nationalities": None,
         	"location": None
     		}
@@ -954,8 +940,7 @@ class RegistrationTest(TestCase):
         	"artists": None,
         	"pictures": None,
         	"video": None,
-        	"youtube_vids": None,
-        	"vimeo_vids": None,
+        	"videos": None,
         	"nationalities": None,
         	"location": None
     		}
@@ -1228,7 +1213,6 @@ class refreshWCTest(TestCase):
 		login_response_body = json.loads(login_response.content)
 		response = self.client.post('/api/auth/refreshWC', {}, HTTP_ACCEPT='application/json')
 		content = json.loads(response.content)
-		print(content)
 
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 

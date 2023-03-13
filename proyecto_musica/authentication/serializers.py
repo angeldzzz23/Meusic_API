@@ -150,7 +150,6 @@ class EditSerializer(serializers.ModelSerializer):
     
     def get_videos(self, obj): 
         vids = self.context.get("videos")
-        print('videos', get_list_field(obj.id, "videos", vids))
         return get_list_field(obj.id, "videos", vids)
 
     def get_gender_name(self, obj):
