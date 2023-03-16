@@ -121,12 +121,12 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'Sheep787',
-        'NAME': 'music7',
+        'PASSWORD': '',
+        'NAME': 'django-app-db',
         'TEST': {
             'NAME': 'testing_music7',
         },
@@ -136,6 +136,7 @@ DATABASES = {
     }
 
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
