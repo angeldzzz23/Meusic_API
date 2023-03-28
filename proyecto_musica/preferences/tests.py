@@ -12,7 +12,6 @@ from django.core import mail
 
 
 class PreferencesGendersTest(TestCase):
-
 	def setUp(self):
 		# 1) Creating the user
 		# 2) Filling the models
@@ -32,9 +31,6 @@ class PreferencesGendersTest(TestCase):
 		Genres.objects.create(genre_id=2, genre_name="R&B")
 		Genres.objects.create(genre_id=3, genre_name="pop")
 
-		# User_Preferences_Age.create()
-		# User_Preferences_Distance.create()
-		# User_Preferences_Globally.create()
 
 	# Testing login into existing account
 	def test_genders(self):

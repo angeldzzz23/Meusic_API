@@ -123,6 +123,10 @@ def validate_field(field_name, field_list):
                     'error' : "Cannot submit duplicate " + field_name + "."}
 
         for obj in field_list:
+            if not isinstance(obj, int):
+                return {'success' : False,
+                    'error' : "Each value must be an integer in " + field_name + "."}
+                    
             if isinstance(obj, str) and (not obj.isnumeric()):
                 return {'success' : False,
                         'error' : "Please enter numeric " + field_name + "."}
