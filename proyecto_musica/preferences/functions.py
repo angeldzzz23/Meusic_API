@@ -32,7 +32,6 @@ def get_list_field(user_id, f_name, f_ids): # f_ids = [1,2,3](value of a field) 
                 the_id = obj if f_ids else obj[field_id]
                 x = Skills.objects.filter(skill_id=the_id).values(field_name)
                 field_names.append({'skill_id': the_id, 'skill_name': x[0][field_name]})
-            print("FIELD NAMES skill: ", field_names)
             return field_names
     elif f_name == 'genre':
         field_ids = f_ids if f_ids else User_Preference_Genres.objects.filter(user_id=user_id).values(field_id)
@@ -42,7 +41,6 @@ def get_list_field(user_id, f_name, f_ids): # f_ids = [1,2,3](value of a field) 
                 the_id = obj if f_ids else obj[field_id]
                 x = Genres.objects.filter(genre_id=the_id).values(field_name)
                 field_names.append({'genre_id': the_id, 'genre_name': x[0][field_name]})
-            print("FIELD NAMES genre: ", field_names)
             return field_names
 
     elif f_name == 'gender':
@@ -53,7 +51,6 @@ def get_list_field(user_id, f_name, f_ids): # f_ids = [1,2,3](value of a field) 
                 x = Genders.objects.filter(gender_id=the_id).values(field_name)
                 #field_names.append({'gender_id': the_id, 'gender_name': x[0][field_name]})
                 field_names.append(x[0][field_name])
-            print("FIELD NAMES GENDER: ", field_names)
             return field_names
 
     elif f_name == 'age':
@@ -93,7 +90,6 @@ def get_list_field(user_id, f_name, f_ids): # f_ids = [1,2,3](value of a field) 
             return field_names[0]
 
     elif f_name == 'search_globally':
-        print("f_ids is ", f_ids)
         if f_ids:
             field_ids = []
             field_ids.append(f_ids) 
@@ -127,6 +123,10 @@ def validate_field(field_name, field_list):
                     'error' : "Cannot submit duplicate " + field_name + "."}
 
         for obj in field_list:
+            if not isinstance(obj, int):
+                return {'success' : False,
+                    'error' : "Each value must be an integer in " + field_name + "."}
+                    
             if isinstance(obj, str) and (not obj.isnumeric()):
                 return {'success' : False,
                         'error' : "Please enter numeric " + field_name + "."}
@@ -143,5 +143,33 @@ def validate_field(field_name, field_list):
                 return {'success' : False,
                         'error' : "Could not find one or several " +
                         field_name + " in database."}
+
+    if (field_name == 'search_globally'):
+        if not isinstance(field_list, bool):
+            return {'success' : False,
+                    'error' : "Field for " + field_name + " should be a boolean."}
+
+
+
+    if (field_name == 'age' or field_name == 'distance'):
+        if not isinstance(field_list, dict):
+            return {'success' : False,
+                    'error' : field_name + " must be a dictionary."}
+        if len(field_list) != 2:
+            return {'success' : False,
+                    'error' : "incorrect amount of keys in " + field_name + "."}
+        for obj in field_list:
+            if (obj != "low") and (obj != "high"):
+                return {'success' : False,
+                    'error' : "low and high are the only allowed keys for " + field_name + "."}
+
+        for obj in field_list:
+            if not isinstance(field_list[obj], int):
+                return {'success' : False,
+                    'error' : "Each value must be an integer in " + field_name + "."}
+
+        if  field_list["low"] > field_list["high"]:
+            return {'success' : False,
+                    'error' : "low must be <= high in " + field_name + "."}
 
 

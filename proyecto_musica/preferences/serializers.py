@@ -48,7 +48,6 @@ class PreferenceAgeSerializer(serializers.ModelSerializer):
     age = serializers.SerializerMethodField()
 
     class Meta:
-        #model = User_Preferences_Age
         model = User
         fields = ('age',)
 
@@ -60,7 +59,6 @@ class PreferenceDistanceSerializer(serializers.ModelSerializer):
     distance = serializers.SerializerMethodField()
 
     class Meta:
-        #model = User_Preferences_Age
         model = User
         fields = ('distance',)
 
@@ -73,7 +71,6 @@ class PreferenceGloballySerializer(serializers.ModelSerializer):
     search_globally = serializers.SerializerMethodField()
 
     class Meta:
-        #model = User_Preferences_Age
         model = User
         fields = ('search_globally',)
 

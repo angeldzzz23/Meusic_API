@@ -121,12 +121,15 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'db',
+        #'HOST': 'db',      DOCKER
+        'HOST': 'localhost',
         'STORAGE_ENGINE': 'InnoDB',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': '',
-        'NAME': 'django-app-db',
+        #'PASSWORD': '',    DOCKER
+        'PASSWORD': 'USPirat2001',
+        #'NAME': 'django-app-db',   DOCKER
+        'NAME': 'music7',
         'TEST': {
             'NAME': 'testing_music7',
         },

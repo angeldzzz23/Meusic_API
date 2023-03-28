@@ -203,7 +203,7 @@ class PreferenceGloballyView(GenericAPIView):
 
 
 class PreferenceUserAPIView(GenericAPIView):
-
+    # CREATE VALIDATION HERE
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PreferenceEditSerializer
 
