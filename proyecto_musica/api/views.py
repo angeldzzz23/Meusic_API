@@ -57,7 +57,7 @@ class UpdateImage(GenericAPIView):
         img = Images.objects.filter(image_id=id, user=request.user.id)
 
         if len(img) == 0:
-            res = {'success' : False, 'error': 'video with that id does not exist'}
+            res = {'success' : False, 'error': 'image with that id does not exist'}
             return response.Response(res)
 
         imgeObj = img[0]
@@ -84,6 +84,15 @@ class UpdateImage(GenericAPIView):
             res = {'success' : False, 'error': "you didnt add all of the parameters"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
+        if "title" not in jd:
+            res = {'success' : False, 'error' : "Title has to be specified in the request as a key"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+        if "image" not in jd:
+            res = {'success' : False, 'error' : "Image has to be specified in the request as a key"}
+            return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
         #verifying that we have a valid user
         try:
             user_obj = request.user
@@ -107,7 +116,7 @@ class UpdateImage(GenericAPIView):
 
         # making sure that we have a valid title name
         if jd['title'] not in valid_titles:
-            res = {'success' : False, 'error': "not a valid image type"}
+            res = {'success' : False, 'error': "not a valid image title"}
             return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
         # does the user already have an image_1, if they do then we
@@ -174,7 +183,12 @@ class UpdateVideo(GenericAPIView):
                 res = {'success' : False, 'error' : "User id does not exist."}
                 return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
+            if "video" not in jd:
+                res = {'success' : False, 'error' : "Request must contain video as a key."}
+                return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
             video = request.FILES["video"]
+
 
 
 
