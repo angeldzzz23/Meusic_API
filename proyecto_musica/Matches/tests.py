@@ -35,17 +35,6 @@ from authentication.models import Genders, Skills, Genres, Nationality
 # 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 # 		self.assertEqual(content, data)
 
-def editUsername(token, username):
-		data = json.dumps({'username': username})
-		response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
-		return response.data
-
-
-def logInSecondUser(email, password): 
-	login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
-	login_response_body_userOne = json.loads(login_response_userone.content)
-	tokenUserOne = login_response_body_userOne['access']  # Gets the token
-	return tokenUserOne
 
 
 
@@ -84,6 +73,13 @@ class MatchesTests(TestCase):
 			response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
 			return response.status_code
 
+		def likeUser(token, message, username):
+			data = message
+			if data == None: 
+				liking_user_response = self.client.post('/api/newsfeed/like/' + username, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+
+				return liking_user_response
+
 
 		def logInSecondUser(email, password): 
 			login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
@@ -91,22 +87,21 @@ class MatchesTests(TestCase):
 			tokenUserOne = login_response_body_userOne['access']  # Gets the token
 			return tokenUserOne
 
+		# editing the user 
 		tokenUserOne = logInSecondUser('aa@gmail.com', 'pass')
 		statusCode = editUsername(tokenUserOne, 'angelzzz23')
 		# making sure that the editing of the user 1 was done correctly 
 		self.assertEqual(201, statusCode)
 
-		tokenUserOne = logInSecondUser('david@gmail.com', 'pass')
-		statusCode = editUsername(tokenUserOne, 'davidzzz23')
+		tokenUserTwo = logInSecondUser('david@gmail.com', 'pass')
+		statusCode = editUsername(tokenUserTwo, 'davidzzz23')
 		self.assertEqual(201, statusCode)
 
+		tokenUserThree = logInSecondUser('gerardo@gmail.com', 'pass')
+		statusCode = editUsername(tokenUserThree, 'gerardo24')
+		self.assertEqual(201, statusCode)
 
-
-
-
-
-
-
+		# get the matches of the user with no matches 
 
 		# log the user in 
 		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
@@ -125,16 +120,28 @@ class MatchesTests(TestCase):
 		self.assertEqual(expected_data, user_before_request_content)	
 
 
-		# loggin in the second user 
 
+		# like the user 
+		like_user_two = likeUser(tokenUserOne, None, 'davidzzz23')
+		like_user_two_expected_data = {'success': True, 'isMatch': False}
 
+		self.assertEqual(like_user_two_expected_data,like_user_two.data)
+
+		# this is testing for a match without a message 
+		user_two_liking_user_one = likeUser(tokenUserTwo, None, 'angelzzz23')
+		user_two_liking_user_one_expected_data = {'success': True, 'isMatch': True, 'user': {'username': 'angelzzz23', 'message': None}}
 		
+		self.assertEqual(user_two_liking_user_one_expected_data,user_two_liking_user_one.data)
 
 
+		# this is testing for user_two 
 
-		# get the matches of the user with no matches 
 
-		# getting the user matches with at least one match 
+		# user one liking usetTwo with message 
+		# user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		# print(user_before_request.data)
+
+ 
 
 
 
