@@ -20,11 +20,48 @@ from authentication.models import Genders, Skills, Genres, Nationality
 
 
 
+# def editUser():
+# 	login_response = self.client.post('/api/auth/login', {'email': 'testuser@gmail.com', 'password' : 'password'}, HTTP_ACCEPT='application/json')
+# 	login_response_body = json.loads(login_response.content)
+# 	token = login_response_body['access']  # Gets the token
+# 	response = self.client.patch('/api/auth/user', HTTP_ACCEPT='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+# 	content = json.loads(response.content)
+
+# 		data = {
+#     			"success": True,
+#     			"user": {}
+# 				}
+
+# 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+# 		self.assertEqual(content, data)
+
+def editUsername(token, username):
+		data = json.dumps({'username': username})
+		response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+		return response.data
+
+
+def logInSecondUser(email, password): 
+	login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
+	login_response_body_userOne = json.loads(login_response_userone.content)
+	tokenUserOne = login_response_body_userOne['access']  # Gets the token
+	return tokenUserOne
+
+
+
+
+
+
 class MatchesTests(TestCase):
 	def setUp(self):
 		# 1) Creating the user
 		# 2) Filling the models
 		self.user = User.objects.create_user(email='aa@gmail.com', password='pass')
+		self.user = User.objects.create_user(email='david@gmail.com', password='pass')
+		self.user = User.objects.create_user(email='gerardo@gmail.com', password='pass')
+		self.user = User.objects.create_user(email='yorbin@gmail.com', password='pass')
+
+
 		self.client = Client()
 
 		# Genders.objects.create(gender_id=1, gender_name="male")
@@ -41,15 +78,59 @@ class MatchesTests(TestCase):
 		# Genres.objects.create(genre_id=3, genre_name="pop")
 
 	def test_user_matches(self):
-		login_response = self.client.post('/api/auth/login', {'email': 'aa@gmail.com', 'password' : 'pass'}, HTTP_ACCEPT='application/json')
-		login_response_body = json.loads(login_response.content)
-		token = login_response_body['access']  # Gets the token
+
+		def editUsername(token, username):
+			data = json.dumps({'username': username})
+			response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+			return response.status_code
+
+
+		def logInSecondUser(email, password): 
+			login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
+			login_response_body_userOne = json.loads(login_response_userone.content)
+			tokenUserOne = login_response_body_userOne['access']  # Gets the token
+			return tokenUserOne
+
+		tokenUserOne = logInSecondUser('aa@gmail.com', 'pass')
+		statusCode = editUsername(tokenUserOne, 'angelzzz23')
+		# making sure that the editing of the user 1 was done correctly 
+		self.assertEqual(201, statusCode)
+
+		tokenUserOne = logInSecondUser('david@gmail.com', 'pass')
+		statusCode = editUsername(tokenUserOne, 'davidzzz23')
+		self.assertEqual(201, statusCode)
+
+
+
+
+
+
+
+
 
 		# log the user in 
-		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'} )
+		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
 		user_before_request_content = json.loads(user_before_request.content) # get the user preferences body before patch 
 
-		print('test content', user_before_request_content)		
+
+		# have user one like all three other users 
+		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		user_before_request_content = json.loads(user_before_request.content) # get the user preferences body before patch 
+
+		expected_data = {
+    					"success": True,
+    					"Matches": []
+						}
+
+		self.assertEqual(expected_data, user_before_request_content)	
+
+
+		# loggin in the second user 
+
+
+		
+
+
 
 		# get the matches of the user with no matches 
 
