@@ -63,7 +63,7 @@ class MatchesView(GenericAPIView):
             user_objects.append(serialized_data)
 
 
-        res = {'success' : True, 'Matches ': user_objects}
+        res = {'success' : True, 'Matches': user_objects}
 
         return response.Response(res, status=status.HTTP_200_OK)
 
