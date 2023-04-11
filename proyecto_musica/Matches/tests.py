@@ -77,8 +77,12 @@ class MatchesTests(TestCase):
 			data = message
 			if data == None: 
 				liking_user_response = self.client.post('/api/newsfeed/like/' + username, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
-
 				return liking_user_response
+
+			toJson = json.dumps({'message' : message})
+			liking_user_response = self.client.post('/api/newsfeed/like/' + username, data=toJson,content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+			return liking_user_response
+
 
 
 		def logInSecondUser(email, password): 
@@ -100,6 +104,11 @@ class MatchesTests(TestCase):
 		tokenUserThree = logInSecondUser('gerardo@gmail.com', 'pass')
 		statusCode = editUsername(tokenUserThree, 'gerardo24')
 		self.assertEqual(201, statusCode)
+
+
+		tokenUserFour = logInSecondUser('yorbin@gmail.com', 'pass')
+		statusCode = editUsername(tokenUserFour, 'yorbinCastigador')
+		self.assertEqual(201, statusCode)		
 
 		# get the matches of the user with no matches 
 
@@ -134,12 +143,24 @@ class MatchesTests(TestCase):
 		self.assertEqual(user_two_liking_user_one_expected_data,user_two_liking_user_one.data)
 
 
-		# this is testing for user_two 
+		# user one liking usertwo 
+		like_user_three = likeUser(tokenUserOne, 'liking the user', 'yorbinCastigador')
+		liking_user_three_expected_Data = {'success': True, 'isMatch': False}
+		self.assertEqual(liking_user_three_expected_Data,like_user_three.data)
+
+		user_four_liking_user_one = likeUser(tokenUserFour, None, 'angelzzz23')
+		expected_data_four_one= {'success': True, 'isMatch': True, 'user': {'username': 'angelzzz23', 'message': 'liking the user'}}
+		self.assertEqual(expected_data_four_one, user_four_liking_user_one.data)
 
 
-		# user one liking usetTwo with message 
-		# user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
-		# print(user_before_request.data)
+
+		# testing the user with all of their matches
+		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 2}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 1}]}
+
+		self.assertEqual(expected_data_for_user_data, user_before_request.data)
+
+
 
  
 
