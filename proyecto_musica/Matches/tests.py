@@ -148,6 +148,8 @@ class MatchesTests(TestCase):
 		# testing the user with all of their matches
 		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
 
+		
+
 		# expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 2}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 1}]}
 		# self.assertEqual(expected_data_for_user_data, user_before_request.data)
 
@@ -181,18 +183,12 @@ class MatchesTests(TestCase):
 
 		# making sure the dislike button works
 		response_after_unmatching = self.unmatching(tokenUserOne, 'gerardo24')
-		print('data', response_after_unmatching.data)
 		# response_after_unmatching.refresh_from_db()
 		# self.assertEqual(201, response_after_unmatching.status_code)
 
 		# making sure that the unmatching worked 
 		user_before_request2 = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
-		print(user_before_request2.data)
-		# self.assertEqual(0, len(user_before_request.data['Matches']))
-
-
-
-
+		self.assertEqual(0, len(user_before_request2.data['Matches']))
 
 
 
