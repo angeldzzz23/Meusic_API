@@ -147,11 +147,13 @@ class MatchesTests(TestCase):
 
 		# testing the user with all of their matches
 		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		print(user_before_request.data)
 
-		
 
-		# expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 2}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 1}]}
-		# self.assertEqual(expected_data_for_user_data, user_before_request.data)
+
+
+		expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 3}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 2}]}
+		self.assertEqual(expected_data_for_user_data, user_before_request.data)
 
 
 	def test_unmatching(self):
