@@ -93,11 +93,15 @@ class UnMatchView(GenericAPIView):
         userMatchWithUserMatching = User_Matches.objects.filter(current_user=unmatchedUser, other_user=CurrentUser, is_active=True)
 
 
+
+
         if userMatchWithUserBeingMatched:
+            print('here')
             match = userMatchWithUserBeingMatched[0]
             match.is_active = False
             match.save()
-        elif userMatchWithUserBeingMatched:
+        elif userMatchWithUserMatching:
+            print('here 1')
             match = userMatchWithUserMatching[0]
             match.is_active = False
             match.save()

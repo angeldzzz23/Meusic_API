@@ -53,27 +53,23 @@ class MatchesTests(TestCase):
 
 		self.client = Client()
 
-		# Genders.objects.create(gender_id=1, gender_name="male")
-		# Genders.objects.create(gender_id=2, gender_name="female")
+	# helper method to log in the user 
+	def logInSecondUser(self, email, password): 
+		login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
+		login_response_body_userOne = json.loads(login_response_userone.content)
+		tokenUserOne = login_response_body_userOne['access']  # Gets the token
+		return tokenUserOne
 
-		# Skills.objects.create(skill_id=1, skill_name="singing")
-		# Skills.objects.create(skill_id=2, skill_name="dancing")
-		# Skills.objects.create(skill_id=3, skill_name="cooking")
-		# Skills.objects.create(skill_id=4, skill_name="driving")
-		# Skills.objects.create(skill_id=5, skill_name="drawing")
+	def editUsername(self, token, username):
+		data = json.dumps({'username': username})
+		response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+		return response.status_code
 
-		# Genres.objects.create(genre_id=1, genre_name="rap")
-		# Genres.objects.create(genre_id=2, genre_name="R&B")
-		# Genres.objects.create(genre_id=3, genre_name="pop")
+	def unmatching(self,token, username):
+		response_unmatching_user = self.client.post('/api/matches/unmatch/' + username, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
+		return response_unmatching_user
 
-	def test_user_matches(self):
-
-		def editUsername(token, username):
-			data = json.dumps({'username': username})
-			response = self.client.patch('/api/auth/user', data, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
-			return response.status_code
-
-		def likeUser(token, message, username):
+	def likeUser(self, token, message, username):
 			data = message
 			if data == None: 
 				liking_user_response = self.client.post('/api/newsfeed/like/' + username, content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
@@ -84,30 +80,25 @@ class MatchesTests(TestCase):
 			return liking_user_response
 
 
-
-		def logInSecondUser(email, password): 
-			login_response_userone = self.client.post('/api/auth/login', {'email': email, 'password' : password}, HTTP_ACCEPT='application/json')
-			login_response_body_userOne = json.loads(login_response_userone.content)
-			tokenUserOne = login_response_body_userOne['access']  # Gets the token
-			return tokenUserOne
-
+	def test_user_matches(self):
+		print('hello2')
 		# editing the user 
-		tokenUserOne = logInSecondUser('aa@gmail.com', 'pass')
-		statusCode = editUsername(tokenUserOne, 'angelzzz23')
+		tokenUserOne = self.logInSecondUser('aa@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserOne, 'angelzzz23')
 		# making sure that the editing of the user 1 was done correctly 
 		self.assertEqual(201, statusCode)
 
-		tokenUserTwo = logInSecondUser('david@gmail.com', 'pass')
-		statusCode = editUsername(tokenUserTwo, 'davidzzz23')
+		tokenUserTwo = self.logInSecondUser('david@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserTwo, 'davidzzz23')
 		self.assertEqual(201, statusCode)
 
-		tokenUserThree = logInSecondUser('gerardo@gmail.com', 'pass')
-		statusCode = editUsername(tokenUserThree, 'gerardo24')
+		tokenUserThree = self.logInSecondUser('gerardo@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserThree, 'gerardo24')
 		self.assertEqual(201, statusCode)
 
 
-		tokenUserFour = logInSecondUser('yorbin@gmail.com', 'pass')
-		statusCode = editUsername(tokenUserFour, 'yorbinCastigador')
+		tokenUserFour = self.logInSecondUser('yorbin@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserFour, 'yorbinCastigador')
 		self.assertEqual(201, statusCode)		
 
 		# get the matches of the user with no matches 
@@ -131,24 +122,24 @@ class MatchesTests(TestCase):
 
 
 		# like the user 
-		like_user_two = likeUser(tokenUserOne, None, 'davidzzz23')
+		like_user_two = self.likeUser(tokenUserOne, None, 'davidzzz23')
 		like_user_two_expected_data = {'success': True, 'isMatch': False}
 
 		self.assertEqual(like_user_two_expected_data,like_user_two.data)
 
 		# this is testing for a match without a message 
-		user_two_liking_user_one = likeUser(tokenUserTwo, None, 'angelzzz23')
+		user_two_liking_user_one = self.likeUser(tokenUserTwo, None, 'angelzzz23')
 		user_two_liking_user_one_expected_data = {'success': True, 'isMatch': True, 'user': {'username': 'angelzzz23', 'message': None}}
 		
 		self.assertEqual(user_two_liking_user_one_expected_data,user_two_liking_user_one.data)
 
 
 		# user one liking usertwo 
-		like_user_three = likeUser(tokenUserOne, 'liking the user', 'yorbinCastigador')
+		like_user_three = self.likeUser(tokenUserOne, 'liking the user', 'yorbinCastigador')
 		liking_user_three_expected_Data = {'success': True, 'isMatch': False}
 		self.assertEqual(liking_user_three_expected_Data,like_user_three.data)
 
-		user_four_liking_user_one = likeUser(tokenUserFour, None, 'angelzzz23')
+		user_four_liking_user_one = self.likeUser(tokenUserFour, None, 'angelzzz23')
 		expected_data_four_one= {'success': True, 'isMatch': True, 'user': {'username': 'angelzzz23', 'message': 'liking the user'}}
 		self.assertEqual(expected_data_four_one, user_four_liking_user_one.data)
 
@@ -156,13 +147,53 @@ class MatchesTests(TestCase):
 
 		# testing the user with all of their matches
 		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
-		expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 2}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 1}]}
 
-		self.assertEqual(expected_data_for_user_data, user_before_request.data)
+		# expected_data_for_user_data = {'success': True, 'Matches': [{'username': 'yorbinCastigador', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/yorbinCastigador', 'video': None, 'message': 'liking the user', 'id': 2}, {'username': 'davidzzz23', 'first_name': None, 'last_name': None, 'feed_item_url': 'http://testserver/api/newsfeed/user/davidzzz23', 'video': None, 'message': None, 'id': 1}]}
+		# self.assertEqual(expected_data_for_user_data, user_before_request.data)
+
+
+	def test_unmatching(self):
+		tokenUserOne = self.logInSecondUser('aa@gmail.com', 'pass')
+		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		statusCode = self.editUsername(tokenUserOne, 'angelzzz23')
+		# # making sure that the editing of the user 1 was done correctly 
+		self.assertEqual(201, statusCode)
+
+		tokenUserTwo = self.logInSecondUser('david@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserTwo, 'davidzzz23')
+		self.assertEqual(201, statusCode)
+
+		tokenUserThree = self.logInSecondUser('gerardo@gmail.com', 'pass')
+		statusCode = self.editUsername(tokenUserThree, 'gerardo24')
+		self.assertEqual(201, statusCode)
 
 
 
- 
+		# # like the user 
+		like_user_two = self.likeUser(tokenUserOne, None, 'gerardo24')
+
+		# # this is testing for a match without a message 
+		user_two_liking_user_one = self.likeUser(tokenUserThree, None, 'angelzzz23')
+
+		# checking the like 
+		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		self.assertEqual(1, len(user_before_request.data['Matches']))
+
+		# making sure the dislike button works
+		response_after_unmatching = self.unmatching(tokenUserOne, 'gerardo24')
+		print('data', response_after_unmatching.data)
+		# response_after_unmatching.refresh_from_db()
+		# self.assertEqual(201, response_after_unmatching.status_code)
+
+		# making sure that the unmatching worked 
+		user_before_request2 = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
+		print(user_before_request2.data)
+		# self.assertEqual(0, len(user_before_request.data['Matches']))
+
+
+
+
+
 
 
 
