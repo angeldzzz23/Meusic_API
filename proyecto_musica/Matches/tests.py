@@ -13,33 +13,6 @@ from authentication.views import VerifyEmail
 from authentication.models import Genders, Skills, Genres, Nationality
 
 
-# from authentication.views import AuthUserAPIView, VerifyEmail
-# from authentication.models import User, Genders, Skills, Genres
-# from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
-# from django.core import mail
-
-
-
-# def editUser():
-# 	login_response = self.client.post('/api/auth/login', {'email': 'testuser@gmail.com', 'password' : 'password'}, HTTP_ACCEPT='application/json')
-# 	login_response_body = json.loads(login_response.content)
-# 	token = login_response_body['access']  # Gets the token
-# 	response = self.client.patch('/api/auth/user', HTTP_ACCEPT='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {token}'})
-# 	content = json.loads(response.content)
-
-# 		data = {
-#     			"success": True,
-#     			"user": {}
-# 				}
-
-# 		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-# 		self.assertEqual(content, data)
-
-
-
-
-
-
 
 class MatchesTests(TestCase):
 	def setUp(self):
