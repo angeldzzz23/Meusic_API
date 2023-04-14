@@ -95,9 +95,22 @@ class Feed(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     # work on a basic algithm for this
 
+    # TODO: find a more efficient way of doing this 
 
     def get(self, request):
-        all_users = User.objects.all().exclude(id=request.user.id).exclude(is_staff=True)
+
+        # these all the users the current user has liked 
+        usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
+
+        usersThatCurrUserHasLiked.append(request.user.id) 
+
+        # TODO: for some reason the excluding didnt work 
+        all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
+
+        # remove all of the users 
+
+        for usr in all_users:
+            print(usr.id)
 
         user_objects = []
          

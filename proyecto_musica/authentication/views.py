@@ -691,11 +691,10 @@ class CreatingFakeData(GenericAPIView):
 
                 if video_serializer.is_valid():
                     video_serializer.save()
-                break
 
             # generating preferences for each user 
-            if id == 'preferences': 
-                print('preferences')
+        elif id == 'preferences': 
+            print('preferences')
 
         datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
