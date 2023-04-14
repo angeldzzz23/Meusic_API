@@ -513,6 +513,11 @@ class FakeUser:
         self.nationalities = nationalities
         self.genders = genders
         self.context = {}
+        self.fullUser = {}
+
+    def initializeUser(self, fname, lname, email, username, dateOfBirth, bio):
+        self.fullUser = {"email":email, 'username': username, "password":"123456","first_name": fname, "last_name":lname, "DOB": dateOfBirth, "gender": None, "about_me": bio
+                }
 
 
     def createMisc(self,objectsToChooseFrom, type):
@@ -556,19 +561,17 @@ class FakeUser:
         # gender 
         userGender = self.createMisc(self.genders.copy(), 'gender')
         # setting the context 
+        self.fullUser['gender'] = userGender
 
-        mark = { "email":"marklovestheworld@gmail.com", 'username': 'heyitsmark', "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "gender": userGender, "about_me": "I created myspace!!!",
-            "context" : {
+        self.fullUser['context'] = {
             "skills": userSkills,
             "genres": userGenres,
             "nationalities":userNationalities, 
             "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],
             "videos": ["aaaa", "aaaa", "dddwd"]
-            },
-            }
-         
+        }
 
-        return mark
+      
 
 
 
@@ -662,25 +665,55 @@ class CreatingFakeData(GenericAPIView):
             genres = list(Genres.objects.all())
             nat = list(Nationality.objects.all())
             genders = list(Genders.objects.all())
-
-
             userFactory = FakeUser(skills, genres, nat, genders)
-            print(userFactory.createUserFieldLists())
+
+
+            __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+            file = open(os.path.join(__location__, 'fakeuserlist.txt'))
+            count = 0
+            for line in file:
+                userInfo = line.replace('\n','').split(' ')
+                print('line ',userInfo)
+                fname = userInfo[0]
+                lname = userInfo[1]
+                email = userInfo[2]
+                username = userInfo[3]
+                dateOfBirth = userInfo[4]
+                bio = userInfo[5]
+
+
+                userFactory.initializeUser(fname, lname, email, username, dateOfBirth, bio)
+                userFactory.createUserFieldLists()
+                
+                serializer = RegisterSerializer(data=userFactory.fullUser,context=userFactory.fullUser['context'])
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    print(serializer.errors)
+
+
+
+
+
+
+
+
+
 
 
             # (self, skills=None, genres=None, nationalities=None, genders=None):
 
 
-            user = userFactory.createUserFieldLists()
-            context = user['context']
+            # user = userFactory.createUserFieldLists()
+            # context = user['context']
 
 #
-            serializer = RegisterSerializer(data=user,context=context)
+            # serializer = RegisterSerializer(data=user,context=context)
 
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                print(serializer.errors)
+            # if serializer.is_valid():
+            #     serializer.save()
+            # else:
+            #     print(serializer.errors)
 
 
         # # everything but the videos get added
@@ -793,10 +826,6 @@ class CreatingFakeData(GenericAPIView):
             #         "high": 50
             #     }
             # }
-
-
-
-
 
 
 
