@@ -111,10 +111,11 @@ class RegisterSerializer(serializers.ModelSerializer):
                         User_Artists.objects.create(user_id=user_id, artist=obj)
                 elif field_name == 'nationalities':
                     for obj in field_list:
-                        User_Nationalities.objects.create(user_id=user_id, nationality_id=obj)
-                elif field_name == 'nationalities':
-                    for obj in field_list:
                         User_Nationality.objects.create(user_id=user_id, nationality_id=obj)
+                elif field_name == 'videos': 
+                    User_Videos.objects.filter(user_id=user_id).delete()
+                    for obj in field_list:
+                        User_Videos.objects.create(user_id=user_id, video_id=obj)
 
         return user
 

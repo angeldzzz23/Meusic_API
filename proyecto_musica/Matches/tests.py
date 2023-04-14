@@ -54,7 +54,6 @@ class MatchesTests(TestCase):
 
 
 	def test_user_matches(self):
-		print('hello2')
 		# editing the user 
 		tokenUserOne = self.logInSecondUser('aa@gmail.com', 'pass')
 		statusCode = self.editUsername(tokenUserOne, 'angelzzz23')
@@ -120,7 +119,6 @@ class MatchesTests(TestCase):
 
 		# testing the user with all of their matches
 		user_before_request = self.client.get('/api/matches/', content_type='application/json', **{'HTTP_AUTHORIZATION': f'Bearer {tokenUserOne}'} )
-		print(user_before_request.data)
 
 
 

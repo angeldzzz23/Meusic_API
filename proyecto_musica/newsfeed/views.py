@@ -92,11 +92,42 @@ def calc_dist_fixed(lat_a, long_a, lat_b, long_b):
 
 class Feed(GenericAPIView):
 
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     # work on a basic algithm for this
 
+    # TODO: find a more efficient way of doing this 
 
     def get(self, request):
+
+        # these all the users the current user has liked 
+        usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
+
+        usersThatCurrUserHasLiked.append(request.user.id) 
+
+        # TODO: for some reason the excluding didnt work 
+        all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
+
+        # remove all of the users 
+
+        for usr in all_users:
+            print(usr.id)
+
+        user_objects = []
+         
+        url = request.build_absolute_uri()
+        newurl = str(url)
+        base_url = newurl[:-5] + ''
+         
+        for user in all_users:
+            serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
+            serialized_data = serializer.data
+            user_objects.append(serialized_data)
+         
+        theFeedJson = {'feed': user_objects}
+        return response.Response(theFeedJson, status=status.HTTP_200_OK)
+
+        # get the user that you have liked 
+        # all 
 
         # return None
         # the location of the user
@@ -190,27 +221,11 @@ class Feed(GenericAPIView):
 
 
 
-         # all_users = User.objects.all().exclude(id=request.user.id).exclude(is_staff=True)
+       
 
+        # theFeedJson = {'feed': 'there is not hahasha'}
 
-
-         # user_objects = []
-         #
-         # url = request.build_absolute_uri()
-         # newurl = str(url)
-         # base_url = newurl[:-5] + ''
-         #
-         # for user in all_users:
-         #
-         #    serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
-         #    serialized_data = serializer.data
-         #    user_objects.append(serialized_data)
-         #
-         # theFeedJson = {'feed': user_objects}
-
-        theFeedJson = {'feed': 'there is not hahasha'}
-
-        return response.Response(theFeedJson, status=status.HTTP_200_OK)
+       
 
 
 class LikingView(GenericAPIView):

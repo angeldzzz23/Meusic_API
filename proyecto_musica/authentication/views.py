@@ -6,12 +6,15 @@ from authentication.serializers import LoginSerializer, CookieTokenRefreshSerial
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from authentication.models import User, User_Skills, Skills, Genres, User_Genres, User_Artists, Genders, Verification, Nationality, User_Nationality
-from authentication.functions import validate_field, List_Fields, User_Fields
+from authentication.functions import validate_field, List_Fields, User_Fields, deleteUser
 from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers  import TokenObtainSerializer
 from rest_framework_simplejwt.serializers  import TokenRefreshSerializer
-
+from api.serializers import PictureSerialiser
+from api.serializers import PicturesSerializer
+from api.serializers import Videoerialiser
+from api.serializers import VideosSerializer
 
 from api.models import Images
 from api.models import Videos
@@ -40,6 +43,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 
 from authentication.functions import validate_email
 from preferences.serializers import PreferenceEditSerializer
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 # this uses a cookie
 # this is in charge of refreshing the user's token
@@ -71,6 +75,8 @@ class CookieTokenRefreshView2(TokenRefreshView):
 
         return super().finalize_response(request, response, *args, **kwargs)
 
+
+import shutil
 
 class AuthUserAPIView(GenericAPIView):
 
@@ -495,260 +501,226 @@ class verifyIsSetUp(GenericAPIView):
         return response.Response(datos, status=status.HTTP_201_CREATED)
 
 
+# class CreatingFakeData2(GenericAPIView):
+    # creating a
+    # def post(self, request): 
+
+
+
+
+import random
+from random import randrange
+
+
+class FakeUser:
+    def __init__(self, skills=None, genres=None, nationalities=None, genders=None):
+        self.skills = skills
+        self.genres = genres
+        self.nationalities = nationalities
+        self.genders = genders
+        self.context = {}
+        self.fullUser = {}
+
+    def initializeUser(self, fname, lname, email, username, dateOfBirth, bio):
+        self.fullUser = {"email":email, 'username': username, "password":"123456","first_name": fname, "last_name":lname, "DOB": dateOfBirth, "gender": None, "about_me": bio
+                }
+
+
+    def createMisc(self,objectsToChooseFrom, type):
+        size = randrange(6)
+        userSize = 0 
+        skills = []
+        if type == 'skills':
+            while userSize < size:
+                randomSkill = random.choice(objectsToChooseFrom)
+                objectsToChooseFrom.remove(randomSkill)
+                skills.append(randomSkill.skill_id)
+                userSize = userSize + 1
+            return skills
+        elif type == 'genres':
+            while userSize < size:
+                randomSkill = random.choice(objectsToChooseFrom)
+                objectsToChooseFrom.remove(randomSkill)
+                skills.append(randomSkill.genre_id)
+                userSize = userSize + 1
+            return skills
+        elif type == 'nationality':
+            while userSize < size:
+                randomSkill = random.choice(objectsToChooseFrom)
+                objectsToChooseFrom.remove(randomSkill)
+                skills.append(randomSkill.nationality_id)
+                userSize = userSize + 1
+            return skills
+        elif type == 'gender':
+            chosenGender = random.choice(objectsToChooseFrom)
+            return chosenGender.gender_id
+
+    def createUserFieldLists(self):
+        # skills 
+        userSkills = self.createMisc(self.skills.copy(),'skills')
+        # genres 
+        userGenres = self.createMisc(self.genres.copy(), 'genres')
+
+        # nationalities
+        userNationalities = self.createMisc(self.nationalities.copy(), 'nationality')
+
+        # gender 
+        userGender = self.createMisc(self.genders.copy(), 'gender')
+        # setting the context 
+        self.fullUser['gender'] = userGender
+
+        self.fullUser['context'] = {
+            "skills": userSkills,
+            "genres": userGenres,
+            "nationalities":userNationalities, 
+            "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],
+            "videos": ["wAjHQXrIj9o", "WuVJMfhpdUk", "297519326"]
+        }
+
+      
+from django.core.files import File
+from newsfeed.models import User_Matches,User_Likes
+from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres
+from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
+
+
+
+
 class CreatingFakeData(GenericAPIView):
 
-    def post(self, request):
-        # point = Locations.objects.all()[0]
-        #
-        # print(point.point.x)
-        # print(point.point.y)
-        #
-        #
-        # user = User.objects.all()[2]
-        # point = Point(float(30.5), float(32.5), srid=4326)
-        # p = Locations(point=point, user=user)
-        # p.save()
+    def delete(self, request): 
+        # getting all of the users 
+         # delete the user likes 
+         # User_Genres.objects.all().delete()
+        User_Likes.objects.all().delete()
 
 
+        # delete the user matches
+        User_Matches.objects.all().delete() 
 
-        # create admin user
-        User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
+        # delete the preferences 
+        # prefrences 
+        User_Preference_Genders.objects.all().delete() 
+        User_Preference_Skills.objects.all().delete() 
+        User_Preference_Genres.objects.all().delete() 
+        User_Preferences_Age.objects.all().delete() 
+        User_Preferences_Distance.objects.all().delete() 
+        User_Preferences_Globally.objects.all().delete() 
 
-        Skills.objects.all().delete()
-        Genres.objects.all().delete()
-        Nationality.objects.all().delete()
-        Genders.objects.all().delete()
+        user = User.objects.all()
 
-        nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
-        skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
+        for aUser in user:
+             deleteUser(str(aUser.id))
+
+        datos = {'success':True}
+
+        return response.Response(datos, status=status.HTTP_201_CREATED)
+
+    def post(self, request,id):
+        if id == 'misc':
+            Skills.objects.all().delete()
+            Genres.objects.all().delete()
+            Nationality.objects.all().delete()
+            Genders.objects.all().delete()
+            nationalities = ["Mexico", "Argentina", "Colombia","Peru","Venezuela","Chile","Ecuador","Bolivia","Paraguay","Uruguay","Guyana","Suriname","French Guiana","Falkland Islands"]
+            skills = ["Singer", "Song Writer", "Music Producer", "Recording Engineer", "Session Musician", "Artist Manager", "Tour Manager", "Music Teacher", "Graphic Desinger", "Baterista", "Booking Agent", "Composer",
                     "Public Relations", "Social Media", "Film Composer", "Music Director"]
-        genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+            genres = ["Regional", "R&B", "Latin", "Rock", "Pop", "Hip hop music", "Rock music", "Rhythm and blues", "Soul music", "Reggae", "Country", "Funk", "Folk music", "Jazz", "Disco", "Electronic music", "Blues", "Bachata"]
+            genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
 
-        genders = ["Male", "Female", "Agender", "Bigender", "Cisgender", "Gender Expression", "Gender Fluid", "Genderqueer", "Gender Variant", "Mx.", "Non-Binary", "Passing", "Third Gender", "Transgender", "Transgender woman", "Two-Spirit"]
-
-        #  creating the Skills
-        for skill in skills:
-            p = Skills(skill_name=skill)
-            p.save()
+                  #  creating the Skills
+            for skill in skills:
+                p = Skills(skill_name=skill)
+                p.save()
 
         # creating the Genres
-        for genre in genres:
-            p = Genres(genre_name=genre)
-            p.save()
+            for genre in genres:
+                p = Genres(genre_name=genre)
+                p.save()
 
         # creating nationalities
-        for nationality in  nationalities:
-            p = Nationality(nationality_name=nationality)
-            p.save()
+            for nationality in  nationalities:
+                p = Nationality(nationality_name=nationality)
+                p.save()
 
         # creating Genders
-        for gender in genders:
-            p = Genders(gender_name=gender)
-            p.save()
+            for gender in genders:
+                p = Genders(gender_name=gender)
+                p.save()
 
-        # everything but the videos get added
-
-        mark = { "email":"marklovestheworld@gmail.com", 'username': 'heyitsmark', "password":"123456","first_name": "1234 ", "last_name":"fffan", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created myspace!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"],
-        "context" : {
-        "skills": [1,2,3],
-            "genres": [1,2],
-            "nationalities":[1,2]
-        },
-        }
-
-        mark_preferences = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
+        elif id == "users": 
 
 
-
-        steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"],  "context":  {
-        "genres": [3,4],
-        "skills": [4,5],
-        "nationalities":[1]
-        }
-        }
+            skills = list(Skills.objects.all())
+            genres = list(Genres.objects.all())
+            nat = list(Nationality.objects.all())
+            genders = list(Genders.objects.all())
+            userFactory = FakeUser(skills, genres, nat, genders)
 
 
-        steve_preferences = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
+            __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+            file = open(os.path.join(__location__, 'fakeuserlist.txt'))
+            count = 0
+            for line in file:
+                userInfo = line.replace('\n','').split(' ')
+                # print('line ',userInfo)
+                fname = userInfo[0]
+                lname = userInfo[1]
+                email = userInfo[2]
+                username = userInfo[3]
+                dateOfBirth = userInfo[4]
+                bio = userInfo[5]
 
 
-        bill = {
-        "email": "billgates@gmail.com", "password" : "123456", "username": "billgates", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"],
-        "context": {
-            "skills": [1,2],
-            "nationalities":[1],
-            "genres": [1,2,4]
-            }
-        }
-
-        bill_preferences = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
-
-
-        sam = {
-        "email": "samaltman@gmail.com", "password" : "123456", "username": "samaltman", "first_name": "Sam", "last_name":"Altman", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"],
-        "context": {
-            "skills": [3,4],
-            "genres": [1,2],
-            "nationalities":[1]
-        }
-        }
-
-        sam_preferences = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
-
-        david = {"email": "davidzambrano@gmail.com", "password" : "123456", "username": "davidzzz23", "first_name": "David", "last_name":"Zambrano", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"], "context": {
-        "skills": [3,6,7],
-        "genres": [4],
-        "nationalities":[1]
-        }
-            }
-
-        david_preferences = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
-
-        total_users = [mark, steve, bill, sam, david]
-        jd = {
-            "skills": [1,2,3],
-            "genres": [1,2,3],
-            "genders": [1],
-            "age": {
-                "low": 14,
-                "high": 22
-            },
-            "distance": {
-                "low": 22,
-                "high": 50
-            }
-        }
-
-         # loop through all of the users and create them
-        for user in total_users:
-            context = {}
-
-            serializer = RegisterSerializer(data=user,context=context)
-
-            if serializer.is_valid():
-                serializer.save()
-                print("success",user['username'] )
-
-            else:
-                datos = {'success':False}
-                return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
-
-        # initialize the preferences of the user
-        # Refactor this later on
-        for user in total_users:
-
-            if user['email'] == "marklovestheworld@gmail.com":
-                user_obj = User.objects.get(email="marklovestheworld@gmail.com")
-                serializer = PreferenceEditSerializer(user_obj, data=jd,
-                                                   context=jd, partial=True)
+                userFactory.initializeUser(fname, lname, email, username, dateOfBirth, bio)
+                userFactory.createUserFieldLists()
+                
+                serializer = RegisterSerializer(data=userFactory.fullUser,context=userFactory.fullUser['context'])
                 if serializer.is_valid():
                     serializer.save()
 
-                else:
-                    print("there is an error with the serializer for", user_obj)
+                try:
+                    user_obj = User.objects.get(username=username)
+                except User.DoesNotExist:
+                    res = {'success' : False, 'error' : "user with that username does not exist."}
+                    return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+                img = request.FILES["image"]
+
+                jd = request.data
+
+                imageNames = ["image_1","image_2","image_3","image_4","image_5","image_6"]
+
+                for imageName in imageNames:
+                    jd['title'] = imageName
+                    picture_serializer = PictureSerialiser(data=jd, context={'user': user_obj, 'img' : img, 'request': request})
+                    if picture_serializer.is_valid():
+                        picture_serializer.save()
+                        datos = {'success':True,'data':picture_serializer.data}
+
+                video = request.FILES["video"]
+
+                # checking if video is 
+                if video:
+                    filename = video.name
+
+                    if  (filename.endswith('.MP4') or filename.endswith('.mp4')) == False :
+                        datos = {'success':False,'data':"file is not of type .mp4"}
+                        return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
 
 
-            elif user['email'] == "stevehatestheworld@gmail.com":
-                user_obj = User.objects.get(email="stevehatestheworld@gmail.com")
-                serializer = PreferenceEditSerializer(user_obj, data=jd,
-                                                   context=jd, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
+                video_serializer = Videoerialiser(data=jd, context={'user': user_obj, 'vid' : video, 'request': request, 'caption': 'This is a fake caption'})
 
-                else:
-                    print("there is an error with the serializer for", user_obj)
+                if video_serializer.is_valid():
+                    video_serializer.save()
 
-            elif user['email'] == "billgates@gmail.com":
-                user_obj = User.objects.get(email="billgates@gmail.com")
-                serializer = PreferenceEditSerializer(user_obj, data=jd,context=jd, partial=True)
-
-                if serializer.is_valid():
-                    serializer.save()
-
-                else:
-                    print("there is an error with the serializer for", user_obj)
-
-            elif user['email'] == "samaltman@gmail.com":
-                user_obj = User.objects.get(email="samaltman@gmail.com")
-                serializer = PreferenceEditSerializer(user_obj, data=jd,
-                                                   context=jd, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-
-                else:
-                    print("there is an error with the serializer for", user_obj)
-
-
-            elif user['email'] == "davidzambrano@gmail.com":
-                user_obj = User.objects.get(email="davidzambrano@gmail.com")
-                serializer = PreferenceEditSerializer(user_obj, data=jd,
-                                                   context=jd, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-                else:
-                    print("there is an error with the serializer for", user_obj)
-
-
-
+            # generating preferences for each user 
+        elif id == 'preferences': 
+            print('preferences')
 
         datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
+
+
+
+   
