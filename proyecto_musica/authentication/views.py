@@ -713,115 +713,12 @@ class CreatingFakeData(GenericAPIView):
                 if video_serializer.is_valid():
                     video_serializer.save()
                 break
+
             # generating preferences for each user 
             if id == 'preferences': 
+                # TODO: 
                 print('preferences')
-                # steve = {"email": "stevehatestheworld@gmail.com", "password" : "123456", "username": "stevejobs", "first_name": "Steve", "last_name":"Jobs", "DOB": "1999-06-22", "gender": 1, "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"], "about_me": "I created apple!!!", "youtube_vids": ["abc", "ajkajkajajjaja"], "vimeo_vids": ["1234355", "3456"],  "context":  {
-                # "genres": [3,4],
-                # "skills": [4,5],
-                # "nationalities":[1]
-                # }
-                # }
-
-
-                # steve_preferences = {
-                #     "skills": [1,2,3],
-                #     "genres": [1,2,3],
-                #     "genders": [1],
-                #     "age": {
-                #         "low": 14,
-                #         "high": 22
-                #     },
-                #     "distance": {
-                #         "low": 22,
-                #         "high": 50
-                #     }
-                # }
-
-                # total_users = [mark, steve, bill, sam, david]
-                # jd = {
-                #     "skills": [1,2,3],
-                #     "genres": [1,2,3],
-                #     "genders": [1],
-                #     "age": {
-                #         "low": 14,
-                #         "high": 22
-                #     },
-                #     "distance": {
-                #         "low": 22,
-                #         "high": 50
-                #     }
-                # }
-
-                #  # loop through all of the users and create them
-                # for user in total_users:
-                #     context = {}
-
-                #     serializer = RegisterSerializer(data=user,context=context)
-
-                #     if serializer.is_valid():
-                #         serializer.save()
-                #         print("success",user['username'] )
-
-                #     else:
-                #         datos = {'success':False}
-                #         return response.Response(datos, status=status.HTTP_400_BAD_REQUEST)
-
-                # # initialize the preferences of the user
-                # # Refactor this later on
-                # for user in total_users:
-
-                #     if user['email'] == "marklovestheworld@gmail.com":
-                #         user_obj = User.objects.get(email="marklovestheworld@gmail.com")
-                #         serializer = PreferenceEditSerializer(user_obj, data=jd,
-                #                                            context=jd, partial=True)
-                #         if serializer.is_valid():
-                #             serializer.save()
-
-                #         else:
-                #             print("there is an error with the serializer for", user_obj)
-
-
-                #     elif user['email'] == "stevehatestheworld@gmail.com":
-                #         user_obj = User.objects.get(email="stevehatestheworld@gmail.com")
-                #         serializer = PreferenceEditSerializer(user_obj, data=jd,
-                #                                            context=jd, partial=True)
-                #         if serializer.is_valid():
-                #             serializer.save()
-
-                #         else:
-                #             print("there is an error with the serializer for", user_obj)
-
-                #     elif user['email'] == "billgates@gmail.com":
-                #         user_obj = User.objects.get(email="billgates@gmail.com")
-                #         serializer = PreferenceEditSerializer(user_obj, data=jd,context=jd, partial=True)
-
-                #         if serializer.is_valid():
-                #             serializer.save()
-
-                #         else:
-                #             print("there is an error with the serializer for", user_obj)
-
-                #     elif user['email'] == "samaltman@gmail.com":
-                #         user_obj = User.objects.get(email="samaltman@gmail.com")
-                #         serializer = PreferenceEditSerializer(user_obj, data=jd,
-                #                                            context=jd, partial=True)
-                #         if serializer.is_valid():
-                #             serializer.save()
-
-                #         else:
-                #             print("there is an error with the serializer for", user_obj)
-
-
-                #     elif user['email'] == "davidzambrano@gmail.com":
-                #         user_obj = User.objects.get(email="davidzambrano@gmail.com")
-                #         serializer = PreferenceEditSerializer(user_obj, data=jd,
-                #                                            context=jd, partial=True)
-                #         if serializer.is_valid():
-                #             serializer.save()
-                #         else:
-                #             print("there is an error with the serializer for", user_obj)
-
+               
 
 
         datos = {'success':True}
