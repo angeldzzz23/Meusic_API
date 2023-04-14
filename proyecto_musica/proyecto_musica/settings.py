@@ -164,6 +164,9 @@ REST_FRAMEWORK={
         'authentication.jwt.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 40
+
 }
 
 
