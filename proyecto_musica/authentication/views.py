@@ -579,12 +579,34 @@ class FakeUser:
 
       
 from django.core.files import File
+from newsfeed.models import User_Matches,User_Likes
+from preferences.models import User_Preference_Genders, User_Preference_Skills, User_Preference_Genres
+from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
+
+
 
 
 class CreatingFakeData(GenericAPIView):
 
     def delete(self, request): 
         # getting all of the users 
+         # delete the user likes 
+         # User_Genres.objects.all().delete()
+        User_Likes.objects.all().delete()
+
+
+        # delete the user matches
+        User_Matches.objects.all().delete() 
+
+        # delete the preferences 
+        # prefrences 
+        User_Preference_Genders.objects.all().delete() 
+        User_Preference_Skills.objects.all().delete() 
+        User_Preference_Genres.objects.all().delete() 
+        User_Preferences_Age.objects.all().delete() 
+        User_Preferences_Distance.objects.all().delete() 
+        User_Preferences_Globally.objects.all().delete() 
+
         user = User.objects.all()
 
         for aUser in user:
