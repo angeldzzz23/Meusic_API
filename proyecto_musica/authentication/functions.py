@@ -7,7 +7,7 @@ from api.models import Videos
 import os
 from proyecto_musica.settings import BASE_DIR
 from pathlib import Path
-
+import shutil
 
 
 def deleteUser(id):
