@@ -626,27 +626,8 @@ class CreatingFakeData(GenericAPIView):
                 p = Genders(gender_name=gender)
                 p.save()
 
+        elif id == "users": 
 
-        def createMisc(objectsToChooseFrom, type):
-            
-            if type == 'skills':
-                size = randrange(6)
-                userSize = 0 
-                skills = []
-                while userSize < size:
-                    randomSkill = random.choice(objectsToChooseFrom)
-                    objectsToChooseFrom.remove(randomSkill)
-                    skills.append(randomSkill.skill_id)
-                    userSize = userSize + 1
-                return skills
-
-# 
-        # list(Skills.objects.all()
-        # createMisc(), 'skills')
-
-        # print()
-
-        if id == "users": 
 
             skills = list(Skills.objects.all())
             genres = list(Genres.objects.all())
@@ -695,8 +676,6 @@ class CreatingFakeData(GenericAPIView):
                         picture_serializer.save()
                         datos = {'success':True,'data':picture_serializer.data}
 
-                # saving video 
-
                 video = request.FILES["video"]
 
                 # checking if video is 
@@ -716,28 +695,11 @@ class CreatingFakeData(GenericAPIView):
 
             # generating preferences for each user 
             if id == 'preferences': 
-                # TODO: 
                 print('preferences')
-               
-
 
         datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
 
 
 
-   # point = Locations.objects.all()[0]
-        #
-        # print(point.point.x)
-        # print(point.point.y)
-        #
-        #
-        # user = User.objects.all()[2]
-        # point = Point(float(30.5), float(32.5), srid=4326)
-        # p = Locations(point=point, user=user)
-        # p.save()
-
-        # # create admin user
-        # User.objects.create_user(email="admin@gmail.com", password="sheep787", is_staff=True)
-
-        # create skills, genres, nationalities, gen
+   
