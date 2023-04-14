@@ -11,7 +11,10 @@ from authentication.Util import Util
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers  import TokenObtainSerializer
 from rest_framework_simplejwt.serializers  import TokenRefreshSerializer
-
+from api.serializers import PictureSerialiser
+from api.serializers import PicturesSerializer
+from api.serializers import Videoerialiser
+from api.serializers import VideosSerializer
 
 from api.models import Images
 from api.models import Videos
@@ -40,6 +43,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 
 from authentication.functions import validate_email
 from preferences.serializers import PreferenceEditSerializer
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 # this uses a cookie
 # this is in charge of refreshing the user's token
@@ -71,6 +75,8 @@ class CookieTokenRefreshView2(TokenRefreshView):
 
         return super().finalize_response(request, response, *args, **kwargs)
 
+
+import shutil
 
 class AuthUserAPIView(GenericAPIView):
 
@@ -568,10 +574,11 @@ class FakeUser:
             "genres": userGenres,
             "nationalities":userNationalities, 
             "artists": ["kakakmakakkaka", "akkakakkaka", "jnnbn23j32ajaj"],
-            "videos": ["aaaa", "aaaa", "dddwd"]
+            "videos": ["wAjHQXrIj9o", "WuVJMfhpdUk", "297519326"]
         }
 
       
+from django.core.files import File
 
 
 
@@ -673,7 +680,7 @@ class CreatingFakeData(GenericAPIView):
             count = 0
             for line in file:
                 userInfo = line.replace('\n','').split(' ')
-                print('line ',userInfo)
+                # print('line ',userInfo)
                 fname = userInfo[0]
                 lname = userInfo[1]
                 email = userInfo[2]
@@ -688,11 +695,57 @@ class CreatingFakeData(GenericAPIView):
                 serializer = RegisterSerializer(data=userFactory.fullUser,context=userFactory.fullUser['context'])
                 if serializer.is_valid():
                     serializer.save()
-                else:
-                    print(serializer.errors)
+
+                try:
+                    user_obj = User.objects.get(username=username)
+                except User.DoesNotExist:
+                    res = {'success' : False, 'error' : "user with that username does not exist."}
+                    return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+                img = request.FILES["image"]
+
+                jd = request.data
+
+                imageNames = ["image_1","image_2","image_3","image_4","image_5","image_6"]
+
+                for imageName in imageNames:
+                    jd['title'] = imageName
+                    picture_serializer = PictureSerialiser(data=jd, context={'user': user_obj, 'img' : img, 'request': request})
+                    if picture_serializer.is_valid():
+                        picture_serializer.save()
+                        datos = {'success':True,'data':picture_serializer.data}
+
+                # saving video 
+
+                
 
 
+                break
 
+
+                # newpic = Images(user=user_obj, title=jd['title'], image = img)
+                # # TODO: imeplement enums
+                # valid_titles = ["image_1","image_2","image_3","image_4","image_5","image_6", "profile_image"]
+
+                # # making sure that we have a valid title name
+                # if jd['title'] not in valid_titles:
+                #     res = {'success' : False, 'error': "not a valid image title"}
+                #     return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+                # # does the user already have an image_1, if they do then we
+                # CurrentUsrimages = Images.objects.filter(user=user_obj, title=jd['title'])
+
+               
+
+                # if picture_serializer.is_valid():
+                #     # implementation goes here
+                #     picture_serializer.save()
+                #     datos = {'success':True,'data':picture_serializer.data}
+
+                #     return response.Response(datos, status=status.HTTP_201_CREATED)
+                # else:
+                #         datos = {'codigo':"200",'message': "success", "url": newpic.url}
+                #         return JsonResponse(datos)
 
 
 
