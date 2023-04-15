@@ -41,7 +41,8 @@ urlpatterns = [
     path('api/preferences/', include('preferences.urls')),
     path('api/user/preferences/', include('preferences.urls')),
     path('api/newsfeed/', include('newsfeed.urls')),
-    path('api/matches/', include('Matches.urls'))
+    path('api/matches/', include('Matches.urls')), 
+    path('api/generate/', include('michaelscarn.urls'))
 
 ]
 # Serving the media files in development mode

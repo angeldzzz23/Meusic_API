@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'Cprofile',
     'rest_framework_simplejwt',
     'preferences',
-    'Matches'
+    'Matches', 
+    'michaelscarn'
 ]
 
 MIDDLEWARE = [

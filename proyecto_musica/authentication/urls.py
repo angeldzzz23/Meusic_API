@@ -12,6 +12,7 @@ urlpatterns = [
     path('refresh', views.CookieTokenRefreshView2.as_view(), name="token_refresh3"),
     path('generateData', views.CreatingFakeData.as_view(), name='generateData'),
     path('generateData/<str:id>', views.CreatingFakeData.as_view(), name='generateData'),
+    path('generate/user/matches',views.GenerateFakeDataPart2.as_view(), name='generateData')
 
 ]
 

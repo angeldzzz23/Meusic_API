@@ -17,6 +17,12 @@ def deleteUser(id):
     User_Artists.objects.filter(user_id=id).delete()
     User_Nationality.objects.filter(user_id=id).delete()
 
+   
+    
+
+
+
+
     # deleting the pics
     pics = Images.objects.filter(user_id=id)
 

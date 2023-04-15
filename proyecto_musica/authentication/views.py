@@ -584,8 +584,6 @@ from preferences.models import User_Preference_Genders, User_Preference_Skills, 
 from preferences.models import User_Preferences_Age, User_Preferences_Distance, User_Preferences_Globally
 
 
-
-
 class CreatingFakeData(GenericAPIView):
 
     def delete(self, request): 
@@ -612,7 +610,7 @@ class CreatingFakeData(GenericAPIView):
         for aUser in user:
              deleteUser(str(aUser.id))
 
-        datos = {'success':True}
+        datos = {'success2':True}
 
         return response.Response(datos, status=status.HTTP_201_CREATED)
 
@@ -718,6 +716,19 @@ class CreatingFakeData(GenericAPIView):
         elif id == 'preferences': 
             print('preferences')
 
+        datos = {'success':True}
+        return response.Response(datos, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+
+class GenerateFakeDataPart2(GenericAPIView):
+    def post(self, request):
         datos = {'success':True}
         return response.Response(datos, status=status.HTTP_201_CREATED)
 
