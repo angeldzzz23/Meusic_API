@@ -245,11 +245,6 @@ class CreatingFakeData(GenericAPIView):
 
 
 
-
-
-
-
-
 class GenerateFakeDataPart2(GenericAPIView):
     def post(self, request):
         datos = {'success':True}
