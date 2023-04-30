@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     'Cprofile',
     'rest_framework_simplejwt',
     'preferences',
-    'Matches'
+    'Matches', 
+    'michaelscarn'
 ]
 
 MIDDLEWARE = [
@@ -163,9 +164,9 @@ REST_FRAMEWORK={
      'DEFAULT_AUTHENTICATION_CLASSES': [
         'authentication.jwt.JWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication'
-    ],
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 40
+    ], 
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 3
 
 }
 

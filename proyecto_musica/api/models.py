@@ -4,14 +4,24 @@ from django.shortcuts import render
 from django.db import models
 from authentication.models import User
 from datetime import datetime
-
+import os
+import uuid
 import random
 
 
 # TODO: make cleaner
 def get_uplaod_file_name(userpic, filename):
     ext = filename.split('.')[-1]
-    newName = userpic.title + '.' + ext
+
+    # TODO: change the name of the file
+
+    newName = str(uuid.uuid4()) + '.' + ext
+
+    print("uid",)
+    print('here', u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName))
+
+
+
     if userpic.title == "profile_image":
         return u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName)
     return u'photos/%s/%s' % (str(userpic.user.id),newName)
