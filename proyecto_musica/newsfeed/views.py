@@ -25,6 +25,7 @@ class SeeProfileOfUserView(GenericAPIView):
             user = User.objects.get(username=id)
 
         except User.DoesNotExist:
+            print("I am here")
             res = {'success' : True, 'user': None}
             return response.Response(res, status=status.HTTP_200_OK)
 
@@ -51,6 +52,7 @@ class SeeUserView(GenericAPIView):
             user = User.objects.get(username=id)
 
         except User.DoesNotExist:
+
             res = {'success' : True, 'user': None}
             return response.Response(res, status=status.HTTP_200_OK)
 
