@@ -8,18 +8,15 @@ class ChatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
         fields = ('convo',)
+
+
     def get_convo(self, obj):
         # print(obj)
         print(" before sqsnqjnsqjnsjqnsjqnsjq")
         print(Inbox.objects.filter(inbox_user_to_sender=obj))
         print(" After sqsnqjnsqjnsjqnsjqnsjq\n\n\n\n")
         conversation = Chat.objects.filter(inbox_user_to_sender=obj).values('message_id', 'message','sender_id', 'created_at', )
-
-
         return conversation
-
-
-
 
 
 
@@ -28,9 +25,6 @@ class InboxesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
         fields = ('inbox',)
-
-
-
 
 
     def get_inbox(self, obj):

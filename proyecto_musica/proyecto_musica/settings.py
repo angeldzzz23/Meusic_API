@@ -31,6 +31,8 @@ DEBUG = True
 #''
 ALLOWED_HOSTS = ['143.198.178.220', '127.0.0.1']
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 
 # Application definition
 
@@ -103,7 +105,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'proyecto_musica.wsgi.application'
-ASGI_APPLICATION = 'proyecto_musica.routing.application'
 
 # 3
 CHANNEL_LAYERS = {
@@ -242,3 +243,4 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ASGI_APPLICATION = 'proyecto_musica.asgi.application'

@@ -81,3 +81,7 @@ class Inbox(models.Model):
 
     # we hashed user_id + sender_id
     inbox_user_to_sender = models.CharField(max_length=1000, null=True)
+
+
+
+

@@ -1,188 +1,129 @@
 import json
 
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from chat.models import Inbox
 from chat.models import Chat
 
 from rest_framework import response, status, permissions
 from django.db.models import Q
 from authentication.models import User
+from channels.db import database_sync_to_async
 
-from .views import get_last_10_messages
+from chat.views import createHashedString
+from chat.views import get_last_10_messages
 
-class ChatConsumer(WebsocketConsumer):
+roomsMap = {}
 
-    # permission_classes = (permissions.IsAuthenticated,)
-
-    # room_name = None
-    # room_group_name = None
-
-
-    def fetch_messages(self, data):
-        # get the last ten messages or so
-        messages = get_last_10_messages(data['inbox_hash'])
-
-        content = {
-            'command': 'messages',
-            'messages': self.messages_to_json(messages)
-        }
-        self.send_message(content)
-
-    def messages_to_json(self, messages):
-        result = []
-        for message in messages:
-            result.append(self.message_to_json(message))
-        return result
-
-    def message_to_json(self, message):
-        return {
-            'id_hash': str(message.inbox_user_to_sender),
-            'author': str(message.sender_id.id),
-            'content': str(message.message),
-            'timestamp': str(message.created_at)
-        }
+# roomsMap = {
+#            room_group_name = ["userID1", "userID2..."]
+#            }
 
 
-    def connect(self):
+class ChatConsumer(AsyncWebsocketConsumer):
+
+    async def connect(self):
+        self.listOfUsers = []
+        self.user = self.scope["user"]
+
+        if self.user.is_anonymous: await self.close()
+        else:   print("User is: ", self.user.id)
+
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = "chat_%s" % self.room_name
+        self.room_group_name = f"chat_{self.room_name}"
 
-        print(self.room_group_name)
+        try:
+            if self.user.id not in roomsMap[self.room_name]:
+                roomsMap[self.room_name].append(self.user.id)
+        except (KeyError):
+            roomsMap[self.room_name] = []
+            roomsMap[self.room_name].append(self.user.id)
+
+
         # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
-        self.accept()
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
 
-    def new_message(self, data):
-        # save the message in the database
-        # get the user id
-        usrId = data["id"]
-        message = data["content"]
-        inbox_hash = data["inbox_hash"]
-
-        foundUsr = User.objects.filter(id=usrId)
-
-        if foundUsr.count() == 0:
-            # return an error message
-            print("returninn an error message ")
-            return
-
-        # save message to database
-        # get the user given the id
-
-        inbox = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).update(latest_message=message)
-
-
-        new_message = Chat(sender_id=foundUsr[0],message=message, inbox_user_to_sender=inbox_hash)
-        new_message.save()
-
-        content = {
-            'command': 'messages',
-            'messages': self.messages_to_json([new_message])
-        }
-
-        async_to_sync(self.channel_layer.group_send)(
-           self.room_group_name, {"type": "chat_message", "messages": self.messages_to_json([new_message])}
-        )
-
-        # self.send_message(content)
-
-
-
-    def fetch_inbox(self, data):
-        # get the id of the user
-        used_id = data['id']
-        print("checking type of id", type(used_id))
-        inboxes = Inbox.objects.filter(Q(user_id=used_id) | Q(sender_id=used_id))
-
-        content = {
-            'command': 'inboxes',
-            'messages': self.inboxes_to_json(inboxes, used_id)
-        }
-
-        self.send_message(content)
-
-
-    commands = {
-        'fetch_messages': fetch_messages,
-        'new_message': new_message,
-        'fetch_inbox' : fetch_inbox
-    }
-
-    def inboxes_to_json(self, inboxes, id):
-        result = []
-        for inbox in inboxes:
-            result.append(self.inbox_to_json(inbox, id))
-        return result
-
-    def inbox_to_json(self, inbox,id):
-        # we check if the user sent the message
-        curUser = None
-
-        if str(inbox.sender_id.id) == id:
-            curUser = inbox.user_id
-            print("they are the same ")
-        elif str(inbox.user_id.id) == id:
-            curUser = inbox.sender_id
-            print("user is the user_id")
-
-        return {
-            'inbox_id': inbox.inbox_id,
-            'user_id': self.user_to_json(curUser),
-            'latest_message': str(inbox.latest_message),
-            'date_modified': str(inbox.date_modified),
-            'unseen_messages': str(inbox.unseen_messages),
-            'inbox_user_to_sender': str(inbox.inbox_user_to_sender)
-        }
-
-    # converts the user to json
-    def user_to_json(self,curUser):
-        #lsksks
-        return  {
-            'user_id': str(curUser.id),
-            'first_name': str(curUser.first_name),
-            'last_name': str(curUser.last_name)
-        }
-
-    def disconnect(self, close_code):
+    async def disconnect(self, close_code):
         # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
-
-
-    async def send_alert(self, event):
-        print("sending alert")
-        # Send message to WebSocket
-        await self.send(text_data={
-            'type': 'alert',
-            'details': 'An external API api.external.com needs some data from you'
-        })
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 
     # Receive message from WebSocket
-    def receive(self, text_data):
-        print("You are receiving a message")
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json["message"]
+        user_sender_id = self.user.id
+        user_receiver_id = self.user.id
+        print("USER RECEIVE FUNCTION: ", self.user.id)      # This is the id of the user that sends a message
 
-        data = json.loads(text_data)
-        self.commands[data['command']](self, data)
+        # Send message to room group
+        await self.channel_layer.group_send(
+            self.room_group_name, {"type": "chat_message", 
+                                    "message": message,
+                                    "user_username": self.user.username        # Pass the sender id here
+                                    }
+        )
 
-        #text_data_json = json.loads(text_data)
-
-        # async_to_sync(self.channel_layer.group_send)(
-        #    self.room_group_name, {"type": "chat_message", "message": "i am drinking coffeee"}
-        # )
+        print("TEXT DATA JSON: ", text_data_json)
 
 
-    def send_message(self, message):
-        print("sending message")
-        self.send(text_data=json.dumps(message))
+    async def chat_message(self, event):
+        message = event["message"]
 
-    # Receive message from room group
-    def chat_message(self, event):
-        print("yo")
-        message = event["messages"]
+        # This defines sender and receiver
+        if event["user_username"] == self.user.username: 
+            user_sender_id = self.user.id
+            await self.handleMessage(user_sender_id, message)
+        else:
+            user_receiver_id = self.user.id   
+            
+
+        print("DICT", roomsMap)
         # Send message to WebSocket
-        self.send(text_data=json.dumps({"messages": message}))
+        await self.send(text_data=json.dumps({"message": message} ))  
+
+        # Put message into db
+        #await self.handleMessage(user_sender_id, message)
+
+
+
+    @database_sync_to_async
+    def handleMessage(self, sender_id, message):
+
+        #inbox_hash = '104592537104'
+
+        for userID in roomsMap[self.room_name]:
+            if userID==sender_id:
+                currentSender = userID
+                print("This is sender id ", userID)
+            else:
+                currentReceiver = userID
+                print("This is receiver id ", userID)
+
+
+
+        # Retrieving the inbox hash
+        try:
+            # The inbox already exists
+            currentHash = Inbox.objects.filter(sender_id_id=currentSender, user_id_id=currentReceiver).values_list('inbox_user_to_sender')[0][0] 
+        except IndexError:
+            # The inbox does not exist yet. First we create a hashed string -> Then we create inbox
+            currentHash = createHashedString(currentSender, currentReceiver)
+            inbox = Inbox.objects.create(inbox_user_to_sender=currentHash, sender_id_id=currentSender, user_id_id=currentReceiver)
+            inbox.save()
+
+
+        # Then we update last message from the inbox
+        inbox = Inbox.objects.filter(inbox_user_to_sender=currentHash).update(latest_message=message)
+
+        # Then we add the message to the chat
+        new_message = Chat.objects.create(sender_id_id=currentSender, message=message, inbox_user_to_sender=currentHash)
+        new_message.save()
+
+
+
+        print("TESTING THE 10 messages function: \n\n")
+
+        print(get_last_10_messages(currentHash))
+

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import response, status, permissions
 from django.contrib.auth import authenticate
 from rest_framework.generics import GenericAPIView
@@ -10,15 +10,44 @@ from chat.serializers import ChatsSerializer
 from channels.layers import get_channel_layer
 import json
 from asgiref.sync import async_to_sync
-
-
-
 import hashlib
+from django.shortcuts import render
+import hashlib
+
+
+def index(request):
+    return render(request, "chat/index.html")
+
+
+def room(request, room_name):
+    return render(request, "chat/room.html", {"room_name": room_name})
+
+
+def anonymous_user(request):
+    return render(request, "chat/not-authenticated.html")
 
 
 def get_last_10_messages(inbox_hash):
     messages = Chat.objects.filter(inbox_user_to_sender=inbox_hash)
     return messages.order_by('-created_at').all()[:10]
+
+
+
+def createHashedString(senderID, recepientID):
+    user_to_Sender = (senderID.hex + recepientID.hex).encode()
+    sender_to_user = (recepientID.hex + recepientID.hex).encode()
+
+
+    m = hashlib.md5()
+    m.update(user_to_Sender)
+    hashed_str = str(int(m.hexdigest(), 16))[0:12]
+
+    m2 = hashlib.md5()
+    m2.update(sender_to_user)
+    hashed_str2 = str(int(m2.hexdigest(), 16))[0:12]
+
+    return hashed_str
+
 
 
 # chat method
@@ -29,6 +58,7 @@ class ChatView(GenericAPIView):
     def get(self, request):
         jd = request.data
         inbox_hash = jd['inbox_hash']
+        print("INBOX HASH: ", inbox_hash)
         serializer = ChatsSerializer(inbox_hash)
 
         res = {'success' : True, 'data': serializer.data}
@@ -42,6 +72,7 @@ class ChatView(GenericAPIView):
         message = jd['message']
 
         inbox_count = Inbox.objects.filter(inbox_user_to_sender=inbox_hash).count()
+        print("inbox_count: ", inbox_count)
 
         if inbox_count == 0:
             res = {'success' : False, 'error' : "current inbox does not exist"}
@@ -61,11 +92,6 @@ class ChatView(GenericAPIView):
 
 
 
-
-
-
-
-
 # this gets the inbox of the user
 class InboxView(GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -75,16 +101,6 @@ class InboxView(GenericAPIView):
         user = request.user
         serializer = InboxesSerializer(user)
         channel_layer = get_channel_layer()
-        # for chat_name in chats:
-        # print("here1")
-        # async_to_sync(channel_layer.send)("chat_338217561529", { "type": "send.alert"})
-        # print("here2")
-        # async_to_sync(channel_layer.send)("338217561529", { "type": "send.alert"})
-        #
-        # print("here3")
-        # async_to_sync(channel_layer.send)("chat", { "type": "send.alert"})
-        # async_to_sync(channel_layer.send)("chat", { "type": "send.alert"})
-
 
         res = {'success' : True, 'data': serializer.data}
         return response.Response(res, status=status.HTTP_201_CREATED)
@@ -119,10 +135,10 @@ class InboxView(GenericAPIView):
 
         # crete an inbox as soon as you send a message
 
-    #
     def post(self, request):
         jd = request.data
         user = request.user
+        print("ID: ", user.id)
 
         last_message =  jd['message']
         receiver_id = jd['receiver_id']
@@ -163,3 +179,14 @@ class InboxView(GenericAPIView):
         # print(receiver_user)
         res = {'success' : True, 'message': 'inbox has been created'}
         return response.Response(res, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
+
+
+
+
