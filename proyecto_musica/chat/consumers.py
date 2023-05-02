@@ -49,37 +49,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 
-    # Receive message from WebSocket
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-
-
-        print('hello I am here   ',text_data
-            )
-
-        message = text_data_json["message"]
-        user_sender_id = self.user.id
-        user_receiver_id = self.user.id
-        print("USER RECEIVE FUNCTION: ", self.user.id)      # This is the id of the user that sends a message
-
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", 
-                                    "message": message,
-                                    "user_username": self.user.username        # Pass the sender id here
-                                    }
-        )
-
-        print("TEXT DATA JSON: ", text_data_json)
-
-
+    # TODO: save the data in the
     async def chat_message(self, event):
         message = event["message"]
 
         # This defines sender and receiver
         if event["user_username"] == self.user.username: 
             user_sender_id = self.user.id
-            await self.handleMessage(user_sender_id, message)
+            # await self.handleMessage(user_sender_id, message)
         else:
             user_receiver_id = self.user.id   
             
@@ -88,8 +65,56 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send message to WebSocket
         await self.send(text_data=json.dumps({"message": message} ))  
 
+
         # Put message into db
         #await self.handleMessage(user_sender_id, message)
+
+
+    # this function calls chat_message
+    async def new_message(self, data): 
+        print(self.user.username )
+        message = data["message"]
+        await self.channel_layer.group_send(
+            self.room_group_name, {"type": "chat_message", 
+                                    "message": message,
+                                    "user_username": self.user.username        # Pass the sender id here
+                                    }
+        )
+
+
+
+    commands = {
+        'new_message': new_message,
+    }
+
+
+
+
+    # Receive message from WebSocket
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+
+        message = text_data_json["message"]
+        user_sender_id = self.user.id
+        user_receiver_id = self.user.id
+
+        await self.commands[text_data_json['command']](self, text_data_json)
+
+
+
+
+
+        # # Send message to room group
+        # await self.channel_layer.group_send(
+        #     self.room_group_name, {"type": "chat_message", 
+        #                             "message": message,
+        #                             "user_username": self.user.username        # Pass the sender id here
+        #                             }
+        # )
+
+
+
+ 
 
 
 
@@ -109,26 +134,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
         # Retrieving the inbox hash
-        try:
-            # The inbox already exists
-            currentHash = Inbox.objects.filter(sender_id_id=currentSender, user_id_id=currentReceiver).values_list('inbox_user_to_sender')[0][0] 
-        except IndexError:
-            # The inbox does not exist yet. First we create a hashed string -> Then we create inbox
-            currentHash = createHashedString(currentSender, currentReceiver)
-            inbox = Inbox.objects.create(inbox_user_to_sender=currentHash, sender_id_id=currentSender, user_id_id=currentReceiver)
-            inbox.save()
+        # try:
+        #     # The inbox already exists
+        #     currentHash = Inbox.objects.filter(sender_id_id=currentSender, user_id_id=currentReceiver).values_list('inbox_user_to_sender')[0][0] 
+        # except IndexError:
+        #     # The inbox does not exist yet. First we create a hashed string -> Then we create inbox
+        #     currentHash = createHashedString(currentSender, currentReceiver)
+        #     inbox = Inbox.objects.create(inbox_user_to_sender=currentHash, sender_id_id=currentSender, user_id_id=currentReceiver)
+        #     inbox.save()
 
 
-        # Then we update last message from the inbox
-        inbox = Inbox.objects.filter(inbox_user_to_sender=currentHash).update(latest_message=message)
+        # # Then we update last message from the inbox
+        # inbox = Inbox.objects.filter(inbox_user_to_sender=currentHash).update(latest_message=message)
 
-        # Then we add the message to the chat
-        new_message = Chat.objects.create(sender_id_id=currentSender, message=message, inbox_user_to_sender=currentHash)
-        new_message.save()
+        # # Then we add the message to the chat
+        # new_message = Chat.objects.create(sender_id_id=currentSender, message=message, inbox_user_to_sender=currentHash)
+        # new_message.save()
 
 
 
-        print("TESTING THE 10 messages function: \n\n")
+        # print("TESTING THE 10 messages function: \n\n")
 
-        print(get_last_10_messages(currentHash))
+        # print(get_last_10_messages(currentHash))
 
