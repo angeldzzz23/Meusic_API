@@ -3,6 +3,7 @@ from authentication.models import User, Nationality, User_Nationality
 from api.models import Images
 from api.models import Videos
 from authentication.functions import List_Fields, get_list_field
+from newsfeed.models import User_Matches,User_Likes
 
 # the user
 # with pictures
@@ -51,9 +52,28 @@ class ProfileSerializer(serializers.ModelSerializer):
 class NewsfeedSerializer(serializers.ModelSerializer):
     feed = serializers.SerializerMethodField()
 
-    class meta():
+    class Meta():
         model = User
         fields = ('feed',)
+    
+    def get_feed(self,obj):
+        request = self.context.get("request")
+        base_url = self.context.get("base_url")
+        usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
+        usersThatCurrUserHasLiked.append(request.user.id)
+        all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
 
-        def get_feed(self, obj):
-            return None
+        user_objects = []
+
+        for user in all_users:
+            serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
+            serialized_data = serializer.data
+            user_objects.append(serialized_data)
+
+
+        return user_objects
+
+ 
+
+
+    #     return None
