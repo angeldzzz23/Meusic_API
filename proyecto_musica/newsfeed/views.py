@@ -8,7 +8,7 @@ from authentication.models import User
 from authentication.serializers import RegisterSerializer
 
 from newsfeed.models import User_Matches,User_Likes
-from newsfeed.serializers import ProfileSerializer
+from newsfeed.serializers import ProfileSerializer, NewsfeedSerializer
 from math import sin, cos, radians, acos
 
 
@@ -91,8 +91,55 @@ def calc_dist_fixed(lat_a, long_a, lat_b, long_b):
         )
     return acos(cos_x) * EARTH_RADIUS_IN_MILES
 
+class MyPaginationMixin(object):
 
-class Feed(GenericAPIView):
+    @property
+    def paginator(self):
+        """
+        The paginator instance associated with the view, or `None`.
+        """
+        if not hasattr(self, '_paginator'):
+            if self.pagination_class is None:
+                self._paginator = None
+            else:
+                self._paginator = self.pagination_class()
+        return self._paginator
+
+        def paginate_queryset(self, queryset):
+            if self.paginator is None:
+                return None
+            return self.paginator.paginate_queryset(
+             queryset, self.request, view=self)
+        
+        def get_paginated_response(self, data):
+            assert self.paginator is not None
+            return self.paginator.get_paginated_response(data)
+
+
+from rest_framework.settings import api_settings
+
+
+def userQueryset():
+    n = User.objects.all()
+
+
+
+    return n
+
+def gettingTheUsersWeHaveN(context):
+    request = context.get("request")
+    usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
+    usersThatCurrUserHasLiked.append(request.user.id)
+    all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
+
+
+    return all_users
+
+
+class Feed(GenericAPIView, MyPaginationMixin):
+    # queryset = gettingTheUsersWeHaveN
+    serializer_class = ProfileSerializer
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS 
 
     permission_classes = (permissions.IsAuthenticated,)
     # work on a basic algithm for this
@@ -101,32 +148,48 @@ class Feed(GenericAPIView):
 
     def get(self, request):
 
-        # these all the users the current user has liked 
-        usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
-
-        usersThatCurrUserHasLiked.append(request.user.id) 
-
-        # TODO: for some reason the excluding didnt work 
-        all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
-
-        # remove all of the users 
-
-        for usr in all_users:
-            print(usr.id)
-
-        user_objects = []
-         
         url = request.build_absolute_uri()
         newurl = str(url)
         base_url = newurl[:-5] + ''
-         
-        for user in all_users:
-            serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
-            serialized_data = serializer.data
-            user_objects.append(serialized_data)
-         
-        theFeedJson = {'feed': user_objects}
+
+        page = self.paginate_queryset(gettingTheUsersWeHaveN({'request': request}))
+
+
+        if page is not None:
+            serializer = self.serializer_class(page, context = {'request': request, 'base_url': base_url}, many=True)
+            return self.get_paginated_response(serializer.data)
+
+
+
         return response.Response(theFeedJson, status=status.HTTP_200_OK)
+
+
+        # these all the users the current user has liked 
+        # usersThatCurrUserHasLiked = [str(like.userTwo.id) for like in User_Likes.objects.filter(userLiking=request.user)]
+
+        # usersThatCurrUserHasLiked.append(request.user.id) 
+
+        # # TODO: for some reason the excluding didnt work 
+        # all_users = User.objects.exclude(id__in=usersThatCurrUserHasLiked).exclude(is_staff=True)
+
+        # # remove all of the users 
+
+        # for usr in all_users:
+        #     print(usr.id)
+
+        # user_objects = []
+         
+        # url = request.build_absolute_uri()
+        # newurl = str(url)
+        # base_url = newurl[:-5] + ''
+         
+        # for user in all_users:
+        #     serializer = ProfileSerializer(user, context = {'request': request, 'base_url': base_url})
+        #     serialized_data = serializer.data
+        #     user_objects.append(serialized_data)
+         
+        # theFeedJson = {'feed': user_objects}
+        # return response.Response(theFeedJson, status=status.HTTP_200_OK)
 
         # get the user that you have liked 
         # all 
