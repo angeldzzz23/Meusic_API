@@ -8,6 +8,7 @@ from newsfeed.models import User_Matches,User_Likes
 # the user
 # with pictures
 # the video with caption
+ 
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -17,6 +18,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     video = serializers.SerializerMethodField()
     # the array of natinoality of the user
     nationalities = serializers.SerializerMethodField()
+    genres = serializers.SerializerMethodField()
     skills = serializers.SerializerMethodField()
 
     profile_url = serializers.SerializerMethodField()
@@ -24,12 +26,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta():
         model=User
-        fields=('username','first_name','last_name', 'profile_url', 'pictures', 'video', 'nationalities', 'skills')
+        fields=('username','first_name','last_name', 'profile_url', 'pictures', 'video', 'nationalities', 'skills', 'genres')
 
     def get_pictures(self, obj):
         query = Images.objects.filter(user_id=obj.id).values('image_id',
                     'url', 'title')
         return list(query) if query else None
+
+    def get_genres(self, obj):
+        genres = self.context.get("genres")
+        return get_list_field(obj.id, "genre", genres)
 
     def get_video(self, obj):
         query = Videos.objects.filter(user_id=obj.id).values('video_id',
@@ -74,6 +80,5 @@ class NewsfeedSerializer(serializers.ModelSerializer):
         return user_objects
 
  
-
 
     #     return None
