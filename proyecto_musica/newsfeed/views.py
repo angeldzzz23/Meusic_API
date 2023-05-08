@@ -151,11 +151,9 @@ class Feed(GenericAPIView, MyPaginationMixin):
         url = request.build_absolute_uri()
         newurl = str(url)
         base_url = newurl[:-5] + ''
-        print('a query set', userQueryset())
 
         page = self.paginate_queryset(gettingTheUsersWeHaveN({'request': request}))
 
-        # print('second method', gettingTheUsersWeHaveN())
 
         if page is not None:
             serializer = self.serializer_class(page, context = {'request': request, 'base_url': base_url}, many=True)
