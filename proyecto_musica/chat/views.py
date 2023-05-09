@@ -50,6 +50,7 @@ def createHashedString(senderID, recepientID):
 
 
 
+
 # chat method
 class ChatView(GenericAPIView):
     # retrieves all of the chats between two users
