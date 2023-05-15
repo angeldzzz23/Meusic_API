@@ -13,10 +13,50 @@ from asgiref.sync import async_to_sync
 import hashlib
 from django.shortcuts import render
 import hashlib
+from django.db.models import Q
 
+
+def fetch_user_inbox(request):
+    requestingUser = request.user.id
+    print("Fetch User Inbox: ", requestingUser)
+    inboxes = []
+
+    arrayOfUserInboxes = Inbox.objects.filter(Q(sender_id_id=requestingUser)|Q(user_id_id=requestingUser)).values_list('inbox_user_to_sender', 'inbox_id', 'sender_id_id', 'user_id_id')
+
+    for element in arrayOfUserInboxes:
+        inboxHash, inboxID, sender, recepient = element
+
+        if sender == request.user.id:
+            trueRecepient = recepient
+        else:
+            trueRecepient = sender
+
+        recepientFirstName = User.objects.filter(id=trueRecepient).values_list('first_name')[0][0]
+        recepientLastName  = User.objects.filter(id=trueRecepient).values_list('last_name')[0][0]
+
+        fullName = recepientFirstName + ' ' + recepientLastName
+
+        #image_url = Images.objects.filter(user_id=trueRecepient).values_list('url')[0]
+
+        currentInboxInfo = {
+                            'inbox_id':   inboxID,
+                            'inbox_hash': inboxHash,
+                            'recepient':  fullName,
+                            #'image_url':  image_url
+        }
+        inboxes.append(currentInboxInfo)
+
+    return inboxes
 
 def index(request):
-    return render(request, "chat/index.html")
+    inboxes = fetch_user_inbox(request)
+    inboxDict = {}
+    for element in inboxes:
+        currentInboxId = str(element['inbox_id'])
+        inboxDict[currentInboxId] = element
+
+    print("INBOXESSSS: ", inboxes)
+    return render(request, "chat/index.html", {'inboxDict': inboxDict})
 
 
 def room(request, room_name):

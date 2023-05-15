@@ -1,4 +1,4 @@
-<!-- chat/templates/chat/index.html -->
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,4 +24,78 @@
         };
     </script>
 </body>
-</html>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+
+{% for key, value in inboxDict.items %}
+    <div class="inboxContainer">
+        <button class="inboxButton" onclick="chooseRecipient(this, '{{ key }}')">Choose This Chat</button>
+        <div class="inboxID" style="display: inline-block; color: red; margin-right: 50px;">InboxID: {{ key }}</div>
+        <div class="recepientName" style="display: inline-block; color: blue;">Recepient Name: {{ value.recepient }}</div>
+    </div>
+{% endfor %}
+
+
+<br>
+<br>
+<button class="goToChat" onclick="handleGoToChat()">Go To Selected Chat</button>
+
+<script>
+    var lastClickedButton = null;
+    var lastClickedInboxID = null;
+
+    function chooseRecipient(button, inboxID) {
+        if (lastClickedButton) {
+            lastClickedButton.classList.remove("highlight"); 
+        }
+        lastClickedButton = button;
+        lastClickedButton.classList.add("highlight"); 
+
+        // lastClickedInboxID = inboxID;
+        // var container = button.parentNode; 
+        // var recipientNameElement = container.querySelector(".recepientName"); 
+
+
+    }
+
+    function handleGoToChat(button) {
+        var highlightedButton = document.querySelector(".inboxButton.highlight");
+
+        if (highlightedButton) {
+            // Access the currently highlighted button
+            var container = highlightedButton.parentNode
+            var inboxToRedirect = container.querySelector(".inboxID")
+            var inboxIDString = inboxToRedirect.textContent.trim();
+            inboxIDString = inboxIDString.match(/\d+/);
+            window.location.pathname = '/chat/' + inboxIDString + '/';
+            console.log("Highlighted button:", highlightedButton);
+        }
+
+
+        // if (lastClickedInboxID) {
+        //     window.location.href = '/chat/' + lastClickedInboxID + '/';
+
+        // }
+        // var container = button.parentNode; // Get the parent container element
+        // var recipientNameElement = container.querySelector(".recepientName"); // Find the corresponding recipient name element within the container
+
+
+    }
+</script>
+
+<style>
+    .highlight {
+        background-color: yellow;
+        /* Add any other styling to highlight the button */
+    }
+</style>
+
+</body>
+</html> 
