@@ -156,6 +156,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         #inbox_hash = '104592537104'
 
+
         for userID in roomsMap[self.room_name]:
             if userID==sender_id:
                 currentSender = userID

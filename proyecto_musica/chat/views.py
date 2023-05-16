@@ -14,6 +14,7 @@ import hashlib
 from django.shortcuts import render
 import hashlib
 from django.db.models import Q
+from channels.layers import get_channel_layer
 
 
 def fetch_user_inbox(request):
@@ -59,7 +60,28 @@ def index(request):
     return render(request, "chat/index.html", {'inboxDict': inboxDict})
 
 
+
+
 def room(request, room_name):
+    hashValue = Inbox.objects.filter(inbox_id=room_name).values_list('inbox_user_to_sender')[0][0]
+    myMessages = Chat.objects.filter(inbox_user_to_sender=hashValue).values_list('message', 'sender_id_id')
+    room_name = {
+    "room_name": str(room_name),
+    "messages": {}
+    }
+
+    for element in myMessages:
+        #print("Message: ", element[0], "User: ", element[1])
+        print("CUrrent message considered.    ", "USER REQUEST ID: ", request.user.id, "ELEMENT: ", element[1])
+        if request.user.id == element[1]:
+            messageUser = 'you'
+        else:
+            messageUser = 'recepient'
+
+        room_name['messages'][str(element[0])] = messageUser
+
+    print("CURRENT STATE OF ROOM-NAME: ", room_name)
+
     return render(request, "chat/room.html", {"room_name": room_name})
 
 
