@@ -134,6 +134,37 @@ class UpdateImage(GenericAPIView):
                 datos = {'codigo':"200",'message': "success", "url": newpic.url}
                 return JsonResponse(datos)
 
+
+
+from ranged_fileresponse import RangedFileResponse
+
+from django.conf import settings
+import os
+
+
+
+class LoadVideo(GenericAPIView): 
+
+    def get(self, request): 
+        video_path = "sample_vid.mp4"  # Update with your video file path
+        file_size = os.path.getsize(video_path)
+
+        response = RangedFileResponse(request, open(video_path, "rb"), content_type="video/mp4")
+
+        return response
+
+        # res = {'hello': 'world'}
+        # image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sample_vid.mp4')
+        # print('file path', image_path)
+        print(request.data)
+
+        # filename = 'sample_vid.mp4'
+        # response = RangedFileResponse(request, open(filename, 'r'), content_type='video/mp4')
+        # response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        # return response
+
+        # return response.Response({'hello':'world'})
+
 class UpdateVideo(GenericAPIView):
         serializer_class= PictureSerialiser
         permission_classes = (permissions.IsAuthenticated,)
@@ -145,8 +176,9 @@ class UpdateVideo(GenericAPIView):
             res = {}
             res['success'] = True
             res['videos'] = serializer.data['videos']
-
+      
             res = res
+
             return response.Response(res)
 
 

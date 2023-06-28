@@ -15,6 +15,118 @@ from chat.views import get_last_10_messages
 from authentication.models import User
 from api.models import Images
 
+from authentication.serializers import RegisterSerializer
+
+
+
+class Inboxxx(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        print("jhss")
+
+    async def receive(self, text_data): 
+        text_data_json = json.loads(text_data)
+        await self.commands[text_data_json['command']](self, text_data_json)
+
+    @database_sync_to_async
+    def fetch_inbox(self, data):
+        requestingUser = self.user.id
+
+        print("Fetch User Inbox: ", requestingUser)
+        inboxes = []
+
+        arrayOfUserInboxes = Inbox.objects.filter(Q(sender_id_id=requestingUser)|Q(user_id_id=requestingUser)).values_list('inbox_user_to_sender', 'inbox_id', 'sender_id_id', 'user_id_id')
+
+        trueRecepient = None
+
+        for user in arrayOfUserInboxes:
+            inboxHash, inboxID, sender, recepient = user
+            fullName = ""
+            images = None
+
+            if sender == self.user.id:
+                trueRecepient = recepient
+            else: 
+                trueRecepient = sender
+
+            # Getting the first name of the user 
+            recepient = User.objects.filter(id=trueRecepient)[0]
+            print(type(recepient))
+
+
+            # Images 
+            # FirstName
+            # LastName
+            #Last Message 
+
+            serializer = RegisterSerializer(recepient)
+
+            print('serializer data', serializer.data)
+
+            if serializer.data['first_name']:
+                fullName += serializer.data['first_name'] 
+            if serializer.data['last_name']:
+                fullName =  fullName + ' ' + serializer.data['last_name'] 
+
+
+            try:
+                if serializer.data['pictures']:
+                    n = serializer.data['pictures'][0]
+                    images = n
+                
+            except IndexError:
+                print('index out of range')
+
+
+            print(type(images))
+
+            self.send()
+
+
+
+        # for element in arrayOfUserInboxes:
+        #     inboxHash, inboxID, sender, recepient = element
+
+        #     if sender == self.user.id:
+        #         trueRecepient = recepient
+        #     else:
+        #         trueRecepient = sender
+
+        #     recepientFirstName = User.objects.filter(id=trueRecepient).values_list('first_name')[0][0]
+        #     recepientLastName  = User.objects.filter(id=trueRecepient).values_list('last_name')[0][0]
+
+        #     fullName = ''
+        #     if recepientFirstName == None and recepientLastName == None:
+        #         fullName = None
+        #     elif recepientFirstName == None and recepientLastName != None: 
+        #         fullName =  recepientLastName
+        #     elif recepientFirstName != None and recepientLastName == None: 
+        #         fullName = recepientFirstName
+        #     else:
+        #         fullName = recepientFirstName + ' ' + recepientLastName
+
+        #     image_url = Images.objects.filter(user_id=trueRecepient).values_list('url')[0]
+
+        #     currentInboxInfo = {
+        #                         'inbox_id':   inboxID,
+        #                         'inbox_hash': inboxHash,
+        #                         'recepient':  fullName,
+        #                         'image_url':  image_url
+        #     }
+        #     inboxes.append(currentInboxInfo)
+
+        print("This is the inboxes of a user: ", inboxes)
+
+    commands = {
+        'fetch_inbox': fetch_inbox,
+    }
+
+
+
 roomsMap = {}
 
 # roomsMap = {

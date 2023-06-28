@@ -11,17 +11,57 @@
     <input id="room-name-submit" type="button" value="Enter">
 
     <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
+
+        // website recive 
+
+        // Updates UI when you receive an inbox communication 
+
+
+
+        // document.querySelector('#room-name-input').focus();
+        // document.querySelector('#room-name-input').onkeyup = function(e) {
+        //     if (e.keyCode === 13) {  // enter, return
+        //         document.querySelector('#room-name-submit').click();
+        //     }
+        // };
+
+        // document.querySelector('#room-name-submit').onclick = function(e) {
+        //     var roomName = document.querySelector('#room-name-input').value;
+        //     window.location.pathname = '/chat/' + roomName + '/';
+        // };
+
+        // This will deal with the socket 
+        // const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + 'inbox'
+            + '/'
+        );
+
+        inboxSocker.onrecieve. kdkkdd {
+            // UI stuff 
+            
+        }
+
+        // 
+
+        // check if the connection is established
+        // let aNotherButton = document.getElementById("room-name-submit");
+
+        
+
 
         document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
+            console.p
+            chatSocket.send(JSON.stringify({
+                'command': 'fetch_inbox',
+            }));
         };
+
+
     </script>
 </body>
 </html>

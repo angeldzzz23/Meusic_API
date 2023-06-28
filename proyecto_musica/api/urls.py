@@ -9,7 +9,8 @@ urlpatterns = [
     path('image', views.UpdateImage.as_view(), name='image'),
     path('image/<str:id>', views.UpdateImage.as_view(), name='image'),
     path('video', views.UpdateVideo.as_view(), name='video'),
-    path('video/<str:id>', views.UpdateVideo.as_view(), name='video_by_id')
+    path('video/<str:id>', views.UpdateVideo.as_view(), name='video_by_id'),
+    path('load/', views.LoadVideo.as_view(), name='load')
 
     #path('image/<str:id>', views.UpdateImage.as_view(), name='image_by_id')
 ]

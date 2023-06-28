@@ -155,9 +155,15 @@ def validate_field(field_name, field_list):
         if not isinstance(field_list, dict):
             return {'success' : False,
                     'error' : field_name + " must be a dictionary."}
+      
+
+        # 
+        # Change preferences 
         if len(field_list) != 2:
             return {'success' : False,
                     'error' : "incorrect amount of keys in " + field_name + "."}
+
+
         for obj in field_list:
             if (obj != "low") and (obj != "high"):
                 return {'success' : False,
