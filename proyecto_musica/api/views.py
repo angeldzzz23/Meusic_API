@@ -215,7 +215,36 @@ class UpdateVideo(GenericAPIView):
                 res = {'success' : False, 'error' : "User id does not exist."}
                 return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
+        
+
             if "video" not in jd:
+                # check if a video existss
+                currentUsrVideo = Videos.objects.filter(user=request.user)\
+
+                if not currentUsrVideo:
+                    res = {'success' : False, 'error' : "Request must contain video as a key."}
+                    return response.Response(res, status=status.HTTP_400_BAD_REQUEST) 
+
+                print('length of video', len(currentUsrVideo) < 0)
+                if len(currentUsrVideo) < 0:
+                    res = {'success' : False, 'error' : "Request must contain video as a key."}
+                    return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
+                else:                    
+                    # video exists in the server and we're just changing the caption
+                    currentUsrVideo[0].caption = caption
+                    currentUsrVideo[0].save()
+
+                    # return the newest user 
+                    serializer = VideosSerializer(request.user)
+                    res = {}
+                    res['success'] = True
+                    res['videos'] = serializer.data['videos']
+
+                    res = res
+
+                    return response.Response(res)
+
+
                 res = {'success' : False, 'error' : "Request must contain video as a key."}
                 return response.Response(res, status=status.HTTP_400_BAD_REQUEST)
 
