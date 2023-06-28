@@ -90,12 +90,11 @@ class Videoerialiser(serializers.ModelSerializer):
         # is there any way to pass all of the that information as validated data
     def create(self, validated_data):
         # get the user, passed in the user
-        print(self.context)
         user_obj = self.context.get("user")
         videooo = self.context.get("vid")
         request = self.context.get("request")
         caption = self.context.get("caption")
-        print('a caption', caption)
+ 
 
 
         title2 = "pitch_vid"
