@@ -136,7 +136,7 @@ class UpdateImage(GenericAPIView):
 
 
 
-from ranged_fileresponse import RangedFileResponse
+#from ranged_fileresponse import RangedFileResponse
 
 from django.conf import settings
 import os

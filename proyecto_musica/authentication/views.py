@@ -15,13 +15,14 @@ from api.serializers import PictureSerialiser
 from api.serializers import PicturesSerializer
 from api.serializers import Videoerialiser
 from api.serializers import VideosSerializer
+from django.contrib import sessions
 
 from api.models import Images
 from api.models import Videos
 from rest_framework.response import Response
 import os
 from pathlib import Path
-
+from django.conf import settings
 import json
 import shutil
 import os
@@ -44,6 +45,10 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from authentication.functions import validate_email
 from preferences.serializers import PreferenceEditSerializer
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+
+
+
 
 # this uses a cookie
 # this is in charge of refreshing the user's token
@@ -303,6 +308,13 @@ class LoginAPIView(GenericAPIView):
             # setting the cookies here
             response.set_cookie(key='access', value=user.token, httponly=True)
             response.set_cookie(key='refresh_token', value=refresh, httponly=True)
+
+
+
+            request.session.create()
+            request.session['user_id'] = request.user.id
+            request.session['username'] = request.user.id
+
 
             return response
 

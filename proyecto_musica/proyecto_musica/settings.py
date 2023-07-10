@@ -129,7 +129,7 @@ DATABASES = {
         'PORT': '3306',
         'USER': 'root',
         #'PASSWORD': '',    DOCKER
-        'PASSWORD': 'Sheep787',
+        'PASSWORD': 'USPirat2001',
         #'NAME': 'django-app-db',   DOCKER
         'NAME': 'music7',
         'TEST': {
