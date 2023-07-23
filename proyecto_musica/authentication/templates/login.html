@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="loginForm" method="post">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+
+    {% if error_message %}
+    <p>{{ error_message }}</p>
+    {% endif %}
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'login' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Login successful, perform appropriate action (e.g., redirect)
+                            window.location.href = "/home";
+                        } else {
+                            // Login failed, display error message or take other action
+                            document.getElementById("error-message").textContent = response.message;
+                        }
+                    } else {
+                        // Request failed, handle error
+                        console.log("Login request failed. Status: " + xhr.status);
+                    }
+                }
+            };
+
+            var requestBody = {
+                email: email,
+                password: password
+            };
+
+            xhr.send(JSON.stringify(requestBody));
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="loginForm" action="/api/auth/login" method="post">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", this.action, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Login successful, perform appropriate action (e.g., redirect)
+                            window.location.href = "/home";
+                        } else {
+                            // Login failed, display error message or take other action
+                            console.log("Login failed: " + response.message);
+                        }
+                    } else {
+                        // Request failed, handle error
+                        console.log("Login request failed. Status: " + xhr.status);
+                    }
+                }
+            };
+
+            var requestBody = {
+                email: email,
+                password: password
+            };
+
+            xhr.send(JSON.stringify(requestBody));
+        });
+    </script>
+</body>
+</html>
+ -->
+

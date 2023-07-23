@@ -15,6 +15,11 @@ from django.shortcuts import render
 import hashlib
 from django.db.models import Q
 from channels.layers import get_channel_layer
+from django.contrib.sessions.models import Session
+from django.contrib.auth import SESSION_KEY
+from django.conf import settings
+
+
 
 
 def fetch_user_inbox(request):
@@ -49,6 +54,9 @@ def fetch_user_inbox(request):
 
     return inboxes
 
+
+from django.contrib.auth import get_user
+
 def index(request):
     inboxes = fetch_user_inbox(request)
     inboxDict = {}
@@ -57,6 +65,25 @@ def index(request):
         inboxDict[currentInboxId] = element
 
     print("INBOXESSSS: ", inboxes)
+    print("Session user: ", request.session.session_key)
+
+    user = request.user.id
+    print("USR", user)
+
+
+    # session_engine = __import__(settings.SESSION_ENGINE, {}, {}, [''])
+    # session_wrapper = session_engine.SessionStore(request.session.session_key)
+    # session = session_wrapper.load()
+    #user_id = session.get(SESSION_KEY)
+
+
+
+    #print("CUrrent username: ", request.user.id)
+    #user_id = get_user(request.session.get('_auth_user_id'))
+    #print("USER cehck ", request.session.session_key['user_id'])
+
+
+
     return render(request, "chat/index.html", {'inboxDict': inboxDict})
 
 

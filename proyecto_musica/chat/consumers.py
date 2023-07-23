@@ -27,6 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.listOfUsers = []
         self.user = self.scope["user"]
+        print("Hello")
 
         if self.user.is_anonymous: await self.close()
         else:   print("User is: ", self.user.id)

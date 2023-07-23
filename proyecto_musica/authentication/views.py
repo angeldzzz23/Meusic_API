@@ -41,6 +41,28 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from authentication.functions import validate_email
 from preferences.serializers import PreferenceEditSerializer
 
+# def login_view(request):
+#     error_message = None
+
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#         user = authenticate(request, username=username, password=password)
+
+#         if user is not None:
+#             login(request, user)
+#             return redirect('home')  # Redirect to the home page or any other desired page
+#         else:
+#             error_message = 'Invalid username or password.'
+
+#     return render(request, 'authentication/login.html', {'error_message': error_message})
+
+
+def login_page(request):
+    return render(request, 'login.html')
+
+
+
 # this uses a cookie
 # this is in charge of refreshing the user's token
 class CookieTokenRefreshView(TokenRefreshView):
@@ -270,16 +292,21 @@ class RegisterAPIView(GenericAPIView):
 # response gives us the token if it is a valid login
 import jwt
 from django.conf import settings
-
+from django.contrib.auth import authenticate, login
 class LoginAPIView(GenericAPIView):
     authentication_classes = []
     serializer_class= LoginSerializer
+
+    template_name = 'login.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
 
     def post(self, request):
         email = request.data.get('email', None)
         password = request.data.get('password', None)
 
-        user=authenticate(username=email, password=password)
+        user=authenticate(request, username=email, password=password)
 
         if user:
             serializer=self.serializer_class(user)
@@ -298,6 +325,17 @@ class LoginAPIView(GenericAPIView):
             response.set_cookie(key='access', value=user.token, httponly=True)
             response.set_cookie(key='refresh_token', value=refresh, httponly=True)
 
+            # request.session.create()
+            # request.session['user_id'] = request.user.id
+            # request.session['username'] = request.user.id
+            # request.session.save()
+
+            #user = authenticate(request, username=username, password=password)
+
+
+
+            print("Check for user id session: ", request.session.session_key)
+            print("Check for user id username: ", user.username)
             return response
 
 

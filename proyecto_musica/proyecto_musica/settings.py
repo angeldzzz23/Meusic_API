@@ -34,6 +34,15 @@ ALLOWED_HOSTS = ['143.198.178.220', '127.0.0.1']
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 
+#SESSION CONF
+
+SESSION_COOKIE_SECURE = True  # Set to True if using HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Set to True for better security
+SESSION_SAVE_EVERY_REQUEST = True  # Save the session on every request
+
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
