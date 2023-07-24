@@ -37,10 +37,15 @@ def fetch_user_inbox(request):
         else:
             trueRecepient = sender
 
+        print("ID", sender)
         recepientFirstName = User.objects.filter(id=trueRecepient).values_list('first_name')[0][0]
         recepientLastName  = User.objects.filter(id=trueRecepient).values_list('last_name')[0][0]
 
-        fullName = recepientFirstName + ' ' + recepientLastName
+        senderFirstName = User.objects.filter(id=sender).values_list('first_name')[0][0]
+        senderLastName  = User.objects.filter(id=sender).values_list('last_name')[0][0]
+
+
+        fullName = senderFirstName + ' ' + senderLastName
 
         #image_url = Images.objects.filter(user_id=trueRecepient).values_list('url')[0]
 
@@ -63,6 +68,10 @@ def index(request):
     for element in inboxes:
         currentInboxId = str(element['inbox_id'])
         inboxDict[currentInboxId] = element
+
+    for inbox_id, element in inboxDict.items():
+        room_name = element['inbox_hash']  # or use another field that represents the room name
+        element['websocket_url'] = f"ws://{request.get_host()}/ws/chat/{room_name}/"
 
     print("INBOXESSSS: ", inboxes)
     print("Session user: ", request.session.session_key)

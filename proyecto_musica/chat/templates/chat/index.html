@@ -1,31 +1,3 @@
-<!-- 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>Chat Rooms</title>
-</head>
-<body>
-    What chat room would you like to enter?<br>
-    <input id="room-name-input" type="text" size="100"><br>
-    <input id="room-name-submit" type="button" value="Enter">
-
-    <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
-
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
-    </script>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,63 +11,188 @@
         <button class="inboxButton" onclick="chooseRecipient(this, '{{ key }}')">Choose This Chat</button>
         <div class="inboxID" style="display: inline-block; color: red; margin-right: 50px;">InboxID: {{ key }}</div>
         <div class="recepientName" style="display: inline-block; color: blue;">Recepient Name: {{ value.recepient }}</div>
+        <input type="hidden" class="websocketURL" value="{{ value.websocket_url }}">
     </div>
 {% endfor %}
 
-
 <br>
 <br>
-<button class="goToChat" onclick="handleGoToChat()">Go To Selected Chat</button>
+<button class="goToChat">Go To Selected Chat</button>
 
 <script>
-    var lastClickedButton = null;
-    var lastClickedInboxID = null;
+    // WebSocket connection object for index.html
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+    );
 
-    function chooseRecipient(button, inboxID) {
-        if (lastClickedButton) {
-            lastClickedButton.classList.remove("highlight"); 
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.querySelector('#chat-log').value += (data.message + '\n');
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    function chooseRecipient(button, key) {
+        // Remove highlight from previously selected button
+        var highlightedButton = document.querySelector(".inboxButton.highlight");
+        if (highlightedButton) {
+            highlightedButton.classList.remove("highlight");
         }
-        lastClickedButton = button;
-        lastClickedButton.classList.add("highlight"); 
 
-        // lastClickedInboxID = inboxID;
-        // var container = button.parentNode; 
-        // var recipientNameElement = container.querySelector(".recepientName"); 
-
-
+        // Add highlight to the selected button
+        button.classList.add("highlight");
     }
 
-    function handleGoToChat(button) {
-        var highlightedButton = document.querySelector(".inboxButton.highlight");
+    // Function to handle going to a selected chat
+    // document.querySelector('.goToChat').onclick = function () {
+    //     var highlightedButton = document.querySelector(".inboxButton.highlight");
+    //     if (highlightedButton) {
+    //         var container = highlightedButton.parentNode;
+    //         var inboxToRedirect = container.querySelector(".inboxID");
+    //         var inboxIDString = inboxToRedirect.textContent.trim();
+    //         inboxIDString = inboxIDString.match(/\d+/);
 
+    //         // Get the WebSocket URL for the selected chat
+    //         var websocketURL = container.querySelector(".websocketURL").value;
+
+    //         // Store the WebSocket URL in local storage
+    //         localStorage.setItem('websocketURL', websocketURL);
+
+    //         // Redirect to the chat room page (room.html)
+    //         window.location.pathname = '/chat/' + inboxIDString + '/';
+    //     }
+    // };
+
+
+    document.querySelector('.goToChat').onclick = function () {
+        var highlightedButton = document.querySelector('.inboxButton.highlight');
         if (highlightedButton) {
-            // Access the currently highlighted button
-            var container = highlightedButton.parentNode
-            var inboxToRedirect = container.querySelector(".inboxID")
+            var container = highlightedButton.parentNode;
+            var inboxToRedirect = container.querySelector('.inboxID');
             var inboxIDString = inboxToRedirect.textContent.trim();
             inboxIDString = inboxIDString.match(/\d+/);
+
+            // Get the WebSocket URL for the selected chat
+            var websocketURL = container.querySelector('.websocketURL').value;
+
+            // Store the WebSocket URL and selected chat information in local storage
+            localStorage.setItem('websocketURL', websocketURL);
+            localStorage.setItem('selectedChatID', inboxIDString);
+
+            // Redirect to the chat room page (room.html) with the selected chat information as a query parameter
             window.location.pathname = '/chat/' + inboxIDString + '/';
-            console.log("Highlighted button:", highlightedButton);
+        } else {
+            // Handle the case when no chat is selected
+            alert('Please choose a chat before proceeding.');
         }
-
-
-        // if (lastClickedInboxID) {
-        //     window.location.href = '/chat/' + lastClickedInboxID + '/';
-
-        // }
-        // var container = button.parentNode; // Get the parent container element
-        // var recipientNameElement = container.querySelector(".recepientName"); // Find the corresponding recipient name element within the container
-
-
-    }
+    };
+    
 </script>
 
+
 <style>
-    .highlight {
+    /* Add the CSS style for the highlighted button */
+    .inboxButton.highlight {
         background-color: yellow;
-        /* Add any other styling to highlight the button */
     }
 </style>
 
+
 </body>
-</html> 
+</html>
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+
+{% for key, value in inboxDict.items %}
+    <div class="inboxContainer">
+        <button class="inboxButton" onclick="chooseRecipient(this, '{{ key }}')">Choose This Chat</button>
+        <div class="inboxID" style="display: inline-block; color: red; margin-right: 50px;">InboxID: {{ key }}</div>
+        <div class="recepientName" style="display: inline-block; color: blue;">Recepient Name: {{ value.recepient }}</div>
+        <input type="hidden" class="websocketURL" value="{{ value.websocket_url }}">
+    </div>
+{% endfor %}
+
+<br>
+<br>
+<button class="goToChat">Go To Selected Chat</button>
+
+<script>
+
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+        );
+
+        // chatSocket.onmessage = function(e) {
+        //     const data = JSON.parse(e.data);
+        //     document.querySelector('#chat-log').value += (data.message + '\n');
+        // };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        // document.querySelector('#chat-message-input').focus();
+        // document.querySelector('#chat-message-input').onkeyup = function(e) {
+        //     if (e.keyCode === 13) {  // enter, return
+        //         document.querySelector('#chat-message-submit').click();
+        //     }
+        // };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message, 
+                'command': 'new_message'
+                //'command': 'fetch_inbox',
+            }));
+            messageInputDom.value = '';
+        };
+
+
+
+
+    // Establish WebSocket connection for each chat room when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        var websocketURLInputs = document.querySelectorAll(".websocketURL");
+        websocketURLInputs.forEach(function (websocketURLInput) {
+            var websocketURL = websocketURLInput.value;
+            establishWebSocketConnection(websocketURL);
+        });
+    });
+
+    // Function to handle going to a selected chat
+    document.querySelector('.goToChat').onclick = function () {
+        var highlightedButton = document.querySelector(".inboxButton.highlight");
+        if (highlightedButton) {
+            var container = highlightedButton.parentNode;
+            var inboxToRedirect = container.querySelector(".inboxID");
+            var inboxIDString = inboxToRedirect.textContent.trim();
+            inboxIDString = inboxIDString.match(/\d+/);
+
+            // Redirect to the chat room page (room.html) or perform any other required actions
+            window.location.pathname = '/chat/' + inboxIDString + '/';
+        }
+    };
+</script>
+
+
+</body>
+</html>
+ -->

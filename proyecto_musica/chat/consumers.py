@@ -27,13 +27,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.listOfUsers = []
         self.user = self.scope["user"]
-        print("Hello")
+        print("Connected to socket")
 
-        if self.user.is_anonymous: await self.close()
-        else:   print("User is: ", self.user.id)
+        if self.user.is_anonymous: 
+            await self.close()
+            return
+        
+        print("User is: ", self.user.id)
 
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = f"chat_{self.room_name}"
+        try:
+            self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+            self.room_group_name = f"chat_{self.room_name}"
+        except:
+            print("Not in the room yet1")
 
         try:
             if self.user.id not in roomsMap[self.room_name]:
@@ -41,15 +47,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except (KeyError):
             roomsMap[self.room_name] = []
             roomsMap[self.room_name].append(self.user.id)
+        except (AttributeError):
+            print("Not in the room yet2")
+
 
 
         # Join room group
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        try:
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            # await self.accept()
+        except:
+             print("Not in the room yet")
+             
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        try:
+            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        except:
+            print("Not in the room yet3")
+
+        #await self.close()
+
 
 
     # TODO: save the data in the
