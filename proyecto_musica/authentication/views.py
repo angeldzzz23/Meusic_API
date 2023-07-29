@@ -309,6 +309,7 @@ class LoginAPIView(GenericAPIView):
         user=authenticate(request, username=email, password=password)
 
         if user:
+            login(request, user)
             serializer=self.serializer_class(user)
 
             refresh = RefreshToken.for_user(user)

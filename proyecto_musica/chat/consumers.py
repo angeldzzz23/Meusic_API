@@ -27,37 +27,39 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.listOfUsers = []
         self.user = self.scope["user"]
-        print("Connected to socket")
 
-        if self.user.is_anonymous: 
-            await self.close()
-            return
+        print(self.user)
+
+
+        # if self.user.is_anonymous: 
+        #     await self.close()
+        #     return
         
-        print("User is: ", self.user.id)
+        # print("User is: ", self.user.id)
 
-        try:
-            self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-            self.room_group_name = f"chat_{self.room_name}"
-        except:
-            print("Not in the room yet1")
+        # try:
+        #     self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        #     self.room_group_name = f"chat_{self.room_name}"
+        # except:
+        #     print("Not in the room yet1")
 
-        try:
-            if self.user.id not in roomsMap[self.room_name]:
-                roomsMap[self.room_name].append(self.user.id)
-        except (KeyError):
-            roomsMap[self.room_name] = []
-            roomsMap[self.room_name].append(self.user.id)
-        except (AttributeError):
-            print("Not in the room yet2")
+        # try:
+        #     if self.user.id not in roomsMap[self.room_name]:
+        #         roomsMap[self.room_name].append(self.user.id)
+        # except (KeyError):
+        #     roomsMap[self.room_name] = []
+        #     roomsMap[self.room_name].append(self.user.id)
+        # except (AttributeError):
+        #     print("Not in the room yet2")
 
 
 
-        # Join room group
-        try:
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            # await self.accept()
-        except:
-             print("Not in the room yet")
+        # # Join room group
+        # try:
+        #     await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        #     # await self.accept()
+        # except:
+        #      print("Not in the room yet")
              
         await self.accept()
 
