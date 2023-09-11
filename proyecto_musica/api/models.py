@@ -1,6 +1,4 @@
-# create user model
 from django.shortcuts import render
-
 from django.db import models
 from authentication.models import User
 from datetime import datetime
@@ -9,18 +7,9 @@ import uuid
 import random
 
 
-# TODO: make cleaner
 def get_uplaod_file_name(userpic, filename):
     ext = filename.split('.')[-1]
-
-    # TODO: change the name of the file
-
     newName = str(uuid.uuid4()) + '.' + ext
-
-    print("uid",)
-    print('here', u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName))
-
-
 
     if userpic.title == "profile_image":
         return u'photos/%s/profileImg//%s' % (str(userpic.user.id),newName)
@@ -33,19 +22,7 @@ def get_uplaod_video_name(userpic, filename):
         return u'videos/%s/vids//%s' % (str(userpic.user.id),newName)
     return u'videos/%s/%s' % (str(userpic.user.id),newName)
 
-# these are the images for the profile page
-    # image_1
-    # image_2
-    # image_3
-    # image_4
-    # image_5
-    # image_6
-# Profile_image
-    # profile_image
 
-
-
-# change name of image_One
 
 class Images(models.Model):
     image_id = models.BigAutoField(
@@ -91,10 +68,6 @@ class Videos(models.Model):
     video = models.FileField(upload_to=get_uplaod_video_name)
 
 
-
-
-
-# this contains all of the types of media that we can have
 class Multimedia_type(models.Model):
 
     multimedia_type_id = models.BigAutoField(
@@ -113,8 +86,7 @@ class Multimedia_type(models.Model):
     class Meta:
         db_table = 'Multimedia_type'
 
-# status multimedia of the multimedia
-# ex. visible, hidden, deleted
+# status multimedia of the multimedia, ex. visible, hidden, deleted
 class Multimedia_status(models.Model):
     multimedia_status_id = models.BigAutoField(
         auto_created=True,
@@ -148,32 +120,6 @@ class Format(models.Model):
         db_table = 'Format'
 
 
-# imagen 1
-
-# iimage 2
-
-# iimage 3
-
-# imagen_5
-
-# iimage 5
-
-
-# When updating I would have to image
-
-# TODO: Validate the max amount permitted
-
-
-
-'''
- class Video:
-    multimedia_id
-    user_id
-
-    title = models.CharField(max_length=50)
-    video = models.Video('video/')
-'''
-
 
 
 # this is table is where we save all of our user multimedia files that are uploade
@@ -192,7 +138,6 @@ class Multimedia(models.Model):
         verbose_name='user_id'
     )
 
-
     multimedia_type = models.ForeignKey(
         Multimedia_type,
         on_delete=models.CASCADE,
@@ -206,11 +151,8 @@ class Multimedia(models.Model):
     )
 
     url = models.CharField(max_length=200)
-
     created_at = models.DateTimeField(auto_now_add=True)
-
     description = models.CharField(max_length=200)
-
     multimedia_status = models.ForeignKey(
         Multimedia_status,
         on_delete=models.CASCADE,
